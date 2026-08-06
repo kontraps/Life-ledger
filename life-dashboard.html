@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ledger</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ledger">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#161B22">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<style>
+  /* No external fonts — everything works with zero network calls */
+  @font-face{font-family:'Display';src:local('Space Grotesk'),local('Avenir Next'),local('Segoe UI');}
+</style>
+<style>
+  :root{
+    --bg: #161B22;
+    --panel: #1D2430;
+    --panel-2: #232B38;
+    --ink: #E9E7DF;
+    --muted: #8B93A0;
+    --line: #2C3542;
+    --teal: #4FB8A6;
+    --amber: #E8A33D;
+    --coral: #E07A5F;
+    --violet: #8B7FD1;
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 15% -10%, #232C3A 0%, transparent 45%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:22px 18px 40px;}
+
+  header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;}
+  .eyebrow{font-family:'JetBrains Mono','SF Mono','Menlo',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+  h1{font-family:'Space Grotesk','Avenir Next','Segoe UI',system-ui,sans-serif;font-size:26px;margin:4px 0 0;font-weight:700;letter-spacing:-0.01em;}
+
+  /* Quadrant dial — signature element */
+  .dial-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+    display:flex;
+    align-items:center;
+    gap:20px;
+    margin-bottom:20px;
+  }
+  .dial{flex-shrink:0;}
+  .dial-legend{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;}
+  .dial-legend div{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);}
+  .dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+  .dial-legend b{color:var(--ink);font-weight:500;}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    margin-bottom:16px;
+    overflow:hidden;
+  }
+  .card-head{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:16px 18px 12px;
+  }
+  .card-head h2{
+    font-family:'Space Grotesk','Avenir Next','Segoe UI',system-ui,sans-serif;
+    font-size:15px;margin:0;font-weight:600;
+    display:flex;align-items:center;gap:9px;
+  }
+  .tag{font-family:'JetBrains Mono','SF Mono','Menlo',monospace;font-size:11px;color:var(--muted);}
+  .card-body{padding:0 18px 18px;}
+
+  /* Habits */
+  .habit-row{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 0;border-top:1px solid var(--line);
+  }
+  .habit-row:first-child{border-top:none;}
+  .check{
+    width:26px;height:26px;border-radius:8px;border:1.5px solid var(--line);
+    flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    background:var(--panel-2);transition:.15s;
+  }
+  .check.on{background:var(--teal);border-color:var(--teal);}
+  .check.on::after{content:"✓";color:#0F1620;font-size:14px;font-weight:700;}
+  .habit-name{flex:1;font-size:14.5px;}
+  .streak{font-family:'JetBrains Mono','SF Mono','Menlo',monospace;font-size:11.5px;color:var(--amber);}
+  .del-x{color:var(--muted);cursor:pointer;font-size:16px;padding:0 4px;}
+
+  .add-row{display:flex;gap:8px;margin-top:12px;}
+  input, select{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+    border-radius:9px;padding:9px 11px;font-size:14px;font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+    width:100%;
+  }
+  input::placeholder{color:var(--muted);}
+  button.add-btn{
+    background:var(--teal);color:#0F1620;border:none;border-radius:9px;
+    padding:0 16px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;
+  }
+  button.add-btn:active{opacity:.8;}
+
+  /* Goals */
+  .goal-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);}
+  .goal-row:first-child{border-top:none;}
+  .goal-row.done .goal-text{text-decoration:line-through;color:var(--muted);}
+  .radio{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--violet);cursor:pointer;flex-shrink:0;}
+  .radio.on{background:var(--violet);}
+  .goal-text{flex:1;font-size:14.5px;}
+
+  /* Money */
+  .money-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+  .money-stat{background:var(--panel-2);border-radius:10px;padding:12px 14px;}
+  .money-stat .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+  .money-stat .val{font-family:'JetBrains Mono','SF Mono','Menlo',monospace;font-size:19px;margin-top:3px;}
+  .val.neg{color:var(--coral);}
+  .val.pos{color:var(--teal);}
+  .expense-row{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px;}
+  .expense-row:first-child{border-top:none;}
+  .expense-row .amt{font-family:'JetBrains Mono','SF Mono','Menlo',monospace;color:var(--coral);}
+
+  /* Mood */
+  .mood-picker{display:flex;gap:8px;margin-bottom:12px;}
+  .mood-opt{
+    flex:1;aspect-ratio:1;border-radius:10px;border:1.5px solid var(--line);
+    background:var(--panel-2);cursor:pointer;font-size:20px;
+    display:flex;align-items:center;justify-content:center;transition:.15s;
+  }
+  .mood-opt.on{border-color:var(--amber);background:rgba(232,163,61,.15);transform:scale(1.05);}
+  .mood-history{display:flex;gap:4px;align-items:flex-end;height:34px;margin-top:6px;}
+  .mood-bar{flex:1;border-radius:3px 3px 0 0;background:var(--violet);opacity:.35;}
+  .mood-bar.filled{opacity:1;}
+
+  .empty{color:var(--muted);font-size:13px;padding:10px 0;font-style:italic;}
+
+  footer{text-align:center;margin-top:26px;font-family:'JetBrains Mono','SF Mono','Menlo',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.08em;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="eyebrow" id="dateLabel">—</div>
+      <h1>Ledger</h1>
+    </div>
+  </header>
+
+  <div class="dial-card">
+    <svg class="dial" id="dialSvg" width="96" height="96" viewBox="0 0 96 96"></svg>
+    <div class="dial-legend">
+      <div><span class="dot" style="background:var(--teal)"></span>Habits <b id="legHabits">0%</b></div>
+      <div><span class="dot" style="background:var(--violet)"></span>Goals <b id="legGoals">0%</b></div>
+      <div><span class="dot" style="background:var(--amber)"></span>Budget <b id="legMoney">—</b></div>
+      <div><span class="dot" style="background:var(--coral)"></span>Mood <b id="legMood">—</b></div>
+    </div>
+  </div>
+
+  <!-- HABITS -->
+  <div class="card">
+    <div class="card-head"><h2>🔥 Habits</h2><span class="tag" id="habitTag">0/0 today</span></div>
+    <div class="card-body">
+      <div id="habitList"></div>
+      <div class="add-row">
+        <input id="habitInput" placeholder="New habit, e.g. Drink water" maxlength="40">
+        <button class="add-btn" onclick="addHabit()">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GOALS -->
+  <div class="card">
+    <div class="card-head"><h2>🎯 Goals</h2><span class="tag" id="goalTag">0 open</span></div>
+    <div class="card-body">
+      <div id="goalList"></div>
+      <div class="add-row">
+        <input id="goalInput" placeholder="New goal or task" maxlength="60">
+        <button class="add-btn" onclick="addGoal()">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MONEY -->
+  <div class="card">
+    <div class="card-head"><h2>💰 Budget</h2><span class="tag">this month</span></div>
+    <div class="card-body">
+      <div class="money-grid">
+        <div class="money-stat"><div class="lbl">Budget</div><div class="val" id="budgetVal">$0</div></div>
+        <div class="money-stat"><div class="lbl">Remaining</div><div class="val" id="remainVal">$0</div></div>
+      </div>
+      <div class="add-row" style="margin-bottom:12px;">
+        <input id="budgetInput" type="number" placeholder="Set monthly budget ($)">
+        <button class="add-btn" onclick="setBudget()">Set</button>
+      </div>
+      <div id="expenseList"></div>
+      <div class="add-row">
+        <input id="expenseNote" placeholder="What did you spend on?" style="flex:1.4">
+        <input id="expenseAmt" type="number" placeholder="$">
+        <button class="add-btn" onclick="addExpense()">Log</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOOD -->
+  <div class="card">
+    <div class="card-head"><h2>🌤 Mood</h2><span class="tag">today</span></div>
+    <div class="card-body">
+      <div class="mood-picker" id="moodPicker"></div>
+      <div class="mood-history" id="moodHistory"></div>
+    </div>
+  </div>
+
+  <footer>PRIVATE · SAVED ON THIS DEVICE ONLY</footer>
+</div>
+
+<script>
+const MOODS = ['😞','😕','😐','🙂','😄'];
+const todayKey = () => new Date().toISOString().slice(0,10);
+const monthKey = () => new Date().toISOString().slice(0,7);
+
+let state = {
+  habits: [],        // {id, name, doneDates: [], streak}
+  goals: [],          // {id, text, done}
+  budget: { month: monthKey(), amount: 0, expenses: [] }, // {note, amt}
+  moodLog: {}         // {dateStr: moodIndex}
+};
+
+function load(){
+  try{
+    const raw = localStorage.getItem('ledger-state');
+    if(raw) state = JSON.parse(raw);
+  }catch(e){ /* no data yet */ }
+  if(!state.budget || state.budget.month !== monthKey()){
+    state.budget = { month: monthKey(), amount: state.budget?.amount || 0, expenses: [] };
+  }
+  render();
+}
+function save(){
+  try{ localStorage.setItem('ledger-state', JSON.stringify(state)); }
+  catch(e){ console.error('save failed', e); }
+}
+
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+// ---------- Habits ----------
+function addHabit(){
+  const inp = document.getElementById('habitInput');
+  const name = inp.value.trim();
+  if(!name) return;
+  state.habits.push({id: uid(), name, doneDates: []});
+  inp.value='';
+  save(); render();
+}
+function toggleHabit(id){
+  const h = state.habits.find(x=>x.id===id);
+  const t = todayKey();
+  const i = h.doneDates.indexOf(t);
+  if(i>-1) h.doneDates.splice(i,1); else h.doneDates.push(t);
+  save(); render();
+}
+function deleteHabit(id){
+  state.habits = state.habits.filter(x=>x.id!==id);
+  save(); render();
+}
+function calcStreak(h){
+  let streak=0, d=new Date();
+  while(true){
+    const key = d.toISOString().slice(0,10);
+    if(h.doneDates.includes(key)){ streak++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  return streak;
+}
+
+// ---------- Goals ----------
+function addGoal(){
+  const inp = document.getElementById('goalInput');
+  const text = inp.value.trim();
+  if(!text) return;
+  state.goals.unshift({id: uid(), text, done:false});
+  inp.value='';
+  save(); render();
+}
+function toggleGoal(id){
+  const g = state.goals.find(x=>x.id===id);
+  g.done = !g.done;
+  save(); render();
+}
+
+// ---------- Money ----------
+function setBudget(){
+  const inp = document.getElementById('budgetInput');
+  const v = parseFloat(inp.value);
+  if(isNaN(v)) return;
+  state.budget.amount = v;
+  inp.value='';
+  save(); render();
+}
+function addExpense(){
+  const note = document.getElementById('expenseNote').value.trim() || 'Expense';
+  const amt = parseFloat(document.getElementById('expenseAmt').value);
+  if(isNaN(amt)) return;
+  state.budget.expenses.unshift({note, amt});
+  document.getElementById('expenseNote').value='';
+  document.getElementById('expenseAmt').value='';
+  save(); render();
+}
+
+// ---------- Mood ----------
+function setMood(idx){
+  state.moodLog[todayKey()] = idx;
+  save(); render();
+}
+
+// ---------- Render ----------
+function render(){
+  document.getElementById('dateLabel').textContent = new Date().toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'});
+
+  // Habits
+  const hl = document.getElementById('habitList');
+  hl.innerHTML = state.habits.length ? '' : '<div class="empty">No habits yet — add one below.</div>';
+  let doneCount=0;
+  state.habits.forEach(h=>{
+    const isDone = h.doneDates.includes(todayKey());
+    if(isDone) doneCount++;
+    const streak = calcStreak(h);
+    const row = document.createElement('div');
+    row.className='habit-row';
+    row.innerHTML = `
+      <div class="check ${isDone?'on':''}" onclick="toggleHabit('${h.id}')"></div>
+      <div class="habit-name">${h.name}</div>
+      <div class="streak">${streak>0?streak+'d streak':''}</div>
+      <div class="del-x" onclick="deleteHabit('${h.id}')">×</div>`;
+    hl.appendChild(row);
+  });
+  document.getElementById('habitTag').textContent = `${doneCount}/${state.habits.length} today`;
+
+  // Goals
+  const gl = document.getElementById('goalList');
+  gl.innerHTML = state.goals.length ? '' : '<div class="empty">No goals yet — add one below.</div>';
+  state.goals.forEach(g=>{
+    const row = document.createElement('div');
+    row.className = 'goal-row'+(g.done?' done':'');
+    row.innerHTML = `
+      <div class="radio ${g.done?'on':''}" onclick="toggleGoal('${g.id}')"></div>
+      <div class="goal-text">${g.text}</div>`;
+    gl.appendChild(row);
+  });
+  const openGoals = state.goals.filter(g=>!g.done).length;
+  document.getElementById('goalTag').textContent = `${openGoals} open`;
+
+  // Money
+  const spent = state.budget.expenses.reduce((s,e)=>s+e.amt,0);
+  const remaining = state.budget.amount - spent;
+  document.getElementById('budgetVal').textContent = '$'+state.budget.amount.toFixed(0);
+  const remainEl = document.getElementById('remainVal');
+  remainEl.textContent = '$'+remaining.toFixed(0);
+  remainEl.className = 'val ' + (remaining<0?'neg':'pos');
+  const el = document.getElementById('expenseList');
+  el.innerHTML = state.budget.expenses.length ? '' : '<div class="empty">No expenses logged this month.</div>';
+  state.budget.expenses.slice(0,6).forEach(e=>{
+    const row = document.createElement('div');
+    row.className='expense-row';
+    row.innerHTML = `<span>${e.note}</span><span class="amt">-$${e.amt.toFixed(2)}</span>`;
+    el.appendChild(row);
+  });
+
+  // Mood
+  const mp = document.getElementById('moodPicker');
+  mp.innerHTML='';
+  const todayMood = state.moodLog[todayKey()];
+  MOODS.forEach((m,i)=>{
+    const d = document.createElement('div');
+    d.className = 'mood-opt'+(todayMood===i?' on':'');
+    d.textContent = m;
+    d.onclick=()=>setMood(i);
+    mp.appendChild(d);
+  });
+  const mh = document.getElementById('moodHistory');
+  mh.innerHTML='';
+  for(let i=13;i>=0;i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const key = d.toISOString().slice(0,10);
+    const val = state.moodLog[key];
+    const bar = document.createElement('div');
+    bar.className = 'mood-bar'+(val!==undefined?' filled':'');
+    bar.style.height = val!==undefined ? (14+val*5)+'px' : '4px';
+    if(val!==undefined) bar.style.background = ['#E07A5F','#E8A33D','#8B93A0','#4FB8A6','#8B7FD1'][val];
+    mh.appendChild(bar);
+  }
+
+  // Dial legend
+  const habitPct = state.habits.length ? Math.round(doneCount/state.habits.length*100) : 0;
+  const goalPct = state.goals.length ? Math.round(state.goals.filter(g=>g.done).length/state.goals.length*100) : 0;
+  document.getElementById('legHabits').textContent = habitPct+'%';
+  document.getElementById('legGoals').textContent = goalPct+'%';
+  document.getElementById('legMoney').textContent = state.budget.amount>0 ? (remaining>=0?'On track':'Over') : '—';
+  document.getElementById('legMood').textContent = todayMood!==undefined ? MOODS[todayMood] : '—';
+
+  drawDial(habitPct, goalPct, state.budget.amount>0?(remaining>=0?100:20):0, todayMood!==undefined?(todayMood+1)*20:0);
+}
+
+function drawDial(habitPct, goalPct, moneyPct, moodPct){
+  const svg = document.getElementById('dialSvg');
+  const cx=48, cy=48, r=38, sw=9;
+  const segs = [
+    {pct:habitPct, color:'#4FB8A6'},
+    {pct:goalPct, color:'#8B7FD1'},
+    {pct:moneyPct, color:'#E8A33D'},
+    {pct:moodPct, color:'#E07A5F'}
+  ];
+  const gap = 6; // degrees gap between segments
+  const segAngle = 90 - gap;
+  let html = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#2C3542" stroke-width="${sw}"/>`;
+  segs.forEach((s, idx)=>{
+    const startDeg = -90 + idx*90 + gap/2;
+    const sweep = segAngle * (s.pct/100);
+    if(sweep<=0) return;
+    const largeArc = sweep>180?1:0;
+    const startRad = startDeg*Math.PI/180;
+    const endRad = (startDeg+sweep)*Math.PI/180;
+    const x1 = cx + r*Math.cos(startRad), y1 = cy + r*Math.sin(startRad);
+    const x2 = cx + r*Math.cos(endRad), y2 = cy + r*Math.sin(endRad);
+    html += `<path d="M ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2}" fill="none" stroke="${s.color}" stroke-width="${sw}" stroke-linecap="round"/>`;
+  });
+  const overall = Math.round((habitPct+goalPct+moneyPct+moodPct)/4);
+  html += `<text x="${cx}" y="${cy+2}" text-anchor="middle" font-family="JetBrains Mono" font-size="16" fill="#E9E7DF" font-weight="500">${overall}%</text>`;
+  html += `<text x="${cx}" y="${cy+15}" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#8B93A0">TODAY</text>`;
+  svg.innerHTML = html;
+}
+
+load();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{ /* fine if unavailable, e.g. viewed locally */ });
+  });
+}
+</script>
+</body>
+</html>

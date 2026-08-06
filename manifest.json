@@ -1,0 +1,12 @@
+{
+  "name": "Ledger — Daily Control Panel",
+  "short_name": "Ledger",
+  "start_url": "./life-dashboard.html",
+  "display": "standalone",
+  "background_color": "#161B22",
+  "theme_color": "#161B22",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
