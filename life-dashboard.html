@@ -147,6 +147,40 @@
 
   footer{text-align:center;margin-top:26px;font-family:'JetBrains Mono','SF Mono','Menlo',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.08em;}
 
+  /* ---------- Expenses, insights, undo toast ---------- */
+  .expense-row{align-items:center;cursor:pointer;}
+  .exp-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+  .exp-cat{font-size:11.5px;color:var(--muted);}
+  .link-btn{background:none;border:none;color:var(--teal);font-size:13px;font-family:inherit;padding:10px 0 4px;cursor:pointer;}
+  .hint{color:var(--muted);font-size:11.5px;padding:6px 0 10px;}
+
+  .sub-head{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:2px 0 8px;}
+  .sub-head:not(:first-child){margin-top:22px;}
+  .week-row{display:grid;grid-template-columns:1fr repeat(7,26px);gap:6px;align-items:center;padding:7px 0;border-top:1px solid var(--line);}
+  .week-row.week-head{border-top:none;padding:0 0 4px;font-family:'JetBrains Mono','SF Mono','Menlo',monospace;font-size:11px;color:var(--muted);text-align:center;}
+  .week-head .today{color:var(--amber);font-weight:700;}
+  .week-name{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .wd{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--line);background:var(--panel-2);justify-self:center;}
+  .wd.on{background:var(--teal);border-color:var(--teal);}
+  .cat-row{margin-top:12px;}
+  .cat-top{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;margin-bottom:5px;}
+  .cat-amt{font-family:'JetBrains Mono','SF Mono','Menlo',monospace;color:var(--muted);font-size:12.5px;white-space:nowrap;}
+  .bar{height:8px;border-radius:4px;background:var(--panel-2);overflow:hidden;}
+  .bar i{display:block;height:100%;border-radius:4px;}
+
+  #toast{
+    position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));
+    transform:translate(-50%,20px);
+    display:flex;align-items:center;gap:14px;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:12px;
+    padding:8px 8px 8px 16px;font-size:14px;max-width:calc(100vw - 28px);
+    box-shadow:0 8px 24px rgba(0,0,0,.45);
+    opacity:0;pointer-events:none;transition:.2s;z-index:10;
+  }
+  #toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto;}
+  #toastMsg{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #toastUndo{background:none;border:none;color:var(--teal);font-weight:700;font-size:14px;font-family:inherit;cursor:pointer;padding:10px 12px;min-height:44px;}
+
   /* ---------- Mobile optimisation ---------- */
   html{-webkit-text-size-adjust:100%;}
   body{
@@ -166,7 +200,7 @@
   }
 
   /* Expense row: long notes wrap instead of pushing the amount off-screen */
-  .expense-row{gap:12px;align-items:baseline;}
+  .expense-row{gap:12px;align-items:center;}
   .exp-note{min-width:0;overflow-wrap:anywhere;}
   .expense-row .amt{white-space:nowrap;}
   .habit-name, .goal-text{min-width:0;overflow-wrap:anywhere;}
@@ -174,7 +208,8 @@
   /* Expense form: note on its own line, amount + Log underneath */
   .expense-add{flex-wrap:wrap;}
   .expense-note{flex:1 1 100%;}
-  .expense-amt{flex:1 1 0;min-width:0;}
+  .expense-cat, .expense-amt{flex:1 1 0;min-width:0;}
+  .expense-add .add-btn{flex:1 1 100%;min-height:44px;}
 
   @media (max-width:520px){
     .wrap{
@@ -214,6 +249,11 @@
     .mood-picker{gap:6px;}
     .mood-opt{font-size:24px;border-radius:12px;}
     .mood-history{height:40px;}
+
+    .week-row{grid-template-columns:1fr repeat(7,22px);gap:4px;}
+    .week-name{font-size:15px;}
+    .cat-top{font-size:14px;}
+    .hint, .link-btn{font-size:13px;}
   }
 
   @media (max-width:360px){
@@ -280,6 +320,13 @@
       <div id="expenseList"></div>
       <div class="add-row expense-add">
         <input id="expenseNote" class="expense-note" enterkeyhint="next" placeholder="What did you spend on?">
+        <select id="expenseCat" class="expense-cat" aria-label="Category">
+          <option value="food">🍜 Food</option>
+          <option value="transport">🚌 Transport</option>
+          <option value="bills">🧾 Bills</option>
+          <option value="fun">🎮 Fun</option>
+          <option value="other">📦 Other</option>
+        </select>
         <input id="expenseAmt" class="expense-amt" type="number" inputmode="decimal" enterkeyhint="done" placeholder="₱ Amount">
         <button class="add-btn" onclick="addExpense()">Log</button>
       </div>
@@ -295,31 +342,75 @@
     </div>
   </div>
 
+  <!-- INSIGHTS -->
+  <div class="card">
+    <div class="card-head"><h2>📊 Insights</h2><span class="tag" id="insightTag">last 7 days</span></div>
+    <div class="card-body">
+      <div class="sub-head">Habits this week</div>
+      <div id="weekGrid"></div>
+      <div class="sub-head">Spending this month</div>
+      <div class="money-grid" id="spendStats"></div>
+      <div id="catBars"></div>
+    </div>
+  </div>
+
   <footer>PRIVATE · SAVED ON THIS DEVICE ONLY</footer>
 </div>
 
+<div id="toast" role="status"><span id="toastMsg"></span><button id="toastUndo" onclick="doUndo()">Undo</button></div>
+
 <script>
 const MOODS = ['😞','😕','😐','🙂','😄'];
-const todayKey = () => new Date().toISOString().slice(0,10);
-const monthKey = () => new Date().toISOString().slice(0,7);
+// Days use the phone's LOCAL time. (toISOString is UTC, which made the day
+// roll over at 8:00 AM in the Philippines instead of midnight.)
+const pad2 = n => String(n).padStart(2,'0');
+const dateKey = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+const todayKey = () => dateKey(new Date());
+const monthKey = () => todayKey().slice(0,7);
+// Makes typed text safe to show inside the page
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CATS = {
+  food:      {label:'Food',      icon:'🍜', color:'#E8A33D'},
+  transport: {label:'Transport', icon:'🚌', color:'#4FB8A6'},
+  bills:     {label:'Bills',     icon:'🧾', color:'#8B7FD1'},
+  fun:       {label:'Fun',       icon:'🎮', color:'#E07A5F'},
+  other:     {label:'Other',     icon:'📦', color:'#8B93A0'}
+};
+const catOf = key => CATS[key] || CATS.other;
 // Philippine peso, with thousands separators (e.g. ₱15,000 or -₱1,250.50)
 const peso = (n, dp) => (n<0?'-':'') + '₱' + Math.abs(n).toLocaleString('en-PH',{minimumFractionDigits:dp, maximumFractionDigits:dp});
 
 let state = {
-  habits: [],        // {id, name, doneDates: [], streak}
-  goals: [],          // {id, text, done}
-  budget: { month: monthKey(), amount: 0, expenses: [] }, // {note, amt}
-  moodLog: {}         // {dateStr: moodIndex}
+  habits: [],        // {id, name, doneDates: []}
+  goals: [],         // {id, text, done}
+  budget: { month: monthKey(), amount: 0, expenses: [] }, // expenses: {id, note, amt, cat}
+  moodLog: {}        // {dateStr: moodIndex}
 };
+let showAllExpenses = false;
 
+// Makes sure saved data has every field we need (older versions saved less)
+// and starts a fresh month of expenses when the month changes.
+function normalize(){
+  state.habits = Array.isArray(state.habits) ? state.habits : [];
+  state.goals = Array.isArray(state.goals) ? state.goals : [];
+  state.moodLog = state.moodLog || {};
+  state.habits.forEach(h=>{ if(!Array.isArray(h.doneDates)) h.doneDates = []; });
+  const b = state.budget || {};
+  const sameMonth = b.month === monthKey();
+  state.budget = {
+    month: monthKey(),
+    amount: Number(b.amount) || 0,
+    expenses: (sameMonth && Array.isArray(b.expenses)) ? b.expenses : []
+  };
+  state.budget.expenses.forEach(e=>{ if(!e.id) e.id = uid(); if(!CATS[e.cat]) e.cat = 'other'; });
+}
 function load(){
   try{
     const raw = localStorage.getItem('ledger-state');
-    if(raw) state = JSON.parse(raw);
+    if(raw) state = JSON.parse(raw) || state;
   }catch(e){ /* no data yet */ }
-  if(!state.budget || state.budget.month !== monthKey()){
-    state.budget = { month: monthKey(), amount: state.budget?.amount || 0, expenses: [] };
-  }
+  normalize();
+  save();
   render();
 }
 function save(){
@@ -328,6 +419,21 @@ function save(){
 }
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+// ---------- Undo toast (shown after deleting something) ----------
+let toastTimer = null, undoAction = null;
+function showToast(msg, undo){
+  undoAction = undo;
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toast').classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>document.getElementById('toast').classList.remove('show'), 6000);
+}
+function doUndo(){
+  if(undoAction){ undoAction(); undoAction = null; }
+  clearTimeout(toastTimer);
+  document.getElementById('toast').classList.remove('show');
+}
 
 // ---------- Habits ----------
 function addHabit(){
@@ -346,16 +452,22 @@ function toggleHabit(id){
   save(); render();
 }
 function deleteHabit(id){
-  state.habits = state.habits.filter(x=>x.id!==id);
+  const idx = state.habits.findIndex(x=>x.id===id);
+  if(idx < 0) return;
+  const [removed] = state.habits.splice(idx, 1);
   save(); render();
+  showToast(`Deleted "${removed.name}"`, ()=>{
+    state.habits.splice(Math.min(idx, state.habits.length), 0, removed);
+    save(); render();
+  });
 }
 function calcStreak(h){
-  let streak=0, d=new Date();
-  while(true){
-    const key = d.toISOString().slice(0,10);
-    if(h.doneDates.includes(key)){ streak++; d.setDate(d.getDate()-1); }
-    else break;
-  }
+  const done = new Set(h.doneDates);
+  const d = new Date();
+  // If today isn't ticked yet, the streak is still alive until midnight, so count from yesterday
+  if(!done.has(dateKey(d))) d.setDate(d.getDate()-1);
+  let streak = 0;
+  while(done.has(dateKey(d))){ streak++; d.setDate(d.getDate()-1); }
   return streak;
 }
 
@@ -374,11 +486,22 @@ function toggleGoal(id){
   save(); render();
 }
 
+function deleteGoal(id){
+  const idx = state.goals.findIndex(x=>x.id===id);
+  if(idx < 0) return;
+  const [removed] = state.goals.splice(idx, 1);
+  save(); render();
+  showToast(`Deleted "${removed.text}"`, ()=>{
+    state.goals.splice(Math.min(idx, state.goals.length), 0, removed);
+    save(); render();
+  });
+}
+
 // ---------- Money ----------
 function setBudget(){
   const inp = document.getElementById('budgetInput');
   const v = parseFloat(inp.value);
-  if(isNaN(v)) return;
+  if(isNaN(v) || v < 0) return;
   state.budget.amount = v;
   inp.value='';
   save(); render();
@@ -386,11 +509,33 @@ function setBudget(){
 function addExpense(){
   const note = document.getElementById('expenseNote').value.trim() || 'Expense';
   const amt = parseFloat(document.getElementById('expenseAmt').value);
-  if(isNaN(amt)) return;
-  state.budget.expenses.unshift({note, amt});
+  if(isNaN(amt) || amt <= 0) return;
+  const cat = document.getElementById('expenseCat').value;
+  state.budget.expenses.unshift({id: uid(), note, amt, cat});
   document.getElementById('expenseNote').value='';
   document.getElementById('expenseAmt').value='';
   save(); render();
+}
+function editExpense(id){
+  const e = state.budget.expenses.find(x=>x.id===id);
+  if(!e) return;
+  const input = prompt(`Change amount for "${e.note}" (₱)`, e.amt);
+  if(input === null) return;
+  const v = parseFloat(String(input).replace(/,/g,''));
+  if(isNaN(v) || v <= 0) return;
+  e.amt = v;
+  save(); render();
+}
+function deleteExpense(id){
+  const list = state.budget.expenses;
+  const idx = list.findIndex(x=>x.id===id);
+  if(idx < 0) return;
+  const [removed] = list.splice(idx, 1);
+  save(); render();
+  showToast(`Deleted "${removed.note}"`, ()=>{
+    state.budget.expenses.splice(Math.min(idx, state.budget.expenses.length), 0, removed);
+    save(); render();
+  });
 }
 
 // ---------- Mood ----------
@@ -415,7 +560,7 @@ function render(){
     row.className='habit-row';
     row.innerHTML = `
       <div class="check ${isDone?'on':''}" onclick="toggleHabit('${h.id}')"></div>
-      <div class="habit-name">${h.name}</div>
+      <div class="habit-name">${esc(h.name)}</div>
       <div class="streak">${streak>0?streak+'d streak':''}</div>
       <div class="del-x" onclick="deleteHabit('${h.id}')">×</div>`;
     hl.appendChild(row);
@@ -430,7 +575,8 @@ function render(){
     row.className = 'goal-row'+(g.done?' done':'');
     row.innerHTML = `
       <div class="radio ${g.done?'on':''}" onclick="toggleGoal('${g.id}')"></div>
-      <div class="goal-text">${g.text}</div>`;
+      <div class="goal-text">${esc(g.text)}</div>
+      <div class="del-x" onclick="deleteGoal('${g.id}')">×</div>`;
     gl.appendChild(row);
   });
   const openGoals = state.goals.filter(g=>!g.done).length;
@@ -444,13 +590,32 @@ function render(){
   remainEl.textContent = peso(remaining, 0);
   remainEl.className = 'val ' + (remaining<0?'neg':'pos');
   const el = document.getElementById('expenseList');
-  el.innerHTML = state.budget.expenses.length ? '' : '<div class="empty">No expenses logged this month.</div>';
-  state.budget.expenses.slice(0,6).forEach(e=>{
+  const exps = state.budget.expenses;
+  el.innerHTML = exps.length ? '' : '<div class="empty">No expenses logged this month.</div>';
+  (showAllExpenses ? exps : exps.slice(0,6)).forEach(e=>{
+    const c = catOf(e.cat);
     const row = document.createElement('div');
     row.className='expense-row';
-    row.innerHTML = `<span class="exp-note">${e.note}</span><span class="amt">-${peso(e.amt, 2)}</span>`;
+    row.onclick = () => editExpense(e.id);
+    row.innerHTML = `
+      <div class="exp-main"><span class="exp-note">${esc(e.note)}</span><span class="exp-cat">${c.icon} ${c.label}</span></div>
+      <span class="amt">-${peso(e.amt, 2)}</span>
+      <div class="del-x" onclick="event.stopPropagation();deleteExpense('${e.id}')">×</div>`;
     el.appendChild(row);
   });
+  if(exps.length > 6){
+    const more = document.createElement('button');
+    more.className = 'link-btn';
+    more.textContent = showAllExpenses ? 'Show less' : `Show all ${exps.length}`;
+    more.onclick = () => { showAllExpenses = !showAllExpenses; render(); };
+    el.appendChild(more);
+  }
+  if(exps.length){
+    const hint = document.createElement('div');
+    hint.className = 'hint';
+    hint.textContent = 'Tap an expense to change its amount.';
+    el.appendChild(hint);
+  }
 
   // Mood
   const mp = document.getElementById('moodPicker');
@@ -467,7 +632,7 @@ function render(){
   mh.innerHTML='';
   for(let i=13;i>=0;i--){
     const d = new Date(); d.setDate(d.getDate()-i);
-    const key = d.toISOString().slice(0,10);
+    const key = dateKey(d);
     const val = state.moodLog[key];
     const bar = document.createElement('div');
     bar.className = 'mood-bar'+(val!==undefined?' filled':'');
@@ -485,6 +650,60 @@ function render(){
   document.getElementById('legMood').textContent = todayMood!==undefined ? MOODS[todayMood] : '—';
 
   drawDial(habitPct, goalPct, state.budget.amount>0?(remaining>=0?100:20):0, todayMood!==undefined?(todayMood+1)*20:0);
+  renderInsights();
+}
+
+function renderInsights(){
+  // --- Habits this week: one row per habit, one square per day (today is the last column) ---
+  const days = [];
+  for(let i=6;i>=0;i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    days.push({key: dateKey(d), label: d.toLocaleDateString('en-US',{weekday:'narrow'}), today: i===0});
+  }
+  const wg = document.getElementById('weekGrid');
+  const tag = document.getElementById('insightTag');
+  if(!state.habits.length){
+    wg.innerHTML = '<div class="empty">Add a habit to see your week here.</div>';
+    tag.textContent = 'last 7 days';
+  }else{
+    let doneTotal = 0;
+    let html = '<div class="week-row week-head"><span></span>' +
+      days.map(d=>`<span class="${d.today?'today':''}">${d.label}</span>`).join('') + '</div>';
+    state.habits.forEach(h=>{
+      html += `<div class="week-row"><span class="week-name">${esc(h.name)}</span>` +
+        days.map(d=>{
+          const on = h.doneDates.includes(d.key);
+          if(on) doneTotal++;
+          return `<span class="wd ${on?'on':''}"></span>`;
+        }).join('') + '</div>';
+    });
+    wg.innerHTML = html;
+    tag.textContent = Math.round(doneTotal/(state.habits.length*7)*100) + '% this week';
+  }
+
+  // --- Spending this month ---
+  const exps = state.budget.expenses;
+  const spent = exps.reduce((s,e)=>s+e.amt,0);
+  const remaining = state.budget.amount - spent;
+  const hasBudget = state.budget.amount > 0;
+  const now = new Date();
+  const daysLeft = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate() - now.getDate() + 1; // includes today
+  const perDay = hasBudget ? Math.max(0, remaining)/daysLeft : 0;
+  document.getElementById('spendStats').innerHTML = `
+    <div class="money-stat"><div class="lbl">Spent</div><div class="val">${peso(spent,0)}</div></div>
+    <div class="money-stat"><div class="lbl">Can spend / day</div><div class="val ${hasBudget?(remaining<0?'neg':'pos'):''}">${hasBudget?peso(perDay,0):'—'}</div></div>`;
+
+  const totals = {};
+  exps.forEach(e=>{ const k = CATS[e.cat] ? e.cat : 'other'; totals[k] = (totals[k]||0) + e.amt; });
+  const rows = Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('catBars').innerHTML = rows.length ? rows.map(([k,amt])=>{
+    const c = CATS[k];
+    const pct = spent>0 ? Math.min(100, Math.max(0, Math.round(amt/spent*100))) : 0;
+    return `<div class="cat-row">
+      <div class="cat-top"><span>${c.icon} ${c.label}</span><span class="cat-amt">${peso(amt,0)} · ${pct}%</span></div>
+      <div class="bar"><i style="width:${pct}%;background:${c.color}"></i></div>
+    </div>`;
+  }).join('') : '<div class="empty">Log an expense to see where your money goes.</div>';
 }
 
 function drawDial(habitPct, goalPct, moneyPct, moodPct){
@@ -522,6 +741,11 @@ function drawDial(habitPct, goalPct, moneyPct, moodPct){
 });
 document.getElementById('expenseNote').addEventListener('keydown', ev=>{
   if(ev.key==='Enter'){ ev.preventDefault(); document.getElementById('expenseAmt').focus(); }
+});
+
+// When you come back to the app (or it's left open past midnight), refresh the day and month
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState === 'visible'){ normalize(); save(); render(); }
 });
 
 load();
