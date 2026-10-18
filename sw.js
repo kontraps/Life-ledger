@@ -1,4 +1,4 @@
-const CACHE = 'ledger-v1';
+const CACHE = 'ledger-v2';
 const FILES = ['./life-dashboard.html', './manifest.json', './icon.png'];
 
 self.addEventListener('install', (e) => {
