@@ -1,5 +1,10 @@
-const CACHE = 'ledger-v3';
-const FILES = ['./life-dashboard.html', './manifest.json', './icon.png'];
+const CACHE = 'ledger-v4';
+const FILES = [
+  './life-dashboard.html', './manifest.json', './icon.png',
+  './fonts/bricolage-700.woff2', './fonts/bricolage-800.woff2',
+  './fonts/plexmono-500-latin.woff2', './fonts/plexmono-500-ext.woff2',
+  './fonts/plexmono-600-latin.woff2', './fonts/plexmono-600-ext.woff2'
+];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(FILES)));
