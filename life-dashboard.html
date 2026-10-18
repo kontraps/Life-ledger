@@ -106,6 +106,23 @@
   /* ---- Today summary ---- */
   .summary{display:flex;align-items:center;gap:18px;padding:0 20px;margin-top:22px;}
   .ring-wrap{position:relative;width:116px;height:116px;flex-shrink:0;}
+  .ring-wrap.celebrate{animation:ringPulse 1s ease-out;}
+  @keyframes ringPulse{
+    0%{transform:scale(1);filter:drop-shadow(0 0 0 transparent);}
+    25%{transform:scale(1.12);filter:drop-shadow(0 0 14px var(--brass));}
+    55%{transform:scale(.98);}
+    100%{transform:scale(1);filter:drop-shadow(0 0 0 transparent);}
+  }
+
+  /* Confetti: tiny pieces that fly out, then fall and fade */
+  .confetti-layer{position:fixed;width:0;height:0;pointer-events:none;z-index:40;}
+  .cf{position:absolute;left:-4px;top:-6px;width:8px;height:12px;border-radius:2px;opacity:0;animation:cf 1s cubic-bezier(.2,.7,.3,1) forwards;}
+  .cf.round{width:9px;height:9px;border-radius:50%;left:-4px;top:-4px;}
+  @keyframes cf{
+    0%{transform:translate(0,0) rotate(0) scale(.4);opacity:1;}
+    40%{transform:translate(var(--dx),var(--up)) rotate(calc(var(--rot) * .5)) scale(1);opacity:1;}
+    100%{transform:translate(calc(var(--dx) * 1.1),var(--down)) rotate(var(--rot)) scale(.9);opacity:0;}
+  }
   .ring-wrap svg{width:100%;height:100%;display:block;}
   .arc{transition:stroke-dasharray .8s cubic-bezier(.3,.7,.2,1),opacity .3s;}
   .ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
@@ -150,6 +167,25 @@
   .habit-name,.goal-text{font-size:17px;font-weight:500;overflow-wrap:anywhere;}
   .goal-row.done .goal-text{text-decoration:line-through;color:var(--muted);}
   .streak{font-size:13px;color:var(--brass);margin-top:2px;}
+  .streak.none{color:var(--muted);}
+
+  /* Streak badge: always shown, grey at 0, brass once a streak is running */
+  .streak-badge{
+    display:flex;align-items:center;gap:5px;flex-shrink:0;
+    padding:6px 11px 6px 9px;border-radius:999px;
+    background:var(--brass-t);color:var(--brass);
+    font-family:var(--mono);font-weight:600;font-size:16px;line-height:1;
+  }
+  .streak-badge .fl{font-size:16px;}
+  .streak-badge.zero{background:var(--sheet-2);color:var(--muted);}
+  .streak-badge.zero .fl{filter:grayscale(1);opacity:.5;}
+  .streak-badge.bump{animation:bump .7s cubic-bezier(.2,.9,.3,1.35);}
+  @keyframes bump{
+    0%{transform:scale(1);}
+    30%{transform:scale(1.4) rotate(-7deg);box-shadow:0 0 0 0 var(--brass-t);}
+    60%{transform:scale(.96) rotate(2deg);box-shadow:0 0 0 10px transparent;}
+    100%{transform:scale(1);}
+  }
   .del-x{color:var(--muted);cursor:pointer;font-size:26px;line-height:1;padding:10px 12px;margin:-10px -10px -10px 0;}
 
   /* A tick is a stamp: an empty dashed slot until you press it */
@@ -287,6 +323,7 @@
     opacity:0;pointer-events:none;transition:.2s;
   }
   #toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto;}
+  #toast.plain{padding:14px 18px;}
   #toastMsg{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   #toastUndo{
     background:none;border:none;color:var(--bg);font-weight:800;font-size:15px;text-decoration:underline;
@@ -300,6 +337,7 @@
   }
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation:none !important;transition:none !important;}
+    .confetti-layer{display:none;}
   }
 </style>
 </head>
@@ -558,12 +596,76 @@ function toggleTheme(){
 
 // ---------- Undo toast (shown after deleting something) ----------
 let toastTimer = null, undoAction = null;
-function showToast(msg, undo){
-  undoAction = undo;
+// With an undo function the toast shows an Undo button; without one it's a plain message
+function showToast(msg, undo, ms){
+  undoAction = undo || null;
   $('toastMsg').textContent = msg;
+  $('toastUndo').style.display = undo ? '' : 'none';
+  $('toast').classList.toggle('plain', !undo);
   $('toast').classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>$('toast').classList.remove('show'), 6000);
+  toastTimer = setTimeout(()=>{ $('toast').classList.remove('show'); undoAction = null; }, ms || 6000);
+}
+
+// ---------- Celebrations ----------
+const MILESTONES = [3, 7, 14, 21, 30, 50, 100, 200, 365];
+const CONFETTI_COLORS = ['var(--mint)','var(--brass)','var(--violet)','var(--coral)'];
+// A burst of confetti from the middle of an element (does nothing if it isn't visible)
+function confetti(el, count){
+  if(!el || !document.body) return;
+  const r = el.getBoundingClientRect();
+  if(!r.width || !r.height) return;
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const layer = document.createElement('div');
+  layer.className = 'confetti-layer';
+  layer.style.left = (r.left + r.width/2) + 'px';
+  layer.style.top = (r.top + r.height/2) + 'px';
+  for(let i=0; i<count; i++){
+    const p = document.createElement('i');
+    p.className = 'cf' + (i%3===0 ? ' round' : '');
+    const angle = (Math.PI * 2 * i / count) + (Math.random()-.5) * .6;
+    const power = 55 + Math.random() * (count > 20 ? 110 : 70);
+    p.style.setProperty('--dx', Math.round(Math.cos(angle) * power) + 'px');
+    p.style.setProperty('--up', Math.round(Math.sin(angle) * power - 30) + 'px');
+    p.style.setProperty('--down', Math.round(Math.sin(angle) * power + 55 + Math.random()*50) + 'px');
+    p.style.setProperty('--rot', Math.round((Math.random()-.5) * 720) + 'deg');
+    p.style.background = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
+    p.style.animationDelay = Math.round(Math.random() * 70) + 'ms';
+    layer.appendChild(p);
+  }
+  document.body.appendChild(layer);
+  setTimeout(()=>layer.remove(), 1300);
+}
+// Runs right after a habit is ticked and the screen has been redrawn
+function celebrate(h){
+  confetti(document.querySelector(`.screen.active .habit-row[data-id="${h.id}"] .check`), 16);
+
+  // The streak number counts up from the old value
+  const num = document.querySelector(`.screen.active .habit-row[data-id="${h.id}"] .streak-num`);
+  const streak = calcStreak(h);
+  if(num && streak > 0){
+    num.textContent = String(streak - 1);
+    setTimeout(()=>{ num.textContent = String(streak); }, 220);
+  }
+
+  const total = state.habits.length;
+  const allDone = total > 0 && state.habits.every(x=>x.doneDates.includes(todayKey()));
+  const milestone = MILESTONES.includes(streak);
+  const undoPending = !!undoAction;   // don't cover up an Undo button the person may still want
+  if(allDone){
+    const ring = document.querySelector('.screen.active .ring-wrap');
+    if(ring){
+      ring.classList.remove('celebrate'); void ring.offsetWidth; ring.classList.add('celebrate');
+      confetti(ring, 34);
+    }else{
+      confetti(document.querySelector(`.screen.active .habit-row[data-id="${h.id}"] .check`), 30);
+    }
+    buzz([20, 50, 20, 50, 40]);
+    if(!undoPending) showToast(milestone ? `All habits done 🎉 ${streak}-day streak on ${h.name}!` : 'All habits done today 🎉', null, 4200);
+  }else if(milestone){
+    buzz([20, 50, 30]);
+    if(!undoPending) showToast(`🔥 ${streak}-day streak on ${h.name}!`, null, 3600);
+  }
 }
 function doUndo(){
   if(undoAction){ undoAction(); undoAction = null; }
@@ -586,9 +688,13 @@ function toggleHabit(id){
   if(!h) return;
   const t = todayKey();
   const i = h.doneDates.indexOf(t);
-  if(i>-1){ h.doneDates.splice(i,1); popId = null; }
+  const completing = i === -1;
+  if(!completing){ h.doneDates.splice(i,1); popId = null; }
   else { h.doneDates.push(t); popId = id; buzz(18); }
   save(); render();
+  if(completing) celebrate(h);
+  // Taking a tick back removes a leftover celebration message (but never an Undo toast)
+  else if(!undoAction) $('toast').classList.remove('show');
 }
 function deleteHabit(id){
   const idx = state.habits.findIndex(x=>x.id===id);
@@ -599,6 +705,17 @@ function deleteHabit(id){
     state.habits.splice(Math.min(idx, state.habits.length), 0, removed);
     save(); render();
   });
+}
+// Longest run of consecutive days ever ticked
+function bestStreak(h){
+  const days = [...new Set(h.doneDates)].map(k=>{ const [y,m,d] = k.split('-').map(Number); return Date.UTC(y, m-1, d); }).sort((a,b)=>a-b);
+  let best = 0, run = 0, prev = null;
+  days.forEach(t=>{
+    run = (prev !== null && Math.round((t - prev) / 86400000) === 1) ? run + 1 : 1;
+    if(run > best) best = run;
+    prev = t;
+  });
+  return best;
 }
 function calcStreak(h){
   const done = new Set(h.doneDates);
@@ -693,9 +810,18 @@ function setMood(idx){
 function habitRow(h, manage){
   const done = h.doneDates.includes(todayKey());
   const streak = calcStreak(h);
-  return `<div class="row habit-row${done?' is-done':''}" onclick="toggleHabit('${h.id}')">
+  const best = bestStreak(h);
+  // The small line under the name always says something useful about the streak
+  let hint;
+  if(streak === 0) hint = 'Tick it today to start a streak';
+  else if(!done) hint = 'Tick today to keep your streak';
+  else if(streak >= 2 && streak >= best) hint = 'Your best streak so far';
+  else if(best > streak) hint = `Best: ${best} day${best>1?'s':''}`;
+  else hint = 'Day one. Keep going';
+  return `<div class="row habit-row${done?' is-done':''}" data-id="${h.id}" onclick="toggleHabit('${h.id}')">
     <div class="check${done?' on':''}${popId===h.id?' pop':''}"></div>
-    <div class="row-main"><div class="habit-name">${esc(h.name)}</div>${streak>0 ? `<div class="streak">🔥 ${streak}-day streak</div>` : ''}</div>
+    <div class="row-main"><div class="habit-name">${esc(h.name)}</div><div class="streak${streak===0?' none':''}">${hint}</div></div>
+    <div class="streak-badge${streak===0?' zero':''}${popId===h.id?' bump':''}" aria-label="${streak} day streak"><span class="fl">🔥</span><span class="streak-num">${streak}</span></div>
     ${manage ? `<div class="del-x" role="button" aria-label="Delete habit" onclick="event.stopPropagation();deleteHabit('${h.id}')">×</div>` : ''}
   </div>`;
 }
@@ -878,7 +1004,9 @@ function render(){
   $('heroMsg').textContent = msg;
   $('heroSub').textContent = sub;
 
-  drawDial(habitPct, goalPct, hasBudget?(remaining>=0?100:20):0, todayMood!==undefined?(todayMood+1)*20:0);
+  // The centre % only averages the areas you actually use (a habit, a goal, a budget, a mood)
+  drawDial(habitPct, goalPct, hasBudget?(remaining>=0?100:20):0, todayMood!==undefined?(todayMood+1)*20:0,
+           [total>0, state.goals.length>0, hasBudget, todayMood!==undefined]);
   popId = null;
 }
 
@@ -897,14 +1025,15 @@ function buildDial(){
   ARC_VARS.forEach((v,i)=>{ html += circle(i, `stroke:var(${v});stroke-dasharray:0 100;opacity:0`, 'arc'); });
   $('dialSvg').innerHTML = html;
 }
-function drawDial(habitPct, goalPct, moneyPct, moodPct){
+function drawDial(habitPct, goalPct, moneyPct, moodPct, active){
   const vals = [habitPct, goalPct, moneyPct, moodPct];
+  const used = vals.filter((v,i)=>!active || active[i]);
   document.querySelectorAll('#dialSvg .arc').forEach((el,i)=>{
     const p = Math.max(0, Math.min(100, vals[i]));
     el.style.setProperty('stroke-dasharray', `${(QLEN*p/100).toFixed(3)} 100`);
     el.style.setProperty('opacity', p>0 ? '1' : '0');
   });
-  $('ringPct').textContent = Math.round(vals.reduce((a,b)=>a+b,0)/4) + '%';
+  $('ringPct').textContent = (used.length ? Math.round(used.reduce((a,b)=>a+b,0)/used.length) : 0) + '%';
 }
 
 // Enter / Go / Done on the phone keyboard submits the field
