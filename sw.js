@@ -1,4 +1,4 @@
-const CACHE = 'ledger-v2';
+const CACHE = 'ledger-v3';
 const FILES = ['./life-dashboard.html', './manifest.json', './icon.png'];
 
 self.addEventListener('install', (e) => {
@@ -15,8 +15,17 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
+// Network-first: always try to get the newest version, fall back to the saved
+// copy only when offline. This way updates show up on the next open.
 self.addEventListener('fetch', (e) => {
+  if (e.request.method !== 'GET') return;
   e.respondWith(
-    caches.match(e.request).then((cached) => cached || fetch(e.request))
+    fetch(e.request, { cache: 'no-cache' })
+      .then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE).then((cache) => cache.put(e.request, copy));
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
