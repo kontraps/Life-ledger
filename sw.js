@@ -1,4 +1,4 @@
-const CACHE = 'ledger-v5';
+const CACHE = 'ledger-v6';
 const FILES = [
   './life-dashboard.html', './manifest.json', './icon.png',
   './fonts/bricolage-700.woff2', './fonts/bricolage-800.woff2',

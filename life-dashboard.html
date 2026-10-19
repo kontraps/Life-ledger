@@ -265,6 +265,36 @@
   .bar{height:6px;border-radius:3px;background:var(--sheet-2);overflow:hidden;}
   .bar i{display:block;height:100%;border-radius:3px;}
 
+  /* ---- Spending plan ---- */
+  .hero-num{font-family:var(--mono);font-weight:600;font-size:42px;line-height:1.1;letter-spacing:-.03em;padding-top:18px;color:var(--mint);}
+  .hero-num.neg{color:var(--red);}
+  .hero-num small{font-family:var(--body);font-weight:500;font-size:17px;letter-spacing:0;color:var(--muted);margin-left:8px;}
+  .hero-note{color:var(--muted);font-size:15px;margin:6px 0 4px;}
+  .hero-note + .meter{margin-top:14px;}
+  .env-row{align-items:flex-start;}
+  .env-row .exp-ico{margin-top:2px;}
+  .env-main{flex:1;min-width:0;}
+  .env-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:9px;}
+  .env-name{font-size:16.5px;font-weight:500;}
+  .env-left{font-family:var(--mono);font-weight:500;font-size:15px;white-space:nowrap;}
+  .env-left.safe{color:var(--mint);}
+  .env-left.careful{color:var(--brass);}
+  .env-left.over{color:var(--red);}
+  .env-left.save{color:var(--violet);}
+  .env-sub{font-size:13px;color:var(--muted);margin-top:7px;}
+  .save-row .env-top{margin-bottom:0;}
+  .save-row .env-sub{margin-top:3px;}
+  .afford-row{align-items:flex-end;}
+  .afford-row input,.afford-row select{flex:1 1 0;min-width:0;}
+  .verdict{
+    border-left:4px solid var(--rule-strong);background:var(--sheet-2);border-radius:0 12px 12px 0;
+    padding:14px 16px;font-size:15.5px;line-height:1.45;margin-bottom:6px;
+  }
+  .verdict.good{border-left-color:var(--mint);}
+  .verdict.warn{border-left-color:var(--brass);}
+  .verdict.bad{border-left-color:var(--red);}
+  .verdict b{font-family:var(--mono);font-weight:600;}
+
   /* ---- Week grid ---- */
   .week-row{display:grid;grid-template-columns:1fr repeat(7,28px);gap:6px;align-items:center;padding:11px 0;border-top:1px solid var(--rule);}
   .week-row.week-head{border-top:none;padding:12px 0 4px;font-size:12.5px;color:var(--muted);text-align:center;}
@@ -370,7 +400,7 @@
     <div class="legend">
       <div class="lg"><span class="dot mint"></span>Habits<b id="legHabits">0%</b></div>
       <div class="lg"><span class="dot violet"></span>Goals<b id="legGoals">0%</b></div>
-      <div class="lg"><span class="dot brass"></span>Budget<b id="legMoney">—</b></div>
+      <div class="lg"><span class="dot brass"></span>Money<b id="legMoney">—</b></div>
       <div class="lg"><span class="dot coral"></span>Mood<b id="legMood">—</b></div>
     </div>
 
@@ -386,7 +416,7 @@
         <div class="note">Last 14 days</div>
       </section>
       <section class="sec">
-        <div class="sec-head"><h2>Budget</h2><button class="link" onclick="go('money')">Open</button></div>
+        <div class="sec-head"><h2>Spending plan</h2><button class="link" onclick="go('money')">Open</button></div>
         <div id="snapBudget"></div>
       </section>
       <div class="foot">Everything is saved on this phone only.</div>
@@ -440,17 +470,42 @@
     <header class="top"><div><h1>Money</h1></div></header>
     <div class="sheet">
       <section class="sec">
+        <div class="sec-head"><h2>You can spend</h2><span class="tally">this month</span></div>
+        <div id="spendHero"></div>
+      </section>
+      <section class="sec">
+        <div class="sec-head"><h2>Where to spend</h2><span class="tally" id="planTag">50/30/20</span></div>
+        <div id="envList"></div>
+        <div class="note" id="planNote"></div>
+        <button class="link-btn" id="planReset" onclick="resetPlan()">Reset to 50/30/20</button>
+      </section>
+      <section class="sec">
+        <div class="sec-head"><h2>Can I afford it?</h2></div>
+        <div class="add-row afford-row">
+          <input id="checkAmt" type="number" inputmode="decimal" enterkeyhint="done" placeholder="₱ Price" aria-label="Price in pesos">
+          <select id="checkCat" aria-label="Where it would come from">
+            <option value="food">🍜 Food</option>
+            <option value="transport">🚌 Transport</option>
+            <option value="bills">🧾 Bills</option>
+            <option value="fun">🎮 Fun</option>
+            <option value="other">📦 Other</option>
+          </select>
+        </div>
+        <div class="verdict" id="verdict" role="status"></div>
+      </section>
+      <section class="sec">
         <div class="sec-head"><h2>This month</h2></div>
         <div class="statement">
-          <div class="st-row"><span>Budget</span><span class="num" id="budgetVal">₱0</span></div>
+          <div class="st-row"><span>Your money</span><span class="num" id="budgetVal">₱0</span></div>
+          <div class="st-row"><span>Set aside for savings</span><span class="num" id="setAsideVal">₱0</span></div>
           <div class="st-row"><span>Spent</span><span class="num" id="spentVal">₱0</span></div>
-          <div class="st-row total"><span>Left</span><span class="num val" id="remainVal">₱0</span></div>
+          <div class="st-row total"><span>Left to spend</span><span class="num val" id="remainVal">₱0</span></div>
           <div class="st-row sub"><span>You can spend per day</span><span class="num" id="perDayVal">—</span></div>
         </div>
         <div class="meter"><i id="meterFill"></i></div>
         <div class="meter-note" id="meterText"></div>
         <div class="add-row">
-          <input id="budgetInput" type="number" inputmode="decimal" enterkeyhint="done" placeholder="Monthly budget (₱)" aria-label="Monthly budget">
+          <input id="budgetInput" type="number" inputmode="decimal" enterkeyhint="done" placeholder="Money for this month (₱)" aria-label="Money for this month">
           <button class="add-btn" onclick="setBudget()">Set</button>
         </div>
       </section>
@@ -472,10 +527,6 @@
       <section class="sec">
         <div class="sec-head"><h2>Expenses</h2><span class="tally" id="expTag">0</span></div>
         <div id="expenseList"></div>
-      </section>
-      <section class="sec">
-        <div class="sec-head"><h2>Where it went</h2></div>
-        <div id="catBars"></div>
       </section>
     </div>
   </section>
@@ -549,10 +600,13 @@ function normalize(){
   state.habits.forEach(h=>{ if(!Array.isArray(h.doneDates)) h.doneDates = []; });
   const b = state.budget || {};
   const sameMonth = b.month === monthKey();
+  const pl = (b.plan && typeof b.plan === 'object') ? b.plan : {};
   state.budget = {
     month: monthKey(),
     amount: Number(b.amount) || 0,
-    expenses: (sameMonth && Array.isArray(b.expenses)) ? b.expenses : []
+    expenses: (sameMonth && Array.isArray(b.expenses)) ? b.expenses : [],
+    // The spending plan carries over from month to month
+    plan: { mode: pl.mode === 'custom' ? 'custom' : 'auto', alloc: (pl.alloc && typeof pl.alloc === 'object') ? pl.alloc : {} }
   };
   state.budget.expenses.forEach(e=>{ if(!e.id) e.id = uid(); if(!CATS[e.cat]) e.cat = 'other'; });
 }
@@ -799,6 +853,101 @@ function deleteExpense(id){
   });
 }
 
+// ---------- Spending plan ----------
+// The 50/30/20 rule: about half of your money for needs, 30% for wants, 20% saved.
+const PLAN_PRESET = { bills:25, food:15, transport:10, fun:20, other:10, savings:20 };
+const ENVS = ['bills','food','transport','fun','other'];   // the envelopes you can spend from
+
+// How much each envelope (and savings) gets this month
+function planAlloc(){
+  const b = state.budget, out = {};
+  if(b.plan.mode === 'custom'){
+    [...ENVS, 'savings'].forEach(k=>{ out[k] = Math.max(0, Number(b.plan.alloc[k]) || 0); });
+    return out;
+  }
+  let used = 0;
+  [...ENVS.filter(k=>k!=='other'), 'savings'].forEach(k=>{ out[k] = Math.floor(b.amount * PLAN_PRESET[k] / 100); used += out[k]; });
+  out.other = Math.max(0, Math.round((b.amount - used) * 100) / 100);   // "Other" takes the leftover pesos so the plan always adds up
+  return out;
+}
+// Everything the Money screen needs: money, savings, spent, what's left, and each envelope
+function moneyInfo(){
+  const b = state.budget, amount = b.amount;
+  const alloc = planAlloc();
+  const spentBy = {};
+  let spent = 0;
+  b.expenses.forEach(e=>{ const k = CATS[e.cat] ? e.cat : 'other'; spentBy[k] = (spentBy[k]||0) + e.amt; spent += e.amt; });
+  const savings = alloc.savings;
+  const spendable = amount - savings;     // the money you are free to spend
+  const left = spendable - spent;
+  const envs = ENVS.map(k=>{
+    const planned = alloc[k], s = spentBy[k] || 0;
+    const pct = planned > 0 ? s / planned * 100 : (s > 0 ? 100 : 0);
+    return {key:k, ...CATS[k], planned, spent:s, left:planned - s, pct,
+            status: s > planned ? 'over' : pct >= 75 ? 'careful' : 'safe'};
+  });
+  const now = new Date();
+  const daysLeft = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate() - now.getDate() + 1;   // includes today
+  const planned = ENVS.reduce((a,k)=>a + alloc[k], 0);
+  return {
+    amount, alloc, savings, spendable, spent, left, envs, daysLeft,
+    perDay: amount > 0 ? Math.max(0, left) / daysLeft : 0,
+    pct: spendable > 0 ? spent / spendable * 100 : (spent > 0 ? 100 : 0),
+    unassigned: Math.round((spendable - planned) * 100) / 100
+  };
+}
+function focusBudget(){
+  go('money');
+  const el = $('budgetInput');
+  try{ el.scrollIntoView({block:'center', behavior:'smooth'}); }catch(e){}
+  setTimeout(()=>{ try{ el.focus(); }catch(e){} }, 350);
+}
+// Tap an envelope (or savings) to change how much it gets. Undo is offered.
+function editPlan(key){
+  const info = moneyInfo();
+  if(!(info.amount > 0)){ focusBudget(); return; }
+  const label = key === 'savings' ? 'Savings' : CATS[key].label;
+  const input = prompt(`How much for ${label} this month? (₱)`, Math.round(info.alloc[key] * 100) / 100);
+  if(input === null) return;
+  const v = parseFloat(String(input).replace(/,/g, ''));
+  if(isNaN(v) || v < 0) return;
+  const prev = JSON.stringify(state.budget.plan);
+  const plan = state.budget.plan;
+  if(plan.mode !== 'custom'){ plan.mode = 'custom'; plan.alloc = {...info.alloc}; }
+  plan.alloc[key] = v;
+  save(); render();
+  showToast(`${label} set to ${pesoExact(v)}`, ()=>{ state.budget.plan = JSON.parse(prev); save(); render(); });
+}
+function resetPlan(){
+  const prev = JSON.stringify(state.budget.plan);
+  state.budget.plan = {mode:'auto', alloc:{}};
+  save(); render();
+  showToast('Plan reset to 50/30/20', ()=>{ state.budget.plan = JSON.parse(prev); save(); render(); });
+}
+// "Can I afford it?": type a price, pick where it would come from
+function checkAfford(){
+  const box = $('verdict');
+  const say = (cls, html) => { box.className = 'verdict ' + cls; box.innerHTML = html; };
+  const info = moneyInfo();
+  const amt = parseFloat($('checkAmt').value);
+  if(!(info.amount > 0)) return say('', 'Set your money for the month first, then I can check prices for you.');
+  if(isNaN(amt) || amt <= 0) return say('', 'Type a price to see if it fits your plan.');
+  const env = info.envs.find(e=>e.key === $('checkCat').value) || info.envs[0];
+  const after = env.left - amt;
+  const totalAfter = info.left - amt;
+  if(totalAfter < 0){
+    return say('bad', `Not this month. It would put you <b>${pesoExact(-totalAfter)}</b> over the money you can spend.`);
+  }
+  if(after >= 0){
+    return env.planned > 0 && after < env.planned * 0.15
+      ? say('warn', `It fits, but only <b>${pesoExact(after)}</b> would be left in ${env.label}.`)
+      : say('good', `Yes, it fits. <b>${pesoExact(after)}</b> would be left in ${env.label}.`);
+  }
+  const alt = info.envs.filter(e=>e.key !== env.key && e.left >= amt).sort((a,b)=>b.left - a.left)[0];
+  say('warn', `That is <b>${pesoExact(-after)}</b> more than your ${env.label} plan.` +
+    (alt ? ` ${alt.label} has <b>${pesoExact(alt.left)}</b> free if you would rather use that.` : ' It would eat into your other envelopes.'));
+}
+
 // ---------- Mood ----------
 function setMood(idx){
   state.moodLog[todayKey()] = idx;
@@ -866,15 +1015,13 @@ function render(){
 
   // ----- Money -----
   const exps = state.budget.expenses;
-  const amount = state.budget.amount;
-  const hasBudget = amount > 0;
-  const spent = exps.reduce((s,e)=>s+e.amt,0);
-  const remaining = amount - spent;
-  const daysLeft = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate() - now.getDate() + 1; // includes today
-  const perDay = hasBudget ? Math.max(0, remaining)/daysLeft : 0;
-  const pct = hasBudget ? spent/amount*100 : 0;
+  const M = moneyInfo();
+  const hasBudget = M.amount > 0;
+  const { spent, left: remaining, perDay, daysLeft, pct } = M;
+  const daysTxt = `${daysLeft} day${daysLeft>1?'s':''}`;
 
-  $('budgetVal').textContent = pesoExact(amount);
+  $('budgetVal').textContent = pesoExact(M.amount);
+  $('setAsideVal').textContent = pesoExact(M.savings);
   $('spentVal').textContent = pesoExact(spent);
   const remainEl = $('remainVal');
   remainEl.textContent = pesoExact(remaining);
@@ -884,14 +1031,57 @@ function render(){
   mf.style.width = Math.min(100, pct) + '%';
   mf.style.background = meterColor(pct);
   $('meterText').textContent = hasBudget
-    ? `${Math.round(pct)}% of your budget used.`
-    : 'Set a monthly budget to see how much you can spend each day.';
+    ? `${Math.round(pct)}% of your spending money used.`
+    : 'Add your money for the month to get a spending plan.';
+
+  // The big answer: how much you can spend per day
+  $('spendHero').innerHTML = hasBudget ? `
+    ${remaining >= 0
+      ? `<div class="hero-num">${peso(perDay,0)}<small>a day</small></div>
+         <div class="hero-note">${pesoExact(remaining)} left to spend, ${daysTxt} to go.</div>`
+      : `<div class="hero-num neg">${pesoExact(remaining)}</div>
+         <div class="hero-note">You have spent more than your plan allows this month.</div>`}
+    <div class="meter"><i style="width:${Math.min(100,pct)}%;background:${meterColor(pct)}"></i></div>`
+    : empty('<span class="peso-ico">₱</span>','Set your money for the month','Add what you have to spend this month. I will split it into a plan for you.','Set my money','focusBudget()');
+
+  // The envelopes: where you can spend, and how much is left in each
+  const statusColor = s => s === 'over' ? 'var(--red)' : s === 'careful' ? 'var(--brass)' : 'var(--mint)';
+  const custom = state.budget.plan.mode === 'custom';
+  $('planTag').textContent = custom ? 'Your plan' : '50/30/20';
+  $('planReset').style.display = (hasBudget && custom) ? '' : 'none';
+  if(!hasBudget){
+    $('envList').innerHTML = '<div class="plain">Set your money for the month to see your envelopes.</div>';
+    $('planNote').textContent = '';
+  }else{
+    $('envList').innerHTML = M.envs.map(e=>`
+      <div class="row env-row" onclick="editPlan('${e.key}')">
+        <div class="exp-ico">${e.icon}</div>
+        <div class="env-main">
+          <div class="env-top"><span class="env-name">${e.label}</span><span class="env-left ${e.status}">${e.left<0 ? pesoExact(-e.left)+' over' : pesoExact(e.left)+' left'}</span></div>
+          <div class="bar"><i style="width:${Math.min(100,Math.round(e.pct))}%;background:${statusColor(e.status)}"></i></div>
+          <div class="env-sub">${pesoExact(e.spent)} of ${pesoExact(e.planned)} spent</div>
+        </div>
+      </div>`).join('') + `
+      <div class="row env-row save-row" onclick="editPlan('savings')">
+        <div class="exp-ico">🐷</div>
+        <div class="env-main">
+          <div class="env-top"><span class="env-name">Savings</span><span class="env-left save">${pesoExact(M.savings)}</span></div>
+          <div class="env-sub">Set aside first, so you do not spend it.</div>
+        </div>
+      </div>`;
+    const u = M.unassigned;
+    $('planNote').textContent = !custom
+      ? 'The 50/30/20 rule: about 50% for needs (bills, food, transport), 30% for wants (fun, other) and 20% for savings. Tap any envelope to change it.'
+      : u >= 1 ? `${pesoExact(u)} of your spending money is not in an envelope yet.`
+      : u <= -1 ? `Your envelopes add up to ${pesoExact(-u)} more than you can spend.`
+      : 'Your envelopes add up to your spending money.';
+  }
 
   $('snapBudget').innerHTML = hasBudget ? `
-    <div class="st-row total"><span>Left this month</span><span class="num ${remaining<0?'neg':'pos'}">${pesoExact(remaining)}</span></div>
+    <div class="st-row total"><span>Left to spend</span><span class="num ${remaining<0?'neg':'pos'}">${pesoExact(remaining)}</span></div>
     <div class="meter"><i style="width:${Math.min(100,pct)}%;background:${meterColor(pct)}"></i></div>
-    <div class="meter-note">${Math.round(pct)}% used. ${remaining>0 ? `About ${peso(perDay,0)} a day for the next ${daysLeft} day${daysLeft>1?'s':''}.` : 'You are over budget this month.'}</div>`
-    : empty('<span class="peso-ico">₱</span>','No budget yet','Set a monthly budget to see what you can spend each day.','Set budget',"go('money')");
+    <div class="meter-note">${remaining>0 ? `About ${peso(perDay,0)} a day for the next ${daysTxt}.` : 'You are over your spending money this month.'}${(()=>{ const o = M.envs.filter(e=>e.status==='over').map(e=>e.label); return o.length ? ` ${o.join(' and ')} ${o.length>1?'are':'is'} over plan.` : ''; })()}</div>`
+    : empty('<span class="peso-ico">₱</span>','No plan yet','Set your money for the month and get a spending plan.','Set my money','focusBudget()');
 
   $('expTag').textContent = exps.length;
   const el = $('expenseList');
@@ -922,18 +1112,7 @@ function render(){
     el.appendChild(hint);
   }
 
-  // Spending by category
-  const totals = {};
-  exps.forEach(e=>{ const k = CATS[e.cat] ? e.cat : 'other'; totals[k] = (totals[k]||0) + e.amt; });
-  const rows = Object.entries(totals).sort((a,b)=>b[1]-a[1]);
-  $('catBars').innerHTML = rows.length ? rows.map(([k,amt])=>{
-    const c = CATS[k];
-    const p = spent>0 ? Math.min(100, Math.max(0, Math.round(amt/spent*100))) : 0;
-    return `<div class="cat-row">
-      <div class="cat-top"><span>${c.icon} ${c.label}</span><span class="cat-amt">${pesoExact(amt)}<small>${p}%</small></span></div>
-      <div class="bar"><i style="width:${p}%;background:${c.color}"></i></div>
-    </div>`;
-  }).join('') : '<div class="plain">Log an expense to see where your money goes.</div>';
+  checkAfford();   // keep the "Can I afford it?" answer in step with your latest numbers
 
   // ----- This week (habit grid) -----
   const days = [];
@@ -1040,6 +1219,8 @@ function drawDial(habitPct, goalPct, moneyPct, moodPct, active){
 [['habitInput', addHabit], ['goalInput', addGoal], ['budgetInput', setBudget], ['expenseAmt', addExpense]].forEach(([id, fn])=>{
   $(id).addEventListener('keydown', ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); fn(); } });
 });
+$('checkAmt').addEventListener('input', checkAfford);
+$('checkCat').addEventListener('change', checkAfford);
 $('expenseNote').addEventListener('keydown', ev=>{
   if(ev.key==='Enter'){ ev.preventDefault(); $('expenseAmt').focus(); }
 });
