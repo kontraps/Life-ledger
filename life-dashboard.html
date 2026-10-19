@@ -286,6 +286,13 @@
   .save-row .env-sub{margin-top:3px;}
   .afford-row{align-items:flex-end;}
   .afford-row input,.afford-row select{flex:1 1 0;min-width:0;}
+  .chips-label{font-size:14px;color:var(--muted);margin:20px 0 10px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:6px;}
+  .chip{
+    min-height:44px;padding:0 16px;border-radius:999px;cursor:pointer;font-size:15px;font-weight:500;
+    background:transparent;color:var(--muted);border:1.5px dashed var(--rule-strong);
+  }
+  .chip.on{background:var(--mint-t);color:var(--ink);border:1.5px solid var(--mint);}
   .verdict{
     border-left:4px solid var(--rule-strong);background:var(--sheet-2);border-radius:0 12px 12px 0;
     padding:14px 16px;font-size:15.5px;line-height:1.45;margin-bottom:6px;
@@ -477,6 +484,8 @@
         <div class="sec-head"><h2>Where to spend</h2><span class="tally" id="planTag">50/30/20</span></div>
         <div id="envList"></div>
         <div class="note" id="planNote"></div>
+        <div class="chips-label">Which of these do you pay for?</div>
+        <div class="chips" id="envChips"></div>
         <button class="link-btn" id="planReset" onclick="resetPlan()">Reset to 50/30/20</button>
       </section>
       <section class="sec">
@@ -606,8 +615,16 @@ function normalize(){
     amount: Number(b.amount) || 0,
     expenses: (sameMonth && Array.isArray(b.expenses)) ? b.expenses : [],
     // The spending plan carries over from month to month
-    plan: { mode: pl.mode === 'custom' ? 'custom' : 'auto', alloc: (pl.alloc && typeof pl.alloc === 'object') ? pl.alloc : {} }
+    // "off" = envelopes you do not pay for. Until you choose, bills, food and transport start off.
+    plan: {
+      mode: pl.mode === 'custom' ? 'custom' : 'auto',
+      alloc: (pl.alloc && typeof pl.alloc === 'object') ? pl.alloc : {},
+      off: Array.isArray(pl.off) ? pl.off.filter(k=>ENVS.includes(k)) : ['bills','food','transport']
+    }
   };
+  // Never hide an envelope that already has spending logged this month
+  state.budget.plan.off = state.budget.plan.off.filter(k=>!state.budget.expenses.some(e=>e.cat===k));
+  if(state.budget.plan.off.length >= ENVS.length) state.budget.plan.off = [];
   state.budget.expenses.forEach(e=>{ if(!e.id) e.id = uid(); if(!CATS[e.cat]) e.cat = 'other'; });
 }
 function load(){
@@ -859,15 +876,24 @@ const PLAN_PRESET = { bills:25, food:15, transport:10, fun:20, other:10, savings
 const ENVS = ['bills','food','transport','fun','other'];   // the envelopes you can spend from
 
 // How much each envelope (and savings) gets this month
+// The envelopes you actually use (the others are switched off)
+const activeEnvs = () => ENVS.filter(k=>!state.budget.plan.off.includes(k));
 function planAlloc(){
   const b = state.budget, out = {};
+  const act = activeEnvs();
   if(b.plan.mode === 'custom'){
-    [...ENVS, 'savings'].forEach(k=>{ out[k] = Math.max(0, Number(b.plan.alloc[k]) || 0); });
+    ENVS.forEach(k=>{ out[k] = act.includes(k) ? Math.max(0, Number(b.plan.alloc[k]) || 0) : 0; });
+    out.savings = Math.max(0, Number(b.plan.alloc.savings) || 0);
     return out;
   }
+  // Automatic split: the 50/30/20 shares, re-balanced across only the envelopes you use plus savings
+  const keys = [...act, 'savings'];
+  const total = keys.reduce((a,k)=>a + PLAN_PRESET[k], 0);
+  const remKey = act.includes('other') ? 'other' : (act[act.length - 1] || 'savings');   // takes the leftover pesos so the plan always adds up
   let used = 0;
-  [...ENVS.filter(k=>k!=='other'), 'savings'].forEach(k=>{ out[k] = Math.floor(b.amount * PLAN_PRESET[k] / 100); used += out[k]; });
-  out.other = Math.max(0, Math.round((b.amount - used) * 100) / 100);   // "Other" takes the leftover pesos so the plan always adds up
+  ENVS.forEach(k=>{ out[k] = 0; });
+  keys.filter(k=>k !== remKey).forEach(k=>{ out[k] = Math.floor(b.amount * PLAN_PRESET[k] / total); used += out[k]; });
+  out[remKey] = Math.max(0, Math.round((b.amount - used) * 100) / 100);
   return out;
 }
 // Everything the Money screen needs: money, savings, spent, what's left, and each envelope
@@ -880,7 +906,7 @@ function moneyInfo(){
   const savings = alloc.savings;
   const spendable = amount - savings;     // the money you are free to spend
   const left = spendable - spent;
-  const envs = ENVS.map(k=>{
+  const envs = activeEnvs().map(k=>{
     const planned = alloc[k], s = spentBy[k] || 0;
     const pct = planned > 0 ? s / planned * 100 : (s > 0 ? 100 : 0);
     return {key:k, ...CATS[k], planned, spent:s, left:planned - s, pct,
@@ -888,7 +914,7 @@ function moneyInfo(){
   });
   const now = new Date();
   const daysLeft = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate() - now.getDate() + 1;   // includes today
-  const planned = ENVS.reduce((a,k)=>a + alloc[k], 0);
+  const planned = activeEnvs().reduce((a,k)=>a + alloc[k], 0);
   return {
     amount, alloc, savings, spendable, spent, left, envs, daysLeft,
     perDay: amount > 0 ? Math.max(0, left) / daysLeft : 0,
@@ -920,9 +946,31 @@ function editPlan(key){
 }
 function resetPlan(){
   const prev = JSON.stringify(state.budget.plan);
-  state.budget.plan = {mode:'auto', alloc:{}};
+  state.budget.plan = {mode:'auto', alloc:{}, off:[...state.budget.plan.off]};   // keeps your on/off choices
   save(); render();
-  showToast('Plan reset to 50/30/20', ()=>{ state.budget.plan = JSON.parse(prev); save(); render(); });
+  showToast(state.budget.plan.off.length ? 'Plan reset to the automatic split' : 'Plan reset to 50/30/20',
+            ()=>{ state.budget.plan = JSON.parse(prev); save(); render(); });
+}
+// Switch an envelope off (you don't pay for it) or back on. The plan is re-split automatically.
+function toggleEnv(key){
+  const plan = state.budget.plan;
+  const wasOff = plan.off.includes(key);
+  if(!wasOff){
+    if(activeEnvs().length <= 1){ showToast('Keep at least one envelope on.', null, 3200); return; }
+    const used = state.budget.expenses.filter(e=>e.cat === key).reduce((s,e)=>s + e.amt, 0);
+    if(used > 0){ showToast(`${CATS[key].label} has ${pesoExact(used)} logged this month. Delete those first.`, null, 4500); return; }
+  }
+  const prev = JSON.stringify(plan);
+  plan.off = wasOff ? plan.off.filter(k=>k !== key) : [...plan.off, key];
+  plan.mode = 'auto'; plan.alloc = {};
+  save(); render();
+  showToast(`${CATS[key].label} turned ${wasOff ? 'on' : 'off'}. Plan split again.`, ()=>{ state.budget.plan = JSON.parse(prev); save(); render(); });
+}
+// The category pickers only list the envelopes you use
+function fillCatSelect(sel, keys){
+  const cur = sel.value;
+  sel.innerHTML = keys.map(k=>`<option value="${k}">${CATS[k].icon} ${CATS[k].label}</option>`).join('');
+  sel.value = keys.includes(cur) ? cur : keys[0];
 }
 // "Can I afford it?": type a price, pick where it would come from
 function checkAfford(){
@@ -1047,8 +1095,18 @@ function render(){
   // The envelopes: where you can spend, and how much is left in each
   const statusColor = s => s === 'over' ? 'var(--red)' : s === 'careful' ? 'var(--brass)' : 'var(--mint)';
   const custom = state.budget.plan.mode === 'custom';
-  $('planTag').textContent = custom ? 'Your plan' : '50/30/20';
+  const offList = state.budget.plan.off;
+  $('planTag').textContent = custom ? 'Your plan' : offList.length ? 'Auto split' : '50/30/20';
+  $('planReset').textContent = offList.length ? 'Reset to the automatic split' : 'Reset to 50/30/20';
   $('planReset').style.display = (hasBudget && custom) ? '' : 'none';
+  // "I pay for" switches: turn off what someone else pays for
+  $('envChips').innerHTML = ENVS.map(k=>{
+    const on = !offList.includes(k);
+    return `<button class="chip${on?' on':''}" aria-pressed="${on}" onclick="toggleEnv('${k}')">${CATS[k].icon} ${CATS[k].label}</button>`;
+  }).join('');
+  // The category pickers only list envelopes you use
+  fillCatSelect($('expenseCat'), activeEnvs());
+  fillCatSelect($('checkCat'), activeEnvs());
   if(!hasBudget){
     $('envList').innerHTML = '<div class="plain">Set your money for the month to see your envelopes.</div>';
     $('planNote').textContent = '';
@@ -1071,7 +1129,9 @@ function render(){
       </div>`;
     const u = M.unassigned;
     $('planNote').textContent = !custom
-      ? 'The 50/30/20 rule: about 50% for needs (bills, food, transport), 30% for wants (fun, other) and 20% for savings. Tap any envelope to change it.'
+      ? (offList.length
+          ? 'Your money is split between the envelopes you pay for and your savings. Tap an envelope to change its amount.'
+          : 'The 50/30/20 rule: about 50% for needs (bills, food, transport), 30% for wants (fun, other) and 20% for savings. Tap any envelope to change it.')
       : u >= 1 ? `${pesoExact(u)} of your spending money is not in an envelope yet.`
       : u <= -1 ? `Your envelopes add up to ${pesoExact(-u)} more than you can spend.`
       : 'Your envelopes add up to your spending money.';
