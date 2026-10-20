@@ -333,6 +333,24 @@
     padding:0 18px;min-height:44px;font-weight:700;font-size:15px;cursor:pointer;
   }
   .plain{color:var(--muted);font-size:14.5px;padding:14px 0 10px;}
+  /* ---- Reminders ---- */
+  .rem-row{display:flex;align-items:center;gap:12px;min-height:56px;}
+  .rem-row .rem-txt{flex:1;min-width:0;}
+  .rem-row .rem-title{font-weight:600;font-size:16px;}
+  .rem-row .rem-sub{color:var(--muted);font-size:13.5px;margin-top:2px;}
+  .switch{position:relative;width:56px;height:44px;flex:none;border:none;background:transparent;cursor:pointer;padding:0;}
+  .switch::before{content:"";position:absolute;left:2px;right:2px;top:6px;height:32px;border-radius:999px;
+    border:1.5px solid var(--rule-strong);transition:background .2s,border-color .2s;}
+  .switch::after{content:"";position:absolute;top:10px;left:7px;width:24px;height:24px;border-radius:50%;
+    background:var(--muted);transition:transform .2s,background .2s;}
+  .switch[aria-checked="true"]::before{background:var(--mint-t);border-color:var(--mint);}
+  .switch[aria-checked="true"]::after{transform:translateX(20px);background:var(--mint);}
+  .rem-time{display:flex;align-items:center;gap:12px;padding:6px 0 4px;}
+  .rem-time label{color:var(--muted);font-size:14.5px;}
+  .rem-time input{font-family:var(--mono);min-height:44px;flex:1;min-width:0;}
+  .rem-btns{display:flex;flex-wrap:wrap;gap:10px;padding:10px 0 4px;}
+  .rem-btns .ghost-btn{flex:1 1 140px;}
+  .rem-note{color:var(--muted);font-size:13.5px;line-height:1.45;padding:8px 0 2px;}
   .foot{text-align:center;color:var(--muted);font-size:13px;margin-top:34px;}
 
   /* ---- Bottom tabs ---- */
@@ -449,6 +467,24 @@
         <div class="sec-head"><h2>This week</h2><span class="tally" id="weekTag">last 7 days</span></div>
         <div id="weekGrid"></div>
       </section>
+      <section class="sec">
+        <div class="sec-head"><h2>Reminders</h2><span class="tally" id="remTag">off</span></div>
+        <div class="rem-row">
+          <div class="rem-txt">
+            <div class="rem-title">Daily habit reminder</div>
+            <div class="rem-sub" id="remSub">Get a nudge if habits are still open.</div>
+          </div>
+          <button class="switch" id="remSwitch" role="switch" aria-checked="false" aria-label="Daily habit reminder" onclick="toggleReminder()"></button>
+        </div>
+        <div id="remOpts" hidden>
+          <div class="rem-time"><label for="remTime">Remind me at</label><input type="time" id="remTime" value="20:00"></div>
+          <div class="rem-btns">
+            <button class="ghost-btn" onclick="testReminder()">Send a test</button>
+            <button class="ghost-btn" onclick="downloadCalendar()">Add to phone calendar</button>
+          </div>
+        </div>
+        <div class="rem-note" id="remNote"></div>
+      </section>
     </div>
   </section>
 
@@ -559,6 +595,7 @@
 
 <div id="toast" role="status"><span id="toastMsg"></span><button id="toastUndo" onclick="doUndo()">Undo</button></div>
 
+<script src="reminder.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const MOODS = ['😞','😕','😐','🙂','😄'];
@@ -594,7 +631,8 @@ let state = {
   habits: [],        // {id, name, doneDates: []}
   goals: [],         // {id, text, done}
   budget: { month: monthKey(), amount: 0, expenses: [] }, // expenses: {id, note, amt, cat}
-  moodLog: {}        // {dateStr: moodIndex}
+  moodLog: {},       // {dateStr: moodIndex}
+  reminder: {on:false, time:'20:00'}
 };
 let showAllExpenses = false;
 let currentTab = 'today';
@@ -606,6 +644,8 @@ function normalize(){
   state.habits = Array.isArray(state.habits) ? state.habits : [];
   state.goals = Array.isArray(state.goals) ? state.goals : [];
   state.moodLog = state.moodLog || {};
+  const rm = state.reminder || {};
+  state.reminder = {on: rm.on === true, time: LedgerReminder.minutesOf(rm.time)!==null ? rm.time : '20:00'};
   state.habits.forEach(h=>{ if(!Array.isArray(h.doneDates)) h.doneDates = []; });
   const b = state.budget || {};
   const sameMonth = b.month === monthKey();
@@ -639,6 +679,7 @@ function load(){
 function save(){
   try{ localStorage.setItem('ledger-state', JSON.stringify(state)); }
   catch(e){ console.error('save failed', e); }
+  syncMeta();
 }
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
@@ -797,6 +838,106 @@ function calcStreak(h){
   while(done.has(dateKey(d))){ streak++; d.setDate(d.getDate()-1); }
   return streak;
 }
+
+// ---------- Reminders ----------
+// Android only lets an installed app show notifications through its service worker.
+// The service worker cannot read localStorage, so a copy of the settings goes into Cache Storage.
+let remSent = '';
+try{ remSent = localStorage.getItem('ledger-rem-sent') || ''; }catch(e){}
+function syncMeta(){
+  if(!('caches' in window)) return;
+  try{
+    const meta = {reminder: state.reminder, habits: state.habits.map(h=>({name:h.name, doneDates:h.doneDates})), sent: remSent};
+    caches.open('ledger-meta').then(c=>c.put('/__meta/state', new Response(JSON.stringify(meta), {headers:{'Content-Type':'application/json'}}))).catch(()=>{});
+  }catch(e){}
+}
+function notifSupported(){ return 'Notification' in window && 'serviceWorker' in navigator; }
+async function showNotif(title, body){
+  const reg = await navigator.serviceWorker.getRegistration();
+  if(!reg) throw new Error('no service worker');
+  await reg.showNotification(title, {body, icon:'icon.png', badge:'icon.png', tag:'ledger-daily'});
+}
+async function toggleReminder(){
+  const rem = state.reminder;
+  if(rem.on){ rem.on = false; save(); render(); return; }
+  if(!notifSupported()){
+    showToast('This browser cannot show notifications. Try the calendar button.', null, 4500);
+    return;
+  }
+  let perm = Notification.permission;
+  if(perm === 'default'){ try{ perm = await Notification.requestPermission(); }catch(e){} }
+  if(perm !== 'granted'){
+    showToast('Notifications are blocked. Allow them in your phone settings for this app.', null, 5000);
+    render(); return;
+  }
+  rem.on = true;
+  save(); render();
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    if(reg.periodicSync) await reg.periodicSync.register('ledger-reminder', {minInterval: 60*60*1000});
+  }catch(e){ /* not available: reminders still work whenever the app is open */ }
+  showToast('Reminder on for ' + LedgerReminder.formatTime(rem.time), null, 3000);
+}
+function setReminderTime(){
+  const v = $('remTime').value;
+  if(LedgerReminder.minutesOf(v) === null) return;
+  state.reminder.time = v;
+  remSent = ''; try{ localStorage.removeItem('ledger-rem-sent'); }catch(e){}   // a new time can fire again today
+  save(); renderReminder();
+}
+async function testReminder(){
+  if(!notifSupported() || Notification.permission !== 'granted'){
+    if(notifSupported() && Notification.permission === 'default'){ await toggleReminder(); }
+    if(!notifSupported() || Notification.permission !== 'granted'){ showToast('Turn on notifications first.', null, 3000); return; }
+  }
+  const msg = LedgerReminder.buildReminder(state.habits, new Date()) || {title:'All habits done today 🎉', body:'Nothing to remind you about. Nice work.'};
+  try{ await showNotif(msg.title, msg.body); showToast('Test sent. Check your notifications.', null, 3000); }
+  catch(e){ showToast('Could not show it right now.', null, 3000); }
+}
+// Fires the reminder while the app is open (or recently open). The service worker covers the closed-app case.
+async function checkReminder(){
+  const now = new Date();
+  if(!LedgerReminder.isDue(state.reminder, now, remSent)) return;
+  if(!notifSupported() || Notification.permission !== 'granted') return;
+  const day = LedgerReminder.dateKey(now);
+  const msg = LedgerReminder.buildReminder(state.habits, now);
+  remSent = day; try{ localStorage.setItem('ledger-rem-sent', day); }catch(e){}
+  syncMeta();
+  if(!msg) return;
+  try{ await showNotif(msg.title, msg.body); }catch(e){}
+}
+function downloadCalendar(){
+  const t = state.reminder.time, mins = LedgerReminder.minutesOf(t);
+  const hh = pad2(Math.floor(mins/60)), mm = pad2(mins%60);
+  const now = new Date();
+  const stamp = now.getFullYear()+pad2(now.getMonth()+1)+pad2(now.getDate());
+  const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Life Ledger//EN','CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT','UID:ledger-habits-'+stamp+'@life-ledger','DTSTAMP:'+stamp+'T000000Z',
+    'DTSTART:'+stamp+'T'+hh+mm+'00','DURATION:PT15M','RRULE:FREQ=DAILY',
+    'SUMMARY:Life Ledger: tick your habits','DESCRIPTION:Open Life Ledger and tick off today\'s habits.',
+    'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Tick your habits','TRIGGER:PT0M','END:VALARM',
+    'END:VEVENT','END:VCALENDAR'].join('\r\n');
+  const url = URL.createObjectURL(new Blob([ics], {type:'text/calendar'}));
+  const a = document.createElement('a');
+  a.href = url; a.download = 'life-ledger-reminder.ics';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  showToast('Open the file to add a daily alarm to your calendar.', null, 4500);
+}
+function renderReminder(){
+  const rem = state.reminder;
+  const granted = notifSupported() && Notification.permission === 'granted';
+  const on = rem.on && granted;
+  $('remSwitch').setAttribute('aria-checked', on ? 'true' : 'false');
+  $('remOpts').hidden = !on;
+  $('remTag').textContent = on ? LedgerReminder.formatTime(rem.time) : 'off';
+  $('remSub').textContent = on ? 'Only if a habit is still open.' : 'Get a nudge if habits are still open.';
+  if(document.activeElement !== $('remTime')) $('remTime').value = rem.time;
+  $('remNote').textContent = on
+    ? 'Reminders appear when the app is open or recently used. For an alarm that always rings, tap "Add to phone calendar".'
+    : (notifSupported() && Notification.permission === 'denied' ? 'Notifications are blocked for this app in your phone settings.' : '');
+}
+$('remTime').addEventListener('change', setReminderTime);
 
 // ---------- Goals ----------
 function addGoal(){
@@ -1172,6 +1313,7 @@ function render(){
     el.appendChild(hint);
   }
 
+  renderReminder();
   checkAfford();   // keep the "Can I afford it?" answer in step with your latest numbers
 
   // ----- This week (habit grid) -----
@@ -1287,12 +1429,14 @@ $('expenseNote').addEventListener('keydown', ev=>{
 
 // When you come back to the app (or it's left open past midnight), refresh the day and month
 document.addEventListener('visibilitychange', ()=>{
-  if(document.visibilityState === 'visible'){ normalize(); save(); render(); }
+  if(document.visibilityState === 'visible'){ normalize(); save(); render(); checkReminder(); }
 });
+setInterval(checkReminder, 30000);
 
 syncThemeColor();
 buildDial();
 load();
+checkReminder();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
