@@ -333,6 +333,11 @@
     padding:0 18px;min-height:44px;font-weight:700;font-size:15px;cursor:pointer;
   }
   .plain{color:var(--muted);font-size:14.5px;padding:14px 0 10px;}
+  .hist-row{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--rule);}
+  .hist-row .h-m{flex:1;min-width:0;font-weight:600;}
+  .hist-row .h-s{color:var(--muted);font-size:13.5px;font-weight:400;margin-top:2px;}
+  .hist-row .h-v{font-family:var(--mono);font-weight:600;text-align:right;}
+  .hist-row .h-v.over{color:var(--coral);}
   /* ---- Reminders ---- */
   .rem-row{display:flex;align-items:center;gap:12px;min-height:56px;}
   .rem-row .rem-txt{flex:1;min-width:0;}
@@ -444,7 +449,15 @@
         <div class="sec-head"><h2>Spending plan</h2><button class="link" onclick="go('money')">Open</button></div>
         <div id="snapBudget"></div>
       </section>
-      <div class="foot">Everything is saved on this phone only.</div>
+      <section class="sec">
+        <div class="sec-head"><h2>Your data</h2></div>
+        <div class="rem-note" style="padding-top:0">Everything is saved on this phone only. Save a backup file so you never lose it if you change phones or clear your browser.</div>
+        <div class="rem-btns">
+          <button class="ghost-btn" onclick="exportBackup()">Save a backup</button>
+          <button class="ghost-btn" onclick="$('restoreFile').click()">Restore a backup</button>
+        </div>
+        <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+      </section>
     </div>
   </section>
 
@@ -573,6 +586,10 @@
         <div class="sec-head"><h2>Expenses</h2><span class="tally" id="expTag">0</span></div>
         <div id="expenseList"></div>
       </section>
+      <section class="sec" id="histSec" hidden>
+        <div class="sec-head"><h2>Past months</h2><span class="tally" id="histTag"></span></div>
+        <div id="histList"></div>
+      </section>
     </div>
   </section>
 
@@ -632,7 +649,8 @@ let state = {
   goals: [],         // {id, text, done}
   budget: { month: monthKey(), amount: 0, expenses: [] }, // expenses: {id, note, amt, cat}
   moodLog: {},       // {dateStr: moodIndex}
-  reminder: {on:false, time:'20:00'}
+  reminder: {on:false, time:'20:00'},
+  history: []        // {month, budget, spent, byCat} saved when a month ends
 };
 let showAllExpenses = false;
 let currentTab = 'today';
@@ -649,6 +667,16 @@ function normalize(){
   state.habits.forEach(h=>{ if(!Array.isArray(h.doneDates)) h.doneDates = []; });
   const b = state.budget || {};
   const sameMonth = b.month === monthKey();
+  // Keep a summary of finished months instead of throwing them away
+  state.history = Array.isArray(state.history) ? state.history.filter(x=>x && /^\d{4}-\d{2}$/.test(x.month)) : [];
+  if(!sameMonth && /^\d{4}-\d{2}$/.test(b.month||'') && Array.isArray(b.expenses) &&
+     (Number(b.amount) > 0 || b.expenses.length) && !state.history.some(x=>x.month===b.month)){
+    const byCat = {}; let spent = 0;
+    b.expenses.forEach(e=>{ const a = Number(e.amt)||0; spent += a; const k = CATS[e.cat] ? e.cat : 'other'; byCat[k] = (byCat[k]||0) + a; });
+    state.history.unshift({month:b.month, budget:Number(b.amount)||0, spent:Math.round(spent*100)/100, byCat});
+  }
+  state.history.sort((x,y)=>y.month.localeCompare(x.month));
+  state.history = state.history.slice(0,24);
   const pl = (b.plan && typeof b.plan === 'object') ? b.plan : {};
   state.budget = {
     month: monthKey(),
@@ -838,6 +866,54 @@ function calcStreak(h){
   while(done.has(dateKey(d))){ streak++; d.setDate(d.getDate()-1); }
   return streak;
 }
+
+// ---------- Backup & restore + past months ----------
+function exportBackup(){
+  const data = JSON.stringify({app:'life-ledger', saved:new Date().toISOString(), state}, null, 2);
+  const url = URL.createObjectURL(new Blob([data], {type:'application/json'}));
+  const a = document.createElement('a');
+  a.href = url; a.download = 'life-ledger-backup-' + todayKey() + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  showToast('Backup saved to your Downloads.', null, 4000);
+}
+function restoreFromText(text){
+  let obj;
+  try{ obj = JSON.parse(text); }catch(e){ showToast('That file is not a Life Ledger backup.', null, 4000); return false; }
+  const st = obj && obj.state ? obj.state : obj;   // accept the wrapped file or a bare state
+  if(!st || typeof st !== 'object' || !Array.isArray(st.habits) || !Array.isArray(st.goals)){
+    showToast('That file is not a Life Ledger backup.', null, 4000); return false;
+  }
+  const before = JSON.stringify(state);
+  state = st; normalize(); save(); render();
+  showToast('Backup restored.', ()=>{ state = JSON.parse(before); normalize(); save(); render(); }, 8000);
+  return true;
+}
+function renderHistory(){
+  const h = state.history;
+  $('histSec').hidden = !h.length;
+  if(!h.length) return;
+  $('histTag').textContent = h.length + (h.length === 1 ? ' month' : ' months');
+  const names = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  $('histList').innerHTML = h.map(x=>{
+    const [y, m] = x.month.split('-');
+    const top = Object.entries(x.byCat||{}).sort((a,b)=>b[1]-a[1])[0];
+    const over = x.budget > 0 && x.spent > x.budget;
+    const sub = x.budget > 0
+      ? (over ? pesoExact(x.spent - x.budget) + ' over' : pesoExact(x.budget - x.spent) + ' left') + ' of ' + pesoExact(x.budget)
+      : 'No budget set';
+    return `<div class="hist-row"><div class="h-m">${names[+m-1]} ${y}<div class="h-s">${esc(sub)}${top ? ' · most on ' + esc(catOf(top[0]).label) : ''}</div></div><div class="h-v${over?' over':''}">${pesoExact(x.spent)}</div></div>`;
+  }).join('');
+}
+$('restoreFile').addEventListener('change', ev=>{
+  const f = ev.target.files && ev.target.files[0];
+  ev.target.value = '';
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = () => restoreFromText(String(r.result));
+  r.onerror = () => showToast('Could not read that file.', null, 4000);
+  r.readAsText(f);
+});
 
 // ---------- Reminders ----------
 // Android only lets an installed app show notifications through its service worker.
@@ -1314,6 +1390,7 @@ function render(){
   }
 
   renderReminder();
+  renderHistory();
   checkAfford();   // keep the "Can I afford it?" answer in step with your latest numbers
 
   // ----- This week (habit grid) -----
