@@ -333,6 +333,25 @@
     padding:0 18px;min-height:44px;font-weight:700;font-size:15px;cursor:pointer;
   }
   .plain{color:var(--muted);font-size:14.5px;padding:14px 0 10px;}
+  .heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,1fr);gap:2px;padding:10px 0 4px;}
+  .heat i{display:block;aspect-ratio:1;border-radius:2px;background:var(--rule);}
+  .heat i.l1{background:color-mix(in srgb,var(--mint) 30%,transparent);}
+  .heat i.l2{background:color-mix(in srgb,var(--mint) 55%,transparent);}
+  .heat i.l3{background:color-mix(in srgb,var(--mint) 80%,transparent);}
+  .heat i.l4{background:var(--mint);}
+  .heat i.fut{background:transparent;}
+  .heat-legend{display:flex;align-items:center;justify-content:flex-end;gap:4px;color:var(--muted);font-size:12.5px;padding-top:4px;}
+  .heat-legend i{width:12px;height:12px;border-radius:2px;display:inline-block;background:var(--rule);}
+  .heat-legend i.l1{background:color-mix(in srgb,var(--mint) 30%,transparent);}
+  .heat-legend i.l2{background:color-mix(in srgb,var(--mint) 55%,transparent);}
+  .heat-legend i.l3{background:color-mix(in srgb,var(--mint) 80%,transparent);}
+  .heat-legend i.l4{background:var(--mint);}
+  .rec-row{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--rule);}
+  .rec-row .rec-txt{flex:1;min-width:0;}
+  .rec-row .rec-t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rec-row .rec-s{color:var(--muted);font-size:13.5px;margin-top:2px;}
+  .rec-row .rec-v{font-family:var(--mono);font-weight:600;}
+  .rec-del{min-width:44px;min-height:44px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;}
   .hist-row{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--rule);}
   .hist-row .h-m{flex:1;min-width:0;font-weight:600;}
   .hist-row .h-s{color:var(--muted);font-size:13.5px;font-weight:400;margin-top:2px;}
@@ -481,6 +500,11 @@
         <div id="weekGrid"></div>
       </section>
       <section class="sec">
+        <div class="sec-head"><h2>This year</h2><span class="tally" id="yearTag"></span></div>
+        <div class="heat" id="heat" role="img" aria-label="Your habits over the past year"></div>
+        <div class="heat-legend">Less <i></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> More</div>
+      </section>
+      <section class="sec">
         <div class="sec-head"><h2>Reminders</h2><span class="tally" id="remTag">off</span></div>
         <div class="rem-row">
           <div class="rem-txt">
@@ -586,6 +610,17 @@
         <div class="sec-head"><h2>Expenses</h2><span class="tally" id="expTag">0</span></div>
         <div id="expenseList"></div>
       </section>
+      <section class="sec">
+        <div class="sec-head"><h2>Repeats every month</h2><span class="tally" id="recTag"></span></div>
+        <div id="recList"></div>
+        <div class="add-row expense-add">
+          <input id="recNote" class="expense-note" enterkeyhint="next" placeholder="e.g. Phone load" aria-label="Name of the monthly expense">
+          <select id="recCat" class="expense-cat" aria-label="Category"></select>
+          <input id="recAmt" class="expense-amt" type="number" inputmode="decimal" placeholder="₱ Amount" aria-label="Amount in pesos">
+          <input id="recDay" class="expense-amt" type="number" inputmode="numeric" min="1" max="28" placeholder="Day (1-28)" aria-label="Day of the month">
+          <button class="add-btn" onclick="addRecurring()">Add monthly expense</button>
+        </div>
+      </section>
       <section class="sec" id="histSec" hidden>
         <div class="sec-head"><h2>Past months</h2><span class="tally" id="histTag"></span></div>
         <div id="histList"></div>
@@ -650,6 +685,7 @@ let state = {
   budget: { month: monthKey(), amount: 0, expenses: [] }, // expenses: {id, note, amt, cat}
   moodLog: {},       // {dateStr: moodIndex}
   reminder: {on:false, time:'20:00'},
+  recurring: [],     // {id, note, amt, cat, day, last}
   history: []        // {month, budget, spent, byCat} saved when a month ends
 };
 let showAllExpenses = false;
@@ -694,6 +730,20 @@ function normalize(){
   state.budget.plan.off = state.budget.plan.off.filter(k=>!state.budget.expenses.some(e=>e.cat===k));
   if(state.budget.plan.off.length >= ENVS.length) state.budget.plan.off = [];
   state.budget.expenses.forEach(e=>{ if(!e.id) e.id = uid(); if(!CATS[e.cat]) e.cat = 'other'; });
+  // Monthly repeating expenses: add them once each month, on or after their day
+  state.recurring = (Array.isArray(state.recurring) ? state.recurring : [])
+    .filter(r=>r && Number(r.amt) > 0)
+    .map(r=>({id: r.id || uid(), note: String(r.note || 'Expense'), amt: Number(r.amt), cat: CATS[r.cat] ? r.cat : 'other',
+              day: Math.min(28, Math.max(1, parseInt(r.day) || 1)), last: typeof r.last === 'string' ? r.last : ''}));
+  const nowD = new Date();
+  state.recurring.forEach(r=>{
+    if(r.last !== monthKey() && nowD.getDate() >= r.day){
+      state.budget.expenses.unshift({id: uid(), note: r.note, amt: r.amt, cat: r.cat, auto: true});
+      r.last = monthKey();
+      // an envelope that now has spending can't stay switched off
+      state.budget.plan.off = state.budget.plan.off.filter(k=>k !== r.cat);
+    }
+  });
 }
 function load(){
   try{
@@ -865,6 +915,61 @@ function calcStreak(h){
   let streak = 0;
   while(done.has(dateKey(d))){ streak++; d.setDate(d.getDate()-1); }
   return streak;
+}
+
+// ---------- Monthly repeating expenses ----------
+function addRecurring(){
+  const note = $('recNote').value.trim() || 'Expense';
+  const amt = parseFloat($('recAmt').value);
+  const day = parseInt($('recDay').value);
+  if(isNaN(amt) || amt <= 0){ showToast('Type an amount first.', null, 2500); return; }
+  if(isNaN(day) || day < 1 || day > 28){ showToast('Pick a day from 1 to 28.', null, 3000); return; }
+  state.recurring.push({id: uid(), note, amt, cat: $('recCat').value, day, last: ''});
+  $('recNote').value = ''; $('recAmt').value = ''; $('recDay').value = '';
+  buzz(12);
+  normalize(); save(); render();
+  const r = state.recurring[state.recurring.length-1];
+  showToast(r.last === monthKey() ? `${r.note} added to this month and will repeat.` : `${r.note} will be added on day ${r.day}.`, null, 3500);
+}
+function deleteRecurring(id){
+  const list = state.recurring, i = list.findIndex(x=>x.id===id);
+  if(i < 0) return;
+  const [gone] = list.splice(i, 1);
+  save(); render();
+  showToast(`Stopped repeating "${gone.note}".`, ()=>{ state.recurring.splice(Math.min(i, state.recurring.length), 0, gone); save(); render(); }, 6000);
+}
+function renderRecurring(){
+  fillCatSelect($('recCat'), Object.keys(CATS));
+  const list = state.recurring;
+  $('recTag').textContent = list.length ? list.length + ' set' : '';
+  $('recList').innerHTML = list.length ? list.map(r=>{
+    const c = catOf(r.cat);
+    return `<div class="rec-row"><div class="rec-txt"><div class="rec-t">${c.icon} ${esc(r.note)}</div><div class="rec-s">Every month on day ${r.day}</div></div><div class="rec-v">${pesoExact(r.amt)}</div><button class="rec-del" aria-label="Stop repeating ${esc(r.note)}" onclick="deleteRecurring('${esc(r.id)}')">×</button></div>`;
+  }).join('') : '<div class="plain">Rent, load, subscriptions: add them once and they log themselves every month.</div>';
+}
+
+// ---------- Year heatmap ----------
+function renderHeat(){
+  const total = state.habits.length;
+  const el = $('heat');
+  if(!total){ el.innerHTML = ''; el.style.display = 'none'; $('yearTag').textContent = ''; document.querySelector('.heat-legend').style.display = 'none'; return; }
+  el.style.display = ''; document.querySelector('.heat-legend').style.display = '';
+  const counts = {};
+  state.habits.forEach(h=>h.doneDates.forEach(k=>{ counts[k] = (counts[k]||0) + 1; }));
+  const today = new Date(); today.setHours(12,0,0,0);
+  // 53 columns of weeks, Sunday on top, ending with this week
+  const start = new Date(today); start.setDate(start.getDate() - today.getDay() - 52*7);
+  let html = '', active = 0;
+  for(let i=0; i<53*7; i++){
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    if(d > today){ html += '<i class="fut"></i>'; continue; }
+    const n = counts[dateKey(d)] || 0;
+    if(n) active++;
+    const lvl = n ? Math.min(4, Math.max(1, Math.ceil(n / total * 4))) : 0;
+    html += `<i class="${lvl ? 'l'+lvl : ''}" title="${dateKey(d)}: ${n}/${total}"></i>`;
+  }
+  el.innerHTML = html;
+  $('yearTag').textContent = active + (active === 1 ? ' active day' : ' active days');
 }
 
 // ---------- Backup & restore + past months ----------
@@ -1391,6 +1496,8 @@ function render(){
 
   renderReminder();
   renderHistory();
+  renderRecurring();
+  renderHeat();
   checkAfford();   // keep the "Can I afford it?" answer in step with your latest numbers
 
   // ----- This week (habit grid) -----
