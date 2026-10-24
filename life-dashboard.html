@@ -351,6 +351,16 @@
   .rec-row .rec-s{color:var(--muted);font-size:13.5px;margin-top:2px;}
   .rec-row .rec-v{font-family:var(--mono);font-weight:600;}
   .rec-del{min-width:44px;min-height:44px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;}
+  #screen-goals .add-row{flex-wrap:wrap;}
+  #goalInput{flex:1 1 100%;}
+  #goalTarget{flex:1 1 0;min-width:0;}
+  .goal-prog{margin-top:8px;}
+  .goal-prog .meter{margin-top:0;}
+  .goal-amt{font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:6px;}
+  .goal-add{flex-shrink:0;min-height:44px;min-width:44px;padding:0 14px;border-radius:14px;border:1.5px solid var(--violet);background:transparent;color:var(--violet);font-weight:700;font-size:15px;cursor:pointer;}
+  .nudge{display:flex;flex-direction:column;gap:10px;}
+  .nudge p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.45;}
+  .nudge .rem-btns{padding:0;}
   .hist-row{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--rule);}
   .hist-row .h-m{flex:1;min-width:0;font-weight:600;}
   .hist-row .h-s{color:var(--muted);font-size:13.5px;font-weight:400;margin-top:2px;}
@@ -452,6 +462,11 @@
     </div>
 
     <div class="sheet">
+      <section class="sec nudge" id="backupNudge" hidden>
+        <div class="sec-head"><h2>Back up your data</h2></div>
+        <p id="backupText"></p>
+        <div class="rem-btns"><button class="ghost-btn" onclick="exportBackup()">Save a backup</button><button class="ghost-btn" onclick="snoozeBackup()">Later</button></div>
+      </section>
       <section class="sec">
         <div class="sec-head"><h2>Habits</h2><span class="tally" id="habitTag">0/0</span></div>
         <div id="todayHabits"></div>
@@ -530,7 +545,8 @@
       <section class="sec">
         <div class="sec-head"><h2>New goal</h2></div>
         <div class="add-row">
-          <input id="goalInput" placeholder="A goal or task" maxlength="60" enterkeyhint="done" aria-label="New goal">
+          <input id="goalInput" placeholder="A goal or task" maxlength="60" enterkeyhint="next" aria-label="New goal">
+          <input id="goalTarget" type="number" inputmode="decimal" placeholder="₱ Target (optional)" aria-label="Savings target in pesos, optional" enterkeyhint="done">
           <button class="add-btn" onclick="addGoal()">Add</button>
         </div>
       </section>
@@ -699,6 +715,15 @@ function normalize(){
   const rm = state.reminder || {};
   state.reminder = {on: rm.on === true, time: LedgerReminder.minutesOf(rm.time)!==null ? rm.time : '20:00'};
   state.habits.forEach(h=>{ if(!Array.isArray(h.doneDates)) h.doneDates = []; });
+  state.goals = state.goals.filter(g=>g && typeof g === 'object').map(g=>{
+    const t = Number(g.target) > 0 ? Number(g.target) : 0;
+    const out = {id: g.id || uid(), text: String(g.text || 'Goal'), done: g.done === true};
+    if(t){ out.target = t; out.saved = Math.max(0, Number(g.saved) || 0); }
+    return out;
+  });
+  state.backupSince = /^\d{4}-\d{2}-\d{2}$/.test(state.backupSince||'') ? state.backupSince : todayKey();
+  state.lastBackup = /^\d{4}-\d{2}-\d{2}$/.test(state.lastBackup||'') ? state.lastBackup : '';
+  state.backupSnooze = /^\d{4}-\d{2}-\d{2}$/.test(state.backupSnooze||'') ? state.backupSnooze : '';
   const b = state.budget || {};
   const sameMonth = b.month === monthKey();
   // Keep a summary of finished months instead of throwing them away
@@ -971,7 +996,28 @@ function renderHeat(){
 }
 
 // ---------- Backup & restore + past months ----------
+function backupDays(){
+  const ref = state.lastBackup || state.backupSince;
+  const [y,m,d] = ref.split('-').map(Number);
+  const a = new Date(y, m-1, d), b = new Date(); b.setHours(0,0,0,0);
+  return Math.round((b - a) / 86400000);
+}
+function renderBackupNudge(){
+  const hasData = state.habits.length || state.goals.length || state.budget.expenses.length || state.history.length;
+  const due = hasData && backupDays() >= 7 && state.backupSnooze <= todayKey() && state.backupSnooze !== todayKey();
+  $('backupNudge').hidden = !due;
+  if(!due) return;
+  $('backupText').textContent = state.lastBackup
+    ? `Your last backup was ${backupDays()} days ago. Save a fresh one so nothing is lost.`
+    : 'Everything lives only on this phone. Save a backup file so you never lose your habits and money.';
+}
+function snoozeBackup(){
+  const d = new Date(); d.setDate(d.getDate() + 3);
+  state.backupSnooze = dateKey(d);
+  save(); render();
+}
 function exportBackup(){
+  state.lastBackup = todayKey(); save(); renderBackupNudge();
   const data = JSON.stringify({app:'life-ledger', saved:new Date().toISOString(), state}, null, 2);
   const url = URL.createObjectURL(new Blob([data], {type:'application/json'}));
   const a = document.createElement('a');
@@ -1123,9 +1169,26 @@ function addGoal(){
   const inp = $('goalInput');
   const text = inp.value.trim();
   if(!text) return;
-  state.goals.unshift({id: uid(), text, done:false});
-  inp.value='';
+  const t = parseFloat($('goalTarget').value);
+  const g = {id: uid(), text, done:false};
+  if(t > 0){ g.target = t; g.saved = 0; }
+  state.goals.unshift(g);
+  inp.value=''; $('goalTarget').value='';
   buzz(12);
+  save(); render();
+}
+function addToGoal(id){
+  const g = state.goals.find(x=>x.id===id);
+  if(!g || !g.target) return;
+  const input = prompt(`How much did you add to "${g.text}"? (₱)\nUse a minus sign to take some out.`, '');
+  if(input === null) return;
+  const v = parseFloat(String(input).replace(/,/g,''));
+  if(isNaN(v) || v === 0) return;
+  const wasDone = g.done;
+  g.saved = Math.max(0, Math.round((g.saved + v) * 100) / 100);
+  if(g.saved >= g.target) g.done = true; else if(v < 0) g.done = false;
+  buzz(14);
+  if(g.done && !wasDone){ popId = id; buzz(22); showToast(`Goal reached: ${g.text}`, null, 4000); }
   save(); render();
 }
 function toggleGoal(id){
@@ -1343,12 +1406,18 @@ function habitRow(h, manage){
   </div>`;
 }
 function goalRow(g){
+  const has = g.target > 0;
+  const pct = has ? Math.min(100, Math.round(g.saved / g.target * 100)) : 0;
+  const prog = has ? `<div class="goal-prog"><div class="meter"><i style="width:${pct}%;background:var(--violet)"></i></div><div class="goal-amt">${pesoExact(g.saved)} of ${pesoExact(g.target)}</div></div>` : '';
+  const add = has && !g.done ? `<button class="goal-add" aria-label="Add money to ${esc(g.text)}" onclick="event.stopPropagation();addToGoal('${g.id}')">+ ₱</button>` : '';
   return `<div class="row goal-row${g.done?' done':''}" onclick="toggleGoal('${g.id}')">
     <div class="check v${g.done?' on':''}${popId===g.id?' pop':''}"></div>
-    <div class="row-main"><div class="goal-text">${esc(g.text)}</div></div>
+    <div class="row-main"><div class="goal-text">${esc(g.text)}</div>${prog}</div>
+    ${add}
     <div class="del-x" role="button" aria-label="Delete goal" onclick="event.stopPropagation();deleteGoal('${g.id}')">×</div>
   </div>`;
 }
+const goalProgress = g => g.done ? 1 : (g.target > 0 ? Math.min(1, g.saved / g.target) : 0);
 const meterColor = pct => pct >= 100 ? 'var(--red)' : pct >= 75 ? 'var(--brass)' : 'var(--mint)';
 
 function render(){
@@ -1378,7 +1447,8 @@ function render(){
     ? ordered.map(goalRow).join('')
     : empty('🎯','No goals yet','Add something you want to get done, big or small.');
   $('goalTag').textContent = `${openGoals} open`;
-  $('goalBar').style.width = (state.goals.length ? Math.round(doneGoals/state.goals.length*100) : 0) + '%';
+  const goalAvg = state.goals.length ? state.goals.reduce((n,g)=>n+goalProgress(g),0)/state.goals.length : 0;
+  $('goalBar').style.width = Math.round(goalAvg*100) + '%';
   $('goalBarNote').textContent = state.goals.length ? `${doneGoals} of ${state.goals.length} done` : '';
 
   // ----- Money -----
@@ -1495,6 +1565,7 @@ function render(){
   renderReminder();
   renderHistory();
   renderRecurring();
+  renderBackupNudge();
   renderHeat();
   checkAfford();   // keep the "Can I afford it?" answer in step with your latest numbers
 
@@ -1550,7 +1621,7 @@ function render(){
 
   // ----- Today summary -----
   const habitPct = total ? Math.round(doneCount/total*100) : 0;
-  const goalPct = state.goals.length ? Math.round(doneGoals/state.goals.length*100) : 0;
+  const goalPct = Math.round(goalAvg*100);
   $('legHabits').textContent = habitPct+'%';
   $('legGoals').textContent = goalPct+'%';
   $('legMoney').textContent = hasBudget ? (remaining>=0 ? 'On track' : 'Over') : '—';
