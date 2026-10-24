@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="75%"><stop offset="0" stop-color="#16342B"/><stop offset="1" stop-color="#0A1713"/></radialGradient>
+    <linearGradient id="br" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0C766"/><stop offset="1" stop-color="#D9A03A"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <!-- track -->
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#5ECDA1" stroke-opacity=".16" stroke-width="34"/>
+  <!-- progress (about 78%), starting at the top -->
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#5ECDA1" stroke-width="34" stroke-linecap="round"
+          stroke-dasharray="735 943" transform="rotate(-90 256 256)"/>
+  <!-- check mark -->
+  <path d="M194 262 L238 306 L322 214" fill="none" stroke="url(#br)" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

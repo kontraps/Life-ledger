@@ -1,7 +1,7 @@
-const CACHE = 'ledger-v10';
+const CACHE = 'ledger-v11';
 const META_CACHE = 'ledger-meta';   // survives updates: holds a copy of your reminder settings
 const FILES = [
-  './life-dashboard.html','./manifest.json','./icon.png','./reminder.js',
+  './life-dashboard.html','./manifest.json','./icon.png','./reminder.js','./icon-192.png',
   './fonts/bricolage-700.woff2','./fonts/bricolage-800.woff2',
   './fonts/plexmono-500-latin.woff2','./fonts/plexmono-500-ext.woff2',
   './fonts/plexmono-600-latin.woff2','./fonts/plexmono-600-ext.woff2'

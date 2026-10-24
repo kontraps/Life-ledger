@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Ledger</title>
+<title>Daybook</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Ledger">
+<meta name="apple-mobile-web-app-title" content="Daybook">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0C1A16" id="themeColor">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.png">
-<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png?v=2">
+<link rel="icon" href="icon.png?v=2">
 <script>
   // Pick light or dark before the first paint so the page never flashes the wrong colours
   (function(){
@@ -37,7 +37,7 @@
     unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;}
 </style>
 <style>
-  /* Ledger-green and brass. Dark is the default; the button in the corner switches to light. */
+  /* Daybook green and brass. Dark is the default; the button in the corner switches to light. */
   :root{
     --bg:#0C1A16;        /* the desk */
     --sheet:#13261F;     /* the ledger page */
@@ -984,10 +984,10 @@ function exportBackup(){
 }
 function restoreFromText(text){
   let obj;
-  try{ obj = JSON.parse(text); }catch(e){ showToast('That file is not a Life Ledger backup.', null, 4000); return false; }
+  try{ obj = JSON.parse(text); }catch(e){ showToast('That file is not a Daybook backup.', null, 4000); return false; }
   const st = obj && obj.state ? obj.state : obj;   // accept the wrapped file or a bare state
   if(!st || typeof st !== 'object' || !Array.isArray(st.habits) || !Array.isArray(st.goals)){
-    showToast('That file is not a Life Ledger backup.', null, 4000); return false;
+    showToast('That file is not a Daybook backup.', null, 4000); return false;
   }
   const before = JSON.stringify(state);
   state = st; normalize(); save(); render();
@@ -1092,10 +1092,10 @@ function downloadCalendar(){
   const hh = pad2(Math.floor(mins/60)), mm = pad2(mins%60);
   const now = new Date();
   const stamp = now.getFullYear()+pad2(now.getMonth()+1)+pad2(now.getDate());
-  const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Life Ledger//EN','CALSCALE:GREGORIAN',
+  const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Daybook//EN','CALSCALE:GREGORIAN',
     'BEGIN:VEVENT','UID:ledger-habits-'+stamp+'@life-ledger','DTSTAMP:'+stamp+'T000000Z',
     'DTSTART:'+stamp+'T'+hh+mm+'00','DURATION:PT15M','RRULE:FREQ=DAILY',
-    'SUMMARY:Life Ledger: tick your habits','DESCRIPTION:Open Life Ledger and tick off today\'s habits.',
+    'SUMMARY:Daybook: tick your habits','DESCRIPTION:Open Daybook and tick off today\'s habits.',
     'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Tick your habits','TRIGGER:PT0M','END:VALARM',
     'END:VEVENT','END:VCALENDAR'].join('\r\n');
   const url = URL.createObjectURL(new Blob([ics], {type:'text/calendar'}));

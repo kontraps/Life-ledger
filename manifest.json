@@ -1,12 +1,13 @@
 {
-  "name": "Ledger — Daily Control Panel",
-  "short_name": "Ledger",
+  "name": "Daybook — habits, goals & pesos",
+  "short_name": "Daybook",
   "start_url": "./life-dashboard.html",
   "display": "standalone",
   "background_color": "#0C1A16",
   "theme_color": "#0C1A16",
   "orientation": "portrait",
   "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
     { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
