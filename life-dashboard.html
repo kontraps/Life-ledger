@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Daybook">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0C1A16" id="themeColor">
+<meta name="theme-color" content="#101A16" id="themeColor">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png?v=2">
 <link rel="icon" href="icon.png?v=2">
@@ -39,18 +39,18 @@
 <style>
   /* Daybook green and brass. Dark is the default; the button in the corner switches to light. */
   :root{
-    --bg:#0C1A16;        /* the desk */
-    --sheet:#13261F;     /* the ledger page */
-    --sheet-2:#1B3329;
-    --ink:#EDE9DA;
-    --muted:#94A79D;
-    --rule:rgba(237,233,218,.11);
-    --rule-strong:rgba(237,233,218,.30);
-    --brass:#E3B24C;  --on-brass:#0C1A16;  --brass-t:rgba(227,178,76,.16);
-    --mint:#5ECDA1;   --mint-t:rgba(94,205,161,.20);
+    --bg:#101A16;        /* the desk */
+    --sheet:#18251F;     /* cards */
+    --sheet-2:#203128;   /* elevated: fields, tiles */
+    --ink:#F3F0E7;
+    --muted:#A0B0A5;
+    --rule:rgba(243,240,231,.10);
+    --rule-strong:rgba(243,240,231,.28);
+    --brass:#D8AD57;  --on-brass:#101A16;  --brass-t:rgba(216,173,87,.16);
+    --mint:#6FBF9B;   --mint-t:rgba(111,191,155,.20);
     --violet:#A99BEA; --violet-t:rgba(169,155,234,.20);
     --coral:#F08A6B;
-    --red:#EE6A52;
+    --red:#E5736A;
     --display:'Bricolage','Segoe UI',system-ui,-apple-system,sans-serif;
     --body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
     --mono:'PlexMono',ui-monospace,Menlo,Consolas,monospace;
@@ -177,7 +177,7 @@
   }
   .streak-badge .fl{font-size:16px;}
   .streak-badge.zero{background:var(--sheet-2);color:var(--muted);}
-  .streak-badge.zero .fl{filter:grayscale(1);opacity:.5;}
+  .streak-badge.zero .fl-ic{opacity:.55;}
   .streak-badge.bump{animation:bump .7s cubic-bezier(.2,.9,.3,1.35);}
   @keyframes bump{
     0%{transform:scale(1);}
@@ -204,12 +204,13 @@
 
   /* ---- Forms: fields are entry lines ---- */
   .add-row{display:flex;gap:10px;align-items:flex-end;padding:10px 0 14px;}
-  input,select{
+  input,select,textarea{
     background:var(--sheet-2);border:1.5px solid transparent;border-radius:14px;
     color:var(--ink);font-family:var(--body);font-size:16px;min-height:48px;width:100%;
     padding:10px 14px;outline:none;
   }
-  input:focus,select:focus{border-color:var(--brass);}
+  input:focus,select:focus,textarea:focus{border-color:var(--brass);}
+  textarea{min-height:112px;resize:vertical;line-height:1.5;display:block;}
   input::placeholder{color:var(--muted);}
   input[type=number]{font-family:var(--mono);font-weight:500;}
   select{
@@ -351,9 +352,10 @@
   .rec-row .rec-s{color:var(--muted);font-size:13.5px;margin-top:2px;}
   .rec-row .rec-v{font-family:var(--mono);font-weight:600;}
   .rec-del{min-width:44px;min-height:44px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;}
-  #screen-goals .add-row{flex-wrap:wrap;}
+  #goalForm,#taskForm{flex-wrap:wrap;}
   #goalInput{flex:1 1 100%;}
   #goalTarget{flex:1 1 0;min-width:0;}
+  #taskInput{flex:1 1 0;min-width:0;}
   .goal-prog{margin-top:8px;}
   .goal-prog .meter{margin-top:0;}
   .goal-amt{font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:6px;}
@@ -361,6 +363,29 @@
   .nudge{display:flex;flex-direction:column;gap:10px;}
   .nudge p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.45;}
   .nudge .rem-btns{padding:0;}
+  /* ---- Journal ---- */
+  .jr-entry{padding:14px 0;border-top:1px solid var(--rule);}
+  .jr-entry:first-child{border-top:none;}
+  .jr-meta{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .jr-meta .jr-mood{font-size:18px;line-height:1;}
+  .jr-text{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:6px;font-size:15.5px;line-height:1.5;}
+  .jr-meta .del-x{margin-left:auto;font-size:22px;padding:8px 10px;margin-top:-8px;margin-bottom:-8px;}
+  .jr-save{width:100%;margin-top:10px;}
+  /* ---- Insights ---- */
+  .stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding-top:6px;}
+  .stat{background:var(--sheet-2);border-radius:16px;padding:12px;min-width:0;}
+  .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+  .stat .v{font-family:var(--mono);font-weight:600;font-size:19px;margin-top:6px;letter-spacing:-.02em;overflow-wrap:anywhere;}
+  .stat .s{font-size:12px;color:var(--muted);margin-top:2px;}
+  .bar-row{padding:9px 0;}
+  .bar-row .br-top{display:flex;justify-content:space-between;gap:12px;font-size:15px;}
+  .bar-row .br-top b{font-family:var(--mono);font-weight:600;font-size:14px;}
+  .bar-row .meter{margin-top:8px;}
+  .daily{display:flex;align-items:flex-end;gap:5px;height:90px;padding-top:10px;}
+  .daily i{flex:1;border-radius:4px 4px 2px 2px;background:var(--mint);min-height:4px;}
+  .daily i.zero{background:var(--sheet-2);}
+  .daily-lbl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--muted);padding-top:6px;}
+  .fl-ic{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
   .hist-row{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--rule);}
   .hist-row .h-m{flex:1;min-width:0;font-weight:600;}
   .hist-row .h-s{color:var(--muted);font-size:13.5px;font-weight:400;margin-top:2px;}
@@ -393,7 +418,7 @@
     padding-bottom:env(safe-area-inset-bottom);
   }
   .tab{
-    flex:1;min-height:56px;margin:6px 4px;border-radius:16px;background:none;border:none;color:var(--muted);cursor:pointer;position:relative;
+    flex:1;min-width:0;min-height:56px;margin:6px 2px;border-radius:16px;background:none;border:none;color:var(--muted);cursor:pointer;position:relative;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
     font-size:12px;font-weight:600;
   }
@@ -425,6 +450,17 @@
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation:none !important;transition:none !important;}
     .confetti-layer{display:none;}
+  }
+  /* ---- Wider screens: side rail + two columns ---- */
+  @media (min-width:820px){
+    .app{max-width:1080px;padding-left:calc(112px + env(safe-area-inset-left));padding-right:24px;}
+    .tabbar{left:0;right:auto;top:0;bottom:0;width:96px;max-width:none;margin:0;flex-direction:column;justify-content:center;gap:6px;border-top:none;border-right:1px solid var(--rule);}
+    .tab{flex:0 0 auto;min-height:64px;margin:0 8px;}
+    .sheet{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start;padding:4px 0 48px;}
+    .sheet > .sec{margin-top:14px;}
+    .sheet > .sec.full{grid-column:1 / -1;}
+    .summary,.legend{margin-left:0;margin-right:0;}
+    #toast{bottom:28px;}
   }
 </style>
 </head>
@@ -472,23 +508,20 @@
         <div id="todayHabits"></div>
       </section>
       <section class="sec">
-        <div class="sec-head"><h2>Mood</h2><span class="tally">today</span></div>
-        <div class="mood-picker" id="moodPicker"></div>
-        <div class="mood-history" id="moodHistory"></div>
-        <div class="note">Last 14 days</div>
+        <div class="sec-head"><h2>Tasks</h2><span class="tally" id="taskTag">0 open</span></div>
+        <div id="taskList"></div>
+        <div class="add-row" id="taskForm">
+          <input id="taskInput" placeholder="Add a task" maxlength="60" enterkeyhint="done" aria-label="New task">
+          <button class="add-btn" onclick="addTask()">Add</button>
+        </div>
       </section>
       <section class="sec">
         <div class="sec-head"><h2>Spending plan</h2><button class="link" onclick="go('money')">Open</button></div>
         <div id="snapBudget"></div>
       </section>
       <section class="sec">
-        <div class="sec-head"><h2>Your data</h2></div>
-        <div class="rem-note" style="padding-top:0">Everything is saved on this phone only. Save a backup file so you never lose it if you change phones or clear your browser.</div>
-        <div class="rem-btns">
-          <button class="ghost-btn" onclick="exportBackup()">Save a backup</button>
-          <button class="ghost-btn" onclick="$('restoreFile').click()">Restore a backup</button>
-        </div>
-        <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+        <div class="sec-head"><h2>Journal</h2><button class="link" onclick="go('journal')">Open</button></div>
+        <div id="snapJournal"></div>
       </section>
     </div>
   </section>
@@ -538,27 +571,6 @@
     </div>
   </section>
 
-  <!-- ============ GOALS ============ -->
-  <section class="screen" id="screen-goals">
-    <header class="top"><div><h1>Goals</h1></div></header>
-    <div class="sheet">
-      <section class="sec">
-        <div class="sec-head"><h2>New goal</h2></div>
-        <div class="add-row">
-          <input id="goalInput" placeholder="A goal or task" maxlength="60" enterkeyhint="next" aria-label="New goal">
-          <input id="goalTarget" type="number" inputmode="decimal" placeholder="₱ Target (optional)" aria-label="Savings target in pesos, optional" enterkeyhint="done">
-          <button class="add-btn" onclick="addGoal()">Add</button>
-        </div>
-      </section>
-      <section class="sec">
-        <div class="sec-head"><h2>Your goals</h2><span class="tally" id="goalTag">0 open</span></div>
-        <div id="goalList"></div>
-        <div class="meter"><i id="goalBar" style="background:var(--violet)"></i></div>
-        <div class="meter-note" id="goalBarNote"></div>
-      </section>
-    </div>
-  </section>
-
   <!-- ============ MONEY ============ -->
   <section class="screen" id="screen-money">
     <header class="top"><div><h1>Money</h1></div></header>
@@ -566,6 +578,17 @@
       <section class="sec">
         <div class="sec-head"><h2>You can spend</h2><span class="tally">this month</span></div>
         <div id="spendHero"></div>
+      </section>
+      <section class="sec">
+        <div class="sec-head"><h2>Savings goals</h2><span class="tally" id="goalTag">0 open</span></div>
+        <div id="goalList"></div>
+        <div class="meter"><i id="goalBar" style="background:var(--violet)"></i></div>
+        <div class="meter-note" id="goalBarNote"></div>
+        <div class="add-row" id="goalForm">
+          <input id="goalInput" placeholder="What are you saving for?" maxlength="60" enterkeyhint="next" aria-label="Savings goal name">
+          <input id="goalTarget" type="number" inputmode="decimal" placeholder="₱ Target" aria-label="Target amount in pesos" enterkeyhint="done">
+          <button class="add-btn" onclick="addGoal()">Add</button>
+        </div>
       </section>
       <section class="sec">
         <div class="sec-head"><h2>Where to spend</h2><span class="tally" id="planTag">50/30/20</span></div>
@@ -642,6 +665,65 @@
     </div>
   </section>
 
+  <!-- ============ JOURNAL ============ -->
+  <section class="screen" id="screen-journal">
+    <header class="top"><div><h1>Journal</h1></div></header>
+    <div class="sheet">
+      <section class="sec">
+        <div class="sec-head"><h2>How are you feeling?</h2><span class="tally">today</span></div>
+        <div class="mood-picker" id="moodPicker"></div>
+        <div class="mood-history" id="moodHistory"></div>
+        <div class="note">Last 14 days</div>
+      </section>
+      <section class="sec">
+        <div class="sec-head"><h2>New entry</h2></div>
+        <textarea id="journalInput" maxlength="2000" placeholder="What is on your mind today?" aria-label="Journal entry"></textarea>
+        <button class="add-btn jr-save" onclick="addJournal()">Save entry</button>
+        <div class="note">Entries stay on this phone and are included in your backup.</div>
+      </section>
+      <section class="sec full">
+        <div class="sec-head"><h2>Timeline</h2><span class="tally" id="journalTag"></span></div>
+        <div id="journalList"></div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ============ INSIGHTS ============ -->
+  <section class="screen" id="screen-insights">
+    <header class="top"><div><h1>Insights</h1></div></header>
+    <div class="sheet">
+      <section class="sec full">
+        <div class="sec-head"><h2>At a glance</h2><span class="tally">recent</span></div>
+        <div class="stat-grid" id="insSummary"></div>
+      </section>
+      <section class="sec">
+        <div class="sec-head"><h2>Habit consistency</h2><span class="tally">30 days</span></div>
+        <div id="insHabits"></div>
+      </section>
+      <section class="sec">
+        <div class="sec-head"><h2>Daily completion</h2><span class="tally">14 days</span></div>
+        <div id="insDaily"></div>
+      </section>
+      <section class="sec">
+        <div class="sec-head"><h2>Spending this month</h2><span class="tally" id="insSpendTag"></span></div>
+        <div id="insSpend"></div>
+      </section>
+      <section class="sec">
+        <div class="sec-head"><h2>Goal progress</h2><span class="tally" id="insGoalTag"></span></div>
+        <div id="insGoals"></div>
+      </section>
+      <section class="sec full">
+        <div class="sec-head"><h2>Your data</h2></div>
+        <div class="rem-note" style="padding-top:0">Everything is saved on this phone only. Save a backup file so you never lose it if you change phones or clear your browser.</div>
+        <div class="rem-btns">
+          <button class="ghost-btn" onclick="exportBackup()">Save a backup</button>
+          <button class="ghost-btn" onclick="$('restoreFile').click()">Restore a backup</button>
+        </div>
+        <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+      </section>
+    </div>
+  </section>
+
 </main>
 
 <nav class="tabbar" aria-label="Main">
@@ -651,11 +733,14 @@
   <button class="tab" data-tab="habits" onclick="go('habits')">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.3 2.4 2.4 4.6-5"/></svg>Habits
   </button>
-  <button class="tab" data-tab="goals" onclick="go('goals')">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".9"/></svg>Goals
-  </button>
   <button class="tab" data-tab="money" onclick="go('money')">
     <svg viewBox="0 0 24 24"><rect x="3.5" y="6.5" width="17" height="12" rx="2.5"/><path d="M3.5 10.5h17"/><path d="M16.5 15h1.5"/></svg>Money
+  </button>
+  <button class="tab" data-tab="journal" onclick="go('journal')">
+    <svg viewBox="0 0 24 24"><path d="M6 4h11a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2z"/><path d="M6 18a2 2 0 0 1 2-2h11"/></svg>Journal
+  </button>
+  <button class="tab" data-tab="insights" onclick="go('insights')">
+    <svg viewBox="0 0 24 24"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg>Insights
   </button>
 </nav>
 
@@ -699,6 +784,7 @@ let state = {
   budget: { month: monthKey(), amount: 0, expenses: [] }, // expenses: {id, note, amt, cat}
   moodLog: {},       // {dateStr: moodIndex}
   reminder: {on:false, time:'20:00'},
+  journal: [],       // {id, date, ts, text, mood}
   recurring: [],     // {id, note, amt, cat, day, last}
   history: []        // {month, budget, spent, byCat} saved when a month ends
 };
@@ -721,6 +807,11 @@ function normalize(){
     if(t){ out.target = t; out.saved = Math.max(0, Number(g.saved) || 0); }
     return out;
   });
+  state.journal = (Array.isArray(state.journal) ? state.journal : [])
+    .filter(e=>e && typeof e === 'object' && String(e.text||'').trim())
+    .map(e=>{ const o = {id: e.id || uid(), date: /^\d{4}-\d{2}-\d{2}$/.test(e.date||'') ? e.date : todayKey(), ts: Number(e.ts) || Date.now(), text: String(e.text).slice(0,2000)};
+              if(Number.isInteger(e.mood) && e.mood >= 0 && e.mood <= 4) o.mood = e.mood; return o; })
+    .sort((a,b)=>b.ts-a.ts);
   state.backupSince = /^\d{4}-\d{2}-\d{2}$/.test(state.backupSince||'') ? state.backupSince : todayKey();
   state.lastBackup = /^\d{4}-\d{2}-\d{2}$/.test(state.lastBackup||'') ? state.lastBackup : '';
   state.backupSnooze = /^\d{4}-\d{2}-\d{2}$/.test(state.backupSnooze||'') ? state.backupSnooze : '';
@@ -798,7 +889,7 @@ function go(tab){
 }
 function syncThemeColor(){
   const light = document.documentElement.getAttribute('data-theme') === 'light';
-  $('themeColor').setAttribute('content', light ? '#E4ECDE' : '#0C1A16');
+  $('themeColor').setAttribute('content', light ? '#E4ECDE' : '#101A16');
 }
 function toggleTheme(){
   const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
@@ -877,7 +968,7 @@ function celebrate(h){
     if(!undoPending) showToast(milestone ? `All habits done 🎉 ${streak}-day streak on ${h.name}!` : 'All habits done today 🎉', null, 4200);
   }else if(milestone){
     buzz([20, 50, 30]);
-    if(!undoPending) showToast(`🔥 ${streak}-day streak on ${h.name}!`, null, 3600);
+    if(!undoPending) showToast(`${streak}-day streak on ${h.name}!`, null, 3600);
   }
 }
 function doUndo(){
@@ -1064,6 +1155,102 @@ $('restoreFile').addEventListener('change', ev=>{
   r.readAsText(f);
 });
 
+// ---------- Journal ----------
+let showAllJournal = false;
+function addJournal(){
+  const inp = $('journalInput');
+  const text = inp.value.trim();
+  if(!text){ showToast('Write a few words first.', null, 2500); return; }
+  const e = {id: uid(), date: todayKey(), ts: Date.now(), text: text.slice(0,2000)};
+  const m = state.moodLog[todayKey()];
+  if(m !== undefined) e.mood = m;
+  state.journal.unshift(e);
+  inp.value = '';
+  buzz(12);
+  save(); render();
+  showToast('Entry saved.', null, 2500);
+}
+function deleteJournal(id){
+  const i = state.journal.findIndex(x=>x.id===id);
+  if(i < 0) return;
+  const [gone] = state.journal.splice(i, 1);
+  save(); render();
+  showToast('Entry deleted.', ()=>{ state.journal.splice(Math.min(i, state.journal.length), 0, gone); save(); render(); }, 7000);
+}
+function renderJournal(){
+  const list = state.journal;
+  $('journalTag').textContent = list.length ? list.length + (list.length === 1 ? ' entry' : ' entries') : '';
+  if(!list.length){
+    $('journalList').innerHTML = empty('✎','Your journal is empty','Write a few lines about your day. It only takes a minute.');
+  }else{
+    const shown = showAllJournal ? list : list.slice(0, 15);
+    $('journalList').innerHTML = shown.map(e=>{
+      const d = new Date(e.ts);
+      const when = d.toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric'}) + ' · ' + d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+      return `<div class="jr-entry"><div class="jr-meta"><span>${esc(when)}</span>${e.mood !== undefined ? `<span class="jr-mood" aria-label="Mood ${e.mood+1} of 5">${MOODS[e.mood]}</span>` : ''}<div class="del-x" role="button" aria-label="Delete entry" onclick="deleteJournal('${esc(e.id)}')">×</div></div><div class="jr-text">${esc(e.text)}</div></div>`;
+    }).join('');
+    if(list.length > 15){
+      const more = document.createElement('button');
+      more.className = 'link-btn';
+      more.textContent = showAllJournal ? 'Show fewer' : `Show ${list.length - 15} older`;
+      more.onclick = () => { showAllJournal = !showAllJournal; render(); };
+      $('journalList').appendChild(more);
+    }
+  }
+  const tk = todayKey(), mood = state.moodLog[tk], n = state.journal.filter(e=>e.date===tk).length;
+  $('snapJournal').innerHTML = `<div class="plain" style="padding-top:4px">${mood !== undefined ? 'Mood today: ' + MOODS[mood] + '. ' : 'No mood logged yet. '}${n ? n + (n > 1 ? ' entries' : ' entry') + ' written today.' : 'Nothing written yet.'}</div><button class="ghost-btn" onclick="go('journal')">${n ? 'Write another' : 'Write an entry'}</button>`;
+}
+
+// ---------- Insights (everything here is calculated from your own data) ----------
+function renderInsights(){
+  const total = state.habits.length;
+  const keys = n => { const a = []; for(let i=n-1;i>=0;i--){ const d = new Date(); d.setDate(d.getDate()-i); a.push(dateKey(d)); } return a; };
+  const doneOn = k => state.habits.filter(h=>h.doneDates.includes(k)).length;
+  const d7 = keys(7), d14 = keys(14), d30 = keys(30);
+  const ticks7 = d7.reduce((n,k)=>n+doneOn(k), 0);
+  const moods = d14.map(k=>state.moodLog[k]).filter(v=>v !== undefined);
+  const moodAvg = moods.length ? moods.reduce((a,v)=>a+v+1, 0) / moods.length : null;
+  const M = moneyInfo();
+  const stat = (k,v,sub) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${sub}</div></div>`;
+  $('insSummary').innerHTML =
+    stat('Habits', total ? Math.round(ticks7/(total*7)*100) + '%' : '—', total ? `${ticks7} of ${total*7} ticks, 7 days` : 'no habits yet') +
+    stat('Spent', pesoExact(M.spent), M.amount > 0 ? 'of ' + pesoExact(M.amount) : 'no budget set') +
+    stat('Mood', moodAvg !== null ? moodAvg.toFixed(1) + '/5' : '—', moods.length ? `${moods.length} day${moods.length>1?'s':''} logged` : 'nothing logged');
+
+  // habit consistency, last 30 days
+  const barColor = pct => pct >= 75 ? 'var(--mint)' : pct >= 40 ? 'var(--brass)' : 'var(--coral)';
+  $('insHabits').innerHTML = total ? state.habits.map(h=>{
+    const c = d30.filter(k=>h.doneDates.includes(k)).length, pct = Math.round(c/30*100);
+    return `<div class="bar-row"><div class="br-top"><span>${esc(h.name)}</span><b>${pct}%</b></div><div class="meter"><i style="width:${pct}%;background:${barColor(pct)}"></i></div><div class="note" style="margin-top:6px">${c} of 30 days · streak ${calcStreak(h)}</div></div>`;
+  }).join('') : '<div class="plain">Add a habit to see how consistent you are.</div>';
+
+  // daily completion, last 14 days
+  $('insDaily').innerHTML = total
+    ? `<div class="daily" role="img" aria-label="Habits finished each day over the last 14 days">${d14.map(k=>{ const v = doneOn(k)/total; return `<i class="${v ? '' : 'zero'}" style="height:${Math.max(4, Math.round(v*80))}px" title="${k}: ${doneOn(k)}/${total}"></i>`; }).join('')}</div><div class="daily-lbl"><span>14 days ago</span><span>Today</span></div>`
+    : '<div class="plain">Your daily chart appears once you add a habit.</div>';
+
+  // spending by category
+  const byCat = {}; let spentTotal = 0;
+  state.budget.expenses.forEach(e=>{ byCat[e.cat] = (byCat[e.cat]||0) + e.amt; spentTotal += e.amt; });
+  const cats = Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  $('insSpendTag').textContent = cats.length ? pesoExact(spentTotal) : '';
+  $('insSpend').innerHTML = cats.length ? cats.map(([k,v])=>{
+    const pct = Math.round(v/spentTotal*100), c = catOf(k);
+    return `<div class="bar-row"><div class="br-top"><span>${c.icon} ${esc(c.label)}</span><b>${pesoExact(v)}</b></div><div class="meter"><i style="width:${pct}%;background:${c.color}"></i></div></div>`;
+  }).join('') : '<div class="plain">No spending logged this month.</div>';
+
+  // goal progress
+  const sav = state.goals.filter(g=>g.target > 0), tasks = state.goals.filter(g=>!(g.target > 0));
+  $('insGoalTag').textContent = sav.length ? `${sav.filter(g=>g.done).length}/${sav.length} reached` : '';
+  let gh = sav.map(g=>{
+    const pct = Math.round(goalProgress(g)*100);
+    return `<div class="bar-row"><div class="br-top"><span>${esc(g.text)}</span><b>${pct}%</b></div><div class="meter"><i style="width:${pct}%;background:var(--violet)"></i></div><div class="note" style="margin-top:6px">${pesoExact(g.saved)} of ${pesoExact(g.target)}</div></div>`;
+  }).join('');
+  if(!sav.length) gh = '<div class="plain">Add a savings goal on the Money screen to track it here.</div>';
+  if(tasks.length) gh += `<div class="note">${tasks.filter(g=>g.done).length} of ${tasks.length} tasks done</div>`;
+  $('insGoals').innerHTML = gh;
+}
+
 // ---------- Reminders ----------
 // Android only lets an installed app show notifications through its service worker.
 // The service worker cannot read localStorage, so a copy of the settings goes into Cache Storage.
@@ -1168,12 +1355,20 @@ $('remTime').addEventListener('change', setReminderTime);
 function addGoal(){
   const inp = $('goalInput');
   const text = inp.value.trim();
-  if(!text) return;
   const t = parseFloat($('goalTarget').value);
-  const g = {id: uid(), text, done:false};
-  if(t > 0){ g.target = t; g.saved = 0; }
-  state.goals.unshift(g);
+  if(!text){ showToast('Name what you are saving for.', null, 2500); return; }
+  if(!(t > 0)){ showToast('Add a target amount in pesos.', null, 2500); return; }
+  state.goals.unshift({id: uid(), text, done:false, target: t, saved: 0});
   inp.value=''; $('goalTarget').value='';
+  buzz(12);
+  save(); render();
+}
+function addTask(){
+  const inp = $('taskInput');
+  const text = inp.value.trim();
+  if(!text) return;
+  state.goals.unshift({id: uid(), text, done:false});
+  inp.value='';
   buzz(12);
   save(); render();
 }
@@ -1401,7 +1596,7 @@ function habitRow(h, manage){
   return `<div class="row habit-row${done?' is-done':''}" data-id="${h.id}" onclick="toggleHabit('${h.id}')">
     <div class="check${done?' on':''}${popId===h.id?' pop':''}"></div>
     <div class="row-main"><div class="habit-name">${esc(h.name)}</div><div class="streak${streak===0?' none':''}">${hint}</div></div>
-    <div class="streak-badge${streak===0?' zero':''}${popId===h.id?' bump':''}" aria-label="${streak} day streak"><span class="fl">🔥</span><span class="streak-num">${streak}</span></div>
+    <div class="streak-badge${streak===0?' zero':''}${popId===h.id?' bump':''}" aria-label="${streak} day streak"><svg class="fl-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg><span class="streak-num">${streak}</span></div>
     ${manage ? `<div class="del-x" role="button" aria-label="Delete habit" onclick="event.stopPropagation();deleteHabit('${h.id}')">×</div>` : ''}
   </div>`;
 }
@@ -1439,17 +1634,22 @@ function render(){
   $('habitTag').textContent = `${doneCount}/${total}`;
   $('habitTag2').textContent = `${doneCount}/${total} today`;
 
-  // ----- Goals (open ones first) -----
+  // ----- Savings goals (Money) and tasks (Today); both live in state.goals -----
+  const savings = state.goals.filter(g=>g.target>0);
+  const tasks = state.goals.filter(g=>!(g.target>0));
   const openGoals = state.goals.filter(g=>!g.done).length;
   const doneGoals = state.goals.length - openGoals;
-  const ordered = [...state.goals.filter(g=>!g.done), ...state.goals.filter(g=>g.done)];
-  $('goalList').innerHTML = ordered.length
-    ? ordered.map(goalRow).join('')
-    : empty('🎯','No goals yet','Add something you want to get done, big or small.');
-  $('goalTag').textContent = `${openGoals} open`;
+  const openFirst = list => [...list.filter(g=>!g.done), ...list.filter(g=>g.done)];
+  $('goalList').innerHTML = savings.length
+    ? openFirst(savings).map(goalRow).join('')
+    : empty('<span class="peso-ico">₱</span>','No savings goals yet','Name something you are saving for and set a target amount.');
+  $('goalTag').textContent = `${savings.filter(g=>!g.done).length} open`;
+  const savAvg = savings.length ? savings.reduce((n,g)=>n+goalProgress(g),0)/savings.length : 0;
+  $('goalBar').style.width = Math.round(savAvg*100) + '%';
+  $('goalBarNote').textContent = savings.length ? `${savings.filter(g=>g.done).length} of ${savings.length} reached` : '';
+  $('taskList').innerHTML = tasks.length ? openFirst(tasks).map(goalRow).join('') : '<div class="plain">No tasks yet. Add something you want to get done.</div>';
+  $('taskTag').textContent = `${tasks.filter(g=>!g.done).length} open`;
   const goalAvg = state.goals.length ? state.goals.reduce((n,g)=>n+goalProgress(g),0)/state.goals.length : 0;
-  $('goalBar').style.width = Math.round(goalAvg*100) + '%';
-  $('goalBarNote').textContent = state.goals.length ? `${doneGoals} of ${state.goals.length} done` : '';
 
   // ----- Money -----
   const exps = state.budget.expenses;
@@ -1566,6 +1766,8 @@ function render(){
   renderHistory();
   renderRecurring();
   renderBackupNudge();
+  renderJournal();
+  renderInsights();
   renderHeat();
   checkAfford();   // keep the "Can I afford it?" answer in step with your latest numbers
 
@@ -1671,7 +1873,7 @@ function drawDial(habitPct, goalPct, moneyPct, moodPct, active){
 }
 
 // Enter / Go / Done on the phone keyboard submits the field
-[['habitInput', addHabit], ['goalInput', addGoal], ['budgetInput', setBudget], ['expenseAmt', addExpense]].forEach(([id, fn])=>{
+[['habitInput', addHabit], ['goalInput', addGoal], ['goalTarget', addGoal], ['taskInput', addTask], ['budgetInput', setBudget], ['expenseAmt', addExpense]].forEach(([id, fn])=>{
   $(id).addEventListener('keydown', ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); fn(); } });
 });
 $('checkAmt').addEventListener('input', checkAfford);
