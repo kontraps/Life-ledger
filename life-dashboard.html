@@ -255,7 +255,7 @@
   .exp-note{display:block;font-size:16px;font-weight:500;overflow-wrap:anywhere;}
   .exp-cat{display:block;font-size:13px;color:var(--muted);margin-top:1px;}
   .amt{font-family:var(--mono);font-weight:500;font-size:16px;white-space:nowrap;text-align:right;}
-  .link-btn{background:none;border:none;color:var(--brass);font-weight:700;font-size:14.5px;padding:12px 0 6px;cursor:pointer;}
+  .link-btn{background:none;border:none;color:var(--brass);font-weight:700;font-size:14.5px;padding:12px 0 6px;min-height:44px;cursor:pointer;}
   .hint{color:var(--muted);font-size:13px;padding:6px 0 10px;}
 
   .cat-row{margin-top:16px;}
@@ -386,6 +386,41 @@
   .daily i.zero{background:var(--sheet-2);}
   .daily-lbl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--muted);padding-top:6px;}
   .fl-ic{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  /* ---- Today dashboard ---- */
+  #screen-today h1{font-size:30px;}
+  .hero-col{min-width:0;}
+  .hero-count{font-family:var(--mono);font-weight:600;font-size:14px;color:var(--brass);margin-top:8px;}
+  .stat-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px;}
+  .stat-card{all:unset;box-sizing:border-box;cursor:pointer;background:var(--sheet);border:1px solid var(--rule);border-radius:20px;padding:14px;min-height:88px;display:flex;flex-direction:column;gap:4px;}
+  .stat-card:focus-visible{outline:2px solid var(--brass);outline-offset:2px;}
+  .stat-card .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+  .stat-card .v{font-family:var(--mono);font-weight:600;font-size:22px;letter-spacing:-.02em;overflow-wrap:anywhere;}
+  .stat-card .v.pos{color:var(--mint);} .stat-card .v.neg{color:var(--red);}
+  .stat-card .s{font-size:12.5px;color:var(--muted);}
+  .quick{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:14px;}
+  .qbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:64px;padding:8px 2px;border-radius:16px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink);font-size:12px;font-weight:600;cursor:pointer;}
+  .qbtn svg{width:22px;height:22px;stroke:var(--brass);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+  .qbtn:active{transform:translateY(1px);}
+  .sub-head{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:14px 0 4px;}
+  .reflect{padding:6px 0 10px;}
+  .reflect .prompt{font-size:15.5px;line-height:1.45;margin:0 0 10px;}
+  .reflect .note{margin:8px 0 0;}
+  /* Quick action sheet */
+  .qa{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;}
+  .qa[hidden]{display:none;}
+  .qa-card{width:100%;max-width:520px;background:var(--sheet);border:1px solid var(--rule-strong);border-radius:24px 24px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto;}
+  .qa-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .qa-head h2{font-family:var(--display);font-size:21px;font-weight:700;margin:0;}
+  .qa-x{min-width:44px;min-height:44px;background:none;border:none;color:var(--muted);font-size:28px;cursor:pointer;}
+  #qaBody{display:flex;flex-direction:column;gap:10px;}
+  .qa-row{display:flex;gap:10px;}
+  .qa-row > *{flex:1 1 0;min-width:0;}
+  .qa-err{color:var(--red);font-size:14px;margin-top:10px;}
+  .qa-actions{display:flex;gap:10px;margin-top:14px;}
+  .qa-actions button{flex:1;min-height:48px;}
+  .qa-actions .add-btn[disabled]{opacity:.6;}
+  @media (min-width:560px){ .stat-cards{grid-template-columns:repeat(4,minmax(0,1fr));} .qa{align-items:center;} .qa-card{border-radius:24px;} }
+  @media (prefers-reduced-motion:no-preference){ .qa-card{animation:qaIn .18s ease both;} @keyframes qaIn{from{transform:translateY(12px);opacity:0;}to{transform:none;opacity:1;}} }
   .hist-row{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--rule);}
   .hist-row .h-m{flex:1;min-width:0;font-weight:600;}
   .hist-row .h-s{color:var(--muted);font-size:13.5px;font-weight:400;margin-top:2px;}
@@ -485,43 +520,49 @@
         <svg id="dialSvg" viewBox="0 0 160 160" aria-hidden="true"></svg>
         <div class="ring-center"><div class="ring-pct" id="ringPct">0%</div><div class="ring-sub">of today</div></div>
       </div>
-      <div>
+      <div class="hero-col">
         <div class="hero-msg" id="heroMsg"></div>
         <div class="hero-sub" id="heroSub"></div>
+        <div class="hero-count" id="heroCount"></div>
       </div>
-    </div>
-    <div class="legend">
-      <div class="lg"><span class="dot mint"></span>Habits<b id="legHabits">0%</b></div>
-      <div class="lg"><span class="dot violet"></span>Goals<b id="legGoals">0%</b></div>
-      <div class="lg"><span class="dot brass"></span>Money<b id="legMoney">—</b></div>
-      <div class="lg"><span class="dot coral"></span>Mood<b id="legMood">—</b></div>
     </div>
 
     <div class="sheet">
-      <section class="sec nudge" id="backupNudge" hidden>
-        <div class="sec-head"><h2>Back up your data</h2></div>
-        <p id="backupText"></p>
-        <div class="rem-btns"><button class="ghost-btn" onclick="exportBackup()">Save a backup</button><button class="ghost-btn" onclick="snoozeBackup()">Later</button></div>
-      </section>
-      <section class="sec">
-        <div class="sec-head"><h2>Habits</h2><span class="tally" id="habitTag">0/0</span></div>
+      <div class="stat-cards" id="statGrid"></div>
+
+      <div class="quick" role="group" aria-label="Quick actions">
+        <button class="qbtn" data-qa="expense"><svg viewBox="0 0 24 24"><path d="M12 3v18M16.5 7.5c0-1.7-2-3-4.5-3s-4.5 1.3-4.5 3 2 2.6 4.5 3 4.5 1.3 4.5 3-2 3-4.5 3-4.5-1.3-4.5-3"/></svg>Expense</button>
+        <button class="qbtn" data-qa="mood"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 14c.8 1.4 2 2 3.5 2s2.7-.6 3.5-2M9 9.5h.01M15 9.5h.01"/></svg>Mood</button>
+        <button class="qbtn" data-qa="task"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8.5v7M8.5 12h7"/></svg>Task</button>
+        <button class="qbtn" data-qa="journal"><svg viewBox="0 0 24 24"><path d="M6 4h11a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2z"/><path d="M6 18a2 2 0 0 1 2-2h11"/></svg>Journal</button>
+        <button class="qbtn" data-qa="goal"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".9"/></svg>Goal</button>
+      </div>
+
+      <section class="sec full" id="todaySec">
+        <div class="sec-head"><h2>Today</h2><span class="tally" id="todayTag"></span></div>
+        <div id="todayEmpty"></div>
+        <div class="sub-head" id="habitsHead">Habits <span class="tally" id="habitTag">0/0</span></div>
         <div id="todayHabits"></div>
-      </section>
-      <section class="sec">
-        <div class="sec-head"><h2>Tasks</h2><span class="tally" id="taskTag">0 open</span></div>
+        <div class="sub-head" id="tasksHead">Tasks <span class="tally" id="taskTag">0 open</span></div>
         <div id="taskList"></div>
+        <div id="earlierBtn"></div>
         <div class="add-row" id="taskForm">
           <input id="taskInput" placeholder="Add a task" maxlength="60" enterkeyhint="done" aria-label="New task">
           <button class="add-btn" onclick="addTask()">Add</button>
         </div>
+        <button class="link-btn" onclick="goHabits()">Add or manage habits</button>
       </section>
-      <section class="sec">
-        <div class="sec-head"><h2>Spending plan</h2><button class="link" onclick="go('money')">Open</button></div>
-        <div id="snapBudget"></div>
+
+      <section class="sec full">
+        <div class="sec-head"><h2>Daily reflection</h2><span class="tally">optional</span></div>
+        <div class="mood-picker" id="todayMood"></div>
+        <div class="reflect" id="reflect"></div>
       </section>
-      <section class="sec">
-        <div class="sec-head"><h2>Journal</h2><button class="link" onclick="go('journal')">Open</button></div>
-        <div id="snapJournal"></div>
+
+      <section class="sec nudge full" id="backupNudge" hidden>
+        <div class="sec-head"><h2>Back up your data</h2></div>
+        <p id="backupText"></p>
+        <div class="rem-btns"><button class="ghost-btn" onclick="exportBackup()">Save a backup</button><button class="ghost-btn" onclick="snoozeBackup()">Later</button></div>
       </section>
     </div>
   </section>
@@ -744,6 +785,14 @@
   </button>
 </nav>
 
+<div class="qa" id="qa" hidden>
+  <div class="qa-card" role="dialog" aria-modal="true" aria-labelledby="qaTitle">
+    <div class="qa-head"><h2 id="qaTitle"></h2><button class="qa-x" id="qaClose" aria-label="Close">×</button></div>
+    <div id="qaBody"></div>
+    <div class="qa-err" id="qaErr" role="alert" hidden></div>
+    <div class="qa-actions" id="qaActions"></div>
+  </div>
+</div>
 <div id="toast" role="status"><span id="toastMsg"></span><button id="toastUndo" onclick="doUndo()">Undo</button></div>
 
 <script src="reminder.js"></script>
@@ -805,6 +854,7 @@ function normalize(){
     const t = Number(g.target) > 0 ? Number(g.target) : 0;
     const out = {id: g.id || uid(), text: String(g.text || 'Goal'), done: g.done === true};
     if(t){ out.target = t; out.saved = Math.max(0, Number(g.saved) || 0); }
+    if(out.done && /^\d{4}-\d{2}-\d{2}$/.test(g.doneDate||'')) out.doneDate = g.doneDate;
     return out;
   });
   state.journal = (Array.isArray(state.journal) ? state.journal : [])
@@ -1161,14 +1211,17 @@ function addJournal(){
   const inp = $('journalInput');
   const text = inp.value.trim();
   if(!text){ showToast('Write a few words first.', null, 2500); return; }
+  inp.value = '';
+  pushJournal(text);
+  showToast('Entry saved.', null, 2500);
+}
+function pushJournal(text){
   const e = {id: uid(), date: todayKey(), ts: Date.now(), text: text.slice(0,2000)};
   const m = state.moodLog[todayKey()];
   if(m !== undefined) e.mood = m;
   state.journal.unshift(e);
-  inp.value = '';
   buzz(12);
   save(); render();
-  showToast('Entry saved.', null, 2500);
 }
 function deleteJournal(id){
   const i = state.journal.findIndex(x=>x.id===id);
@@ -1197,8 +1250,6 @@ function renderJournal(){
       $('journalList').appendChild(more);
     }
   }
-  const tk = todayKey(), mood = state.moodLog[tk], n = state.journal.filter(e=>e.date===tk).length;
-  $('snapJournal').innerHTML = `<div class="plain" style="padding-top:4px">${mood !== undefined ? 'Mood today: ' + MOODS[mood] + '. ' : 'No mood logged yet. '}${n ? n + (n > 1 ? ' entries' : ' entry') + ' written today.' : 'Nothing written yet.'}</div><button class="ghost-btn" onclick="go('journal')">${n ? 'Write another' : 'Write an entry'}</button>`;
 }
 
 // ---------- Insights (everything here is calculated from your own data) ----------
@@ -1358,8 +1409,11 @@ function addGoal(){
   const t = parseFloat($('goalTarget').value);
   if(!text){ showToast('Name what you are saving for.', null, 2500); return; }
   if(!(t > 0)){ showToast('Add a target amount in pesos.', null, 2500); return; }
-  state.goals.unshift({id: uid(), text, done:false, target: t, saved: 0});
   inp.value=''; $('goalTarget').value='';
+  pushGoal(text, t);
+}
+function pushGoal(text, t){
+  state.goals.unshift({id: uid(), text, done:false, target: t, saved: 0});
   buzz(12);
   save(); render();
 }
@@ -1367,8 +1421,11 @@ function addTask(){
   const inp = $('taskInput');
   const text = inp.value.trim();
   if(!text) return;
-  state.goals.unshift({id: uid(), text, done:false});
   inp.value='';
+  pushTask(text);
+}
+function pushTask(text){
+  state.goals.unshift({id: uid(), text, done:false});
   buzz(12);
   save(); render();
 }
@@ -1381,7 +1438,7 @@ function addToGoal(id){
   if(isNaN(v) || v === 0) return;
   const wasDone = g.done;
   g.saved = Math.max(0, Math.round((g.saved + v) * 100) / 100);
-  if(g.saved >= g.target) g.done = true; else if(v < 0) g.done = false;
+  if(g.saved >= g.target){ g.done = true; g.doneDate = todayKey(); } else if(v < 0){ g.done = false; delete g.doneDate; }
   buzz(14);
   if(g.done && !wasDone){ popId = id; buzz(22); showToast(`Goal reached: ${g.text}`, null, 4000); }
   save(); render();
@@ -1390,6 +1447,7 @@ function toggleGoal(id){
   const g = state.goals.find(x=>x.id===id);
   if(!g) return;
   g.done = !g.done;
+  if(g.done) g.doneDate = todayKey(); else delete g.doneDate;
   popId = g.done ? id : null;
   if(g.done) buzz(18);
   save(); render();
@@ -1420,9 +1478,12 @@ function addExpense(){
   const amt = parseFloat($('expenseAmt').value);
   if(isNaN(amt) || amt <= 0) return;
   const cat = $('expenseCat').value;
-  state.budget.expenses.unshift({id: uid(), note, amt, cat});
   $('expenseNote').value='';
   $('expenseAmt').value='';
+  pushExpense(note, amt, cat);
+}
+function pushExpense(note, amt, cat){
+  state.budget.expenses.unshift({id: uid(), note, amt, cat});
   buzz(12);
   save(); render();
 }
@@ -1579,6 +1640,7 @@ function setMood(idx){
   state.moodLog[todayKey()] = idx;
   buzz(10);
   save(); render();
+  if(!undoAction) showToast('Mood saved.', null, 1800);
 }
 
 // ---------- Rendering ----------
@@ -1627,7 +1689,7 @@ function render(){
   const doneCount = state.habits.filter(h=>h.doneDates.includes(tk)).length;
   $('todayHabits').innerHTML = total
     ? state.habits.map(h=>habitRow(h,false)).join('')
-    : empty('🔥','No habits yet','Pick one small thing you want to do every day.','Add a habit',"go('habits')");
+    : '<div class="plain">No habits yet.</div>';
   $('habitList').innerHTML = total
     ? state.habits.map(h=>habitRow(h,true)).join('')
     : empty('🌱','Start small','Add your first habit above, like “Drink water”.');
@@ -1647,8 +1709,16 @@ function render(){
   const savAvg = savings.length ? savings.reduce((n,g)=>n+goalProgress(g),0)/savings.length : 0;
   $('goalBar').style.width = Math.round(savAvg*100) + '%';
   $('goalBarNote').textContent = savings.length ? `${savings.filter(g=>g.done).length} of ${savings.length} reached` : '';
-  $('taskList').innerHTML = tasks.length ? openFirst(tasks).map(goalRow).join('') : '<div class="plain">No tasks yet. Add something you want to get done.</div>';
+  const isToday = g => !g.done || g.doneDate === tk;
+  const shownTasks = openFirst(tasks.filter(g=>showEarlierTasks || isToday(g)));
+  $('taskList').innerHTML = shownTasks.length ? shownTasks.map(goalRow).join('') : `<div class="plain">${tasks.length ? 'All caught up.' : 'No tasks yet.'}</div>`;
+  const earlier = tasks.filter(g=>!isToday(g)).length;
+  $('earlierBtn').innerHTML = earlier ? `<button class="link-btn" onclick="toggleEarlier()">${showEarlierTasks ? 'Hide' : 'Show'} ${earlier} completed earlier</button>` : '';
   $('taskTag').textContent = `${tasks.filter(g=>!g.done).length} open`;
+  const nothingPlanned = !total && !tasks.length;
+  $('todayEmpty').innerHTML = nothingPlanned ? empty('✓','Nothing planned yet','Add a task below, or start a habit you want to build.') : '';
+  ['habitsHead','tasksHead'].forEach(id=>{ $(id).hidden = nothingPlanned; });
+  $('todayHabits').hidden = nothingPlanned; $('taskList').hidden = nothingPlanned;
   const goalAvg = state.goals.length ? state.goals.reduce((n,g)=>n+goalProgress(g),0)/state.goals.length : 0;
 
   // ----- Money -----
@@ -1727,12 +1797,6 @@ function render(){
       : 'Your envelopes add up to your spending money.';
   }
 
-  $('snapBudget').innerHTML = hasBudget ? `
-    <div class="st-row total"><span>Left to spend</span><span class="num ${remaining<0?'neg':'pos'}">${pesoExact(remaining)}</span></div>
-    <div class="meter"><i style="width:${Math.min(100,pct)}%;background:${meterColor(pct)}"></i></div>
-    <div class="meter-note">${remaining>0 ? `About ${peso(perDay,0)} a day for the next ${daysTxt}.` : 'You are over your spending money this month.'}${(()=>{ const o = M.envs.filter(e=>e.status==='over').map(e=>e.label); return o.length ? ` ${o.join(' and ')} ${o.length>1?'are':'is'} over plan.` : ''; })()}</div>`
-    : empty('<span class="peso-ico">₱</span>','No plan yet','Set your money for the month and get a spending plan.','Set my money','focusBudget()');
-
   $('expTag').textContent = exps.length;
   const el = $('expenseList');
   el.innerHTML = exps.length ? '' : empty('🧾','No expenses yet','Log what you spend and it will show up here.');
@@ -1797,16 +1861,18 @@ function render(){
   }
 
   // ----- Mood -----
-  const mp = $('moodPicker');
-  mp.innerHTML = '';
   const todayMood = state.moodLog[tk];
-  MOODS.forEach((m,i)=>{
-    const b = document.createElement('button');
-    b.className = 'mood-opt' + (todayMood===i ? ' on' : '');
-    b.textContent = m;
-    b.setAttribute('aria-label', `Mood ${i+1} of 5`);
-    b.onclick = () => setMood(i);
-    mp.appendChild(b);
+  ['moodPicker','todayMood'].forEach(id=>{
+    const mp = $(id); mp.innerHTML = '';
+    MOODS.forEach((m,i)=>{
+      const b = document.createElement('button');
+      b.className = 'mood-opt' + (todayMood===i ? ' on' : '');
+      b.textContent = m;
+      b.setAttribute('aria-label', `Mood ${i+1} of 5`);
+      b.setAttribute('aria-pressed', todayMood===i ? 'true' : 'false');
+      b.onclick = () => setMood(i);
+      mp.appendChild(b);
+    });
   });
   const mh = $('moodHistory');
   mh.innerHTML = '';
@@ -1821,56 +1887,119 @@ function render(){
     mh.appendChild(bar);
   }
 
-  // ----- Today summary -----
-  const habitPct = total ? Math.round(doneCount/total*100) : 0;
-  const goalPct = Math.round(goalAvg*100);
-  $('legHabits').textContent = habitPct+'%';
-  $('legGoals').textContent = goalPct+'%';
-  $('legMoney').textContent = hasBudget ? (remaining>=0 ? 'On track' : 'Over') : '—';
-  $('legMood').textContent = todayMood!==undefined ? MOODS[todayMood] : '—';
-
+  // ----- Today summary: habits plus tasks that are open or were finished today -----
+  const todaysTasks = tasks.filter(isToday);
+  const progTotal = total + todaysTasks.length;
+  const progDone = doneCount + todaysTasks.filter(g=>g.done).length;
+  const progPct = progTotal ? Math.round(progDone / progTotal * 100) : 0;
+  const openToday = [...todaysTasks.filter(g=>!g.done).map(g=>g.text), ...state.habits.filter(h=>!h.doneDates.includes(tk)).map(h=>h.name)];
   let msg, sub;
-  if(!total){ msg = 'Let’s get started'; sub = 'Add a habit to begin your day.'; }
-  else if(doneCount === total){ msg = 'All habits done'; sub = 'Nice work. Keep the streak going.'; }
-  else{
-    const left = total - doneCount;
-    msg = `${left} habit${left>1?'s':''} to go`;
-    sub = openGoals ? `${openGoals} open goal${openGoals>1?'s':''} waiting too.` : 'You’ve got this.';
-  }
+  if(!progTotal){ msg = 'Nothing planned yet'; sub = 'Add a habit or a task to start your day.'; }
+  else if(progDone === progTotal){ msg = 'All done for today'; sub = 'Nice work. Keep the streak going.'; }
+  else{ msg = `${progTotal - progDone} to go`; sub = `Next: ${openToday[0]}`; }
   $('heroMsg').textContent = msg;
   $('heroSub').textContent = sub;
+  $('heroCount').textContent = `${progDone} of ${progTotal} done`;
+  drawDial(progPct);
 
-  // The centre % only averages the areas you actually use (a habit, a goal, a budget, a mood)
-  drawDial(habitPct, goalPct, hasBudget?(remaining>=0?100:20):0, todayMood!==undefined?(todayMood+1)*20:0,
-           [total>0, state.goals.length>0, hasBudget, todayMood!==undefined]);
+  // ----- Quick statistics (all calculated from saved data) -----
+  const activeGoals = savings.filter(g=>!g.done).length;
+  const card = (k, v, sub2, cls, act) => `<button class="stat-card" onclick="${act}"><span class="k">${k}</span><span class="v ${cls}">${v}</span><span class="s">${sub2}</span></button>`;
+  $('statGrid').innerHTML =
+    card('Habits', total ? `${doneCount}/${total}` : '—', total ? 'done today' : 'none yet', '', "go('habits')") +
+    card('Tasks left', String(tasks.filter(g=>!g.done).length), tasks.length ? 'still open' : 'none yet', '', 'focusTasks()') +
+    card('Left to spend', hasBudget ? pesoExact(remaining) : '—', hasBudget ? (remaining > 0 ? `about ${peso(perDay,0)} a day` : 'over this month') : 'set your money', hasBudget ? (remaining < 0 ? 'neg' : 'pos') : '', "go('money')") +
+    card('Active goals', String(activeGoals), activeGoals ? `${Math.round(savAvg*100)}% saved on average` : 'none yet', '', "go('money')");
+
+  // ----- Reflection prompt (optional) -----
+  const prompt = REFLECT_PROMPTS[new Date().getDate() % REFLECT_PROMPTS.length];
+  const wrote = state.journal.filter(e=>e.date===tk).length;
+  $('reflect').innerHTML = `<p class="prompt">${prompt}</p><button class="ghost-btn" data-qa="journal">Write about it</button><div class="note">Totally optional. Share only what you want.${wrote ? ` You have ${wrote} ${wrote > 1 ? 'entries' : 'entry'} from today.` : ''}</div>`;
   popId = null;
 }
 
-// ---------- Progress ring: four arcs, one per area ----------
-const DIAL = {c:80, r:62, sw:14, gap:24};
-const QLEN = (90 - DIAL.gap) / 360 * 100;     // length of one quarter, in "pathLength" units
-const ARC_VARS = ['--mint','--violet','--brass','--coral'];
+// ---------- Progress ring: one arc showing today's progress ----------
+const DIAL = {c:80, r:62, sw:14};
 function buildDial(){
-  const {c, r, sw, gap} = DIAL;
-  const circle = (i, style, cls) => {
-    const rot = -90 + i*90 + gap/2;
-    return `<circle ${cls?`class="${cls}"`:''} cx="${c}" cy="${c}" r="${r}" fill="none" stroke-width="${sw}" stroke-linecap="round" pathLength="100" transform="rotate(${rot} ${c} ${c})" style="${style}"/>`;
-  };
-  let html = '';
-  ARC_VARS.forEach((v,i)=>{ html += circle(i, `stroke:var(--rule);stroke-dasharray:${QLEN} 100`); });
-  ARC_VARS.forEach((v,i)=>{ html += circle(i, `stroke:var(${v});stroke-dasharray:0 100;opacity:0`, 'arc'); });
-  $('dialSvg').innerHTML = html;
+  const {c, r, sw} = DIAL;
+  const circle = (cls, style) => `<circle ${cls?`class="${cls}"`:''} cx="${c}" cy="${c}" r="${r}" fill="none" stroke-width="${sw}" stroke-linecap="round" pathLength="100" transform="rotate(-90 ${c} ${c})" style="${style}"/>`;
+  $('dialSvg').innerHTML = circle('', 'stroke:var(--rule);stroke-dasharray:100 100') + circle('arc', 'stroke:var(--mint);stroke-dasharray:0 100;opacity:0');
 }
-function drawDial(habitPct, goalPct, moneyPct, moodPct, active){
-  const vals = [habitPct, goalPct, moneyPct, moodPct];
-  const used = vals.filter((v,i)=>!active || active[i]);
-  document.querySelectorAll('#dialSvg .arc').forEach((el,i)=>{
-    const p = Math.max(0, Math.min(100, vals[i]));
-    el.style.setProperty('stroke-dasharray', `${(QLEN*p/100).toFixed(3)} 100`);
-    el.style.setProperty('opacity', p>0 ? '1' : '0');
-  });
-  $('ringPct').textContent = (used.length ? Math.round(used.reduce((a,b)=>a+b,0)/used.length) : 0) + '%';
+function drawDial(pct){
+  const p = Math.max(0, Math.min(100, pct || 0));
+  const el = document.querySelector('#dialSvg .arc');
+  if(el){ el.style.setProperty('stroke-dasharray', `${p.toFixed(2)} 100`); el.style.setProperty('opacity', p > 0 ? '1' : '0'); }
+  $('ringPct').textContent = p + '%';
 }
+
+let showEarlierTasks = false;
+function toggleEarlier(){ showEarlierTasks = !showEarlierTasks; render(); }
+function goHabits(){ go('habits'); setTimeout(()=>{ try{ $('habitInput').focus(); }catch(e){} }, 60); }
+function focusTasks(){ const el = $('taskInput'); try{ el.scrollIntoView({block:'center'}); el.focus({preventScroll:true}); }catch(e){} }
+const REFLECT_PROMPTS = ['What is one thing that went okay today?','What would make tomorrow a little easier?','What are you glad you did today?','Is there anything you want to remember about today?','What gave you energy today?'];
+
+// ---------- Quick actions: one small sheet, five forms ----------
+let qaKind = null, qaReturn = null;
+const QA = {
+  expense:{ title:'Add an expense',
+    body:()=>`<input id="qaNote" maxlength="60" placeholder="What did you spend on? (optional)" aria-label="What did you spend on"><div class="qa-row"><select id="qaCat" aria-label="Category"></select><input id="qaAmt" type="number" inputmode="decimal" placeholder="₱ Amount" aria-label="Amount in pesos"></div>`,
+    init:()=>{ fillCatSelect($('qaCat'), activeEnvs()); }, focus:'qaAmt',
+    submit:()=>{ const amt = parseFloat($('qaAmt').value); if(!(amt > 0)) return {error:'Enter an amount greater than zero.'};
+      pushExpense($('qaNote').value.trim() || 'Expense', amt, $('qaCat').value); return {msg:'Expense added.'}; } },
+  mood:{ title:'How are you feeling?', body:()=>'<div class="mood-picker" id="qaMoods"></div>', noSave:true,
+    init:()=>{ const cur = state.moodLog[todayKey()]; MOODS.forEach((m,i)=>{ const b = document.createElement('button'); b.className = 'mood-opt' + (cur===i ? ' on' : ''); b.textContent = m; b.dataset.mood = i; b.setAttribute('aria-label', `Mood ${i+1} of 5`); $('qaMoods').appendChild(b); }); } },
+  task:{ title:'New task', body:()=>'<input id="qaText" maxlength="60" placeholder="What needs doing?" aria-label="Task">', focus:'qaText',
+    submit:()=>{ const t = $('qaText').value.trim(); if(!t) return {error:'Write the task first.'}; pushTask(t); return {msg:'Task added.'}; } },
+  journal:{ title:'Journal entry', body:()=>`<textarea id="qaText" maxlength="2000" placeholder="${REFLECT_PROMPTS[new Date().getDate() % REFLECT_PROMPTS.length]}" aria-label="Journal entry"></textarea><div class="note" style="margin:0">Optional. Share only what you want.</div>`, focus:'qaText',
+    submit:()=>{ const t = $('qaText').value.trim(); if(!t) return {error:'Write a few words first.'}; pushJournal(t); return {msg:'Entry saved.'}; } },
+  goal:{ title:'New savings goal', body:()=>'<input id="qaText" maxlength="60" placeholder="What are you saving for?" aria-label="Goal name"><input id="qaTarget" type="number" inputmode="decimal" placeholder="₱ Target amount" aria-label="Target amount in pesos">', focus:'qaText',
+    submit:()=>{ const t = $('qaText').value.trim(), amt = parseFloat($('qaTarget').value); if(!t) return {error:'Name what you are saving for.'}; if(!(amt > 0)) return {error:'Add a target amount in pesos.'}; pushGoal(t, amt); return {msg:'Goal added.'}; } }
+};
+function openQA(kind){
+  const q = QA[kind]; if(!q || qaKind) return;
+  qaKind = kind; qaReturn = document.activeElement;
+  $('qaTitle').textContent = q.title; $('qaBody').innerHTML = q.body();
+  $('qaErr').hidden = true;
+  $('qaActions').innerHTML = q.noSave ? '' : '<button class="ghost-btn" id="qaCancel">Cancel</button><button class="add-btn" id="qaSave">Save</button>';
+  $('qa').hidden = false;
+  if(q.init) q.init();
+  const f = q.focus ? $(q.focus) : $('qaClose'); try{ f.focus(); }catch(e){}
+}
+function closeQA(){
+  if(!qaKind) return;
+  qaKind = null; $('qa').hidden = true;
+  try{ if(qaReturn && qaReturn.focus) qaReturn.focus(); }catch(e){} qaReturn = null;
+}
+function submitQA(){
+  if(!qaKind) return;                       // already submitted: ignore a second tap
+  const r = QA[qaKind].submit();
+  if(r.error){ $('qaErr').textContent = r.error; $('qaErr').hidden = false; return; }
+  const btn = $('qaSave'); if(btn) btn.disabled = true;
+  closeQA();
+  showToast(r.msg, null, 2500);
+}
+// These listeners are attached exactly once, at startup
+document.addEventListener('click', ev=>{
+  const t = ev.target;
+  const trigger = t.closest && t.closest('[data-qa]');
+  if(trigger){ openQA(trigger.dataset.qa); return; }
+  if(t.id === 'qa' || (t.closest && (t.closest('#qaClose') || t.closest('#qaCancel')))){ closeQA(); return; }
+  if(t.closest && t.closest('#qaSave')){ submitQA(); return; }
+  const m = t.closest && t.closest('#qaMoods .mood-opt');
+  if(m){ closeQA(); setMood(+m.dataset.mood); }
+});
+document.addEventListener('keydown', ev=>{
+  if(!qaKind) return;
+  if(ev.key === 'Escape'){ closeQA(); return; }
+  if(ev.key === 'Enter' && ev.target.tagName === 'INPUT'){ ev.preventDefault(); submitQA(); return; }
+  if(ev.key === 'Tab'){
+    const f = [...$('qa').querySelectorAll('button,input,select,textarea')].filter(e=>!e.disabled && e.offsetParent !== null);
+    if(!f.length) return;
+    const first = f[0], last = f[f.length-1];
+    if(ev.shiftKey && document.activeElement === first){ ev.preventDefault(); last.focus(); }
+    else if(!ev.shiftKey && document.activeElement === last){ ev.preventDefault(); first.focus(); }
+  }
+});
 
 // Enter / Go / Done on the phone keyboard submits the field
 [['habitInput', addHabit], ['goalInput', addGoal], ['goalTarget', addGoal], ['taskInput', addTask], ['budgetInput', setBudget], ['expenseAmt', addExpense]].forEach(([id, fn])=>{
