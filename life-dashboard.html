@@ -419,6 +419,52 @@
   .qa-actions{display:flex;gap:10px;margin-top:14px;}
   .qa-actions button{flex:1;min-height:48px;}
   .qa-actions .add-btn[disabled]{opacity:.6;}
+
+  /* ---- Shared: labelled fields, menus, filters, alerts ---- */
+  .fld{display:flex;flex-direction:column;gap:6px;min-width:0;}
+  .fld > label{font-size:13.5px;font-weight:600;color:var(--muted);}
+  .fld-hint{font-size:13px;color:var(--muted);}
+  .fld.wide{grid-column:1/-1;}
+  .qa-text{margin:0;font-size:15.5px;line-height:1.5;}
+  .qa-actions .danger,.ghost-btn.danger{color:var(--red);border-color:var(--red);}
+  .add-btn.danger{background:var(--red);color:#fff;}
+  .menu-btn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:52px;padding:10px 14px;border-radius:14px;border:1.5px solid var(--rule-strong);background:var(--sheet-2);color:var(--ink);font-size:16px;text-align:left;cursor:pointer;}
+  .menu-btn span{font-size:13px;color:var(--muted);font-weight:400;}
+  .menu-btn.danger{color:var(--red);}
+  .more-btn{flex-shrink:0;min-width:44px;min-height:44px;margin:-8px -10px -8px 0;border:none;background:none;color:var(--muted);font-size:24px;line-height:1;border-radius:12px;cursor:pointer;}
+  .habit-meta{font-size:12.5px;color:var(--muted);margin-top:3px;}
+  .pill{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--sheet-2);color:var(--muted);vertical-align:middle;margin-left:6px;}
+  .row.inactive{opacity:.65;}
+  .week-row .wd.off{opacity:.3;background:transparent;border-style:dashed;}
+  .filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:4px 0 10px;}
+  .filters select,.filters input{min-height:44px;padding:8px 10px;font-size:15px;}
+  .jr-filters{grid-template-columns:1fr 1fr;}
+  .txn-add{display:flex;gap:10px;padding:2px 0 12px;}
+  .txn-add > *{flex:1;min-height:44px;}
+  .amt.in{color:var(--mint);}
+  .alert{display:flex;gap:8px;align-items:flex-start;border-radius:12px;padding:10px 14px;margin-top:10px;font-size:14.5px;line-height:1.4;background:var(--sheet-2);border-left:4px solid var(--brass);}
+  .alert.bad{border-left-color:var(--red);}
+  .goal-due{font-size:12.5px;color:var(--muted);margin-top:4px;}
+  .goal-due.soon{color:var(--brass);}
+  .goal-due.late{color:var(--red);}
+  .jr-month{font-family:var(--display);font-size:16px;margin:18px 0 0;color:var(--muted);font-weight:600;}
+  .jr-acts{display:flex;gap:6px;margin-top:6px;}
+  .jr-act{min-height:44px;padding:0 14px;border-radius:12px;border:none;background:none;color:var(--brass);font-weight:700;font-size:14.5px;cursor:pointer;}
+  .jr-act.danger{color:var(--red);}
+  .jr-opts{padding-top:10px;}
+  .info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .cal-h{font-size:11.5px;color:var(--muted);text-align:center;font-family:var(--mono);}
+  .cal-d{display:grid;place-items:center;aspect-ratio:1;border-radius:8px;font-size:12px;font-family:var(--mono);color:var(--muted);border:1.5px solid transparent;}
+  .cal-d.ok{background:var(--mint);color:var(--bg);font-weight:700;}
+  .cal-d.miss{border-color:var(--red);color:var(--red);}
+  .cal-d.na{opacity:.55;background:var(--sheet-2);}
+  .cal-key .cal-d.na{opacity:1;}
+  .cal-d.fut{opacity:.25;}
+  .cal-d.now{outline:2px solid var(--brass);outline-offset:1px;}
+  .cal-key{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);}
+  .cal-key i{display:inline-block;width:14px;height:14px;aspect-ratio:auto;vertical-align:-3px;border-radius:4px;}
+  @media (max-width:360px){ .filters{grid-template-columns:1fr 1fr;} }
   @media (min-width:560px){ .stat-cards{grid-template-columns:repeat(4,minmax(0,1fr));} .qa{align-items:center;} .qa-card{border-radius:24px;} }
   @media (prefers-reduced-motion:no-preference){ .qa-card{animation:qaIn .18s ease both;} @keyframes qaIn{from{transform:translateY(12px);opacity:0;}to{transform:none;opacity:1;}} }
   .hist-row{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--rule);}
@@ -574,13 +620,15 @@
       <section class="sec">
         <div class="sec-head"><h2>New habit</h2></div>
         <div class="add-row">
-          <input id="habitInput" placeholder="e.g. Drink water" maxlength="40" enterkeyhint="done" aria-label="New habit">
+          <input id="habitInput" placeholder="e.g. Drink water" maxlength="40" enterkeyhint="done" aria-label="New habit name">
           <button class="add-btn" onclick="addHabit()">Add</button>
         </div>
+        <button class="link-btn" data-qa="habit">Add with a schedule (weekdays, a few days a week…)</button>
       </section>
       <section class="sec">
         <div class="sec-head"><h2>Your habits</h2><span class="tally" id="habitTag2">0/0 today</span></div>
         <div id="habitList"></div>
+        <div id="habitArchive"></div>
       </section>
       <section class="sec">
         <div class="sec-head"><h2>This week</h2><span class="tally" id="weekTag">last 7 days</span></div>
@@ -617,22 +665,37 @@
     <header class="top"><div><h1>Money</h1></div></header>
     <div class="sheet">
       <section class="sec">
-        <div class="sec-head"><h2>You can spend</h2><span class="tally">this month</span></div>
+        <div class="sec-head"><h2>Budget left</h2><span class="tally">this month</span></div>
         <div id="spendHero"></div>
+        <div id="budgetAlerts" role="status"></div>
       </section>
       <section class="sec">
-        <div class="sec-head"><h2>Savings goals</h2><span class="tally" id="goalTag">0 open</span></div>
-        <div id="goalList"></div>
-        <div class="meter"><i id="goalBar" style="background:var(--violet)"></i></div>
-        <div class="meter-note" id="goalBarNote"></div>
-        <div class="add-row" id="goalForm">
-          <input id="goalInput" placeholder="What are you saving for?" maxlength="60" enterkeyhint="next" aria-label="Savings goal name">
-          <input id="goalTarget" type="number" inputmode="decimal" placeholder="₱ Target" aria-label="Target amount in pesos" enterkeyhint="done">
-          <button class="add-btn" onclick="addGoal()">Add</button>
+        <div class="sec-head"><h2>Income &amp; balance</h2><span class="tally">this month</span></div>
+        <div class="statement" id="balanceBox">
+          <div class="st-row"><span>Income logged</span><span class="num" id="incomeVal">₱0</span></div>
+          <div class="st-row"><span>Expenses</span><span class="num" id="expTotalVal">₱0</span></div>
+          <div class="st-row"><span>Moved to savings goals</span><span class="num" id="movedVal">₱0</span></div>
+          <div class="st-row total"><span>Available</span><span class="num val" id="availVal">—</span></div>
         </div>
+        <div class="note" id="balanceNote"></div>
+        <button class="ghost-btn" data-qa="income" style="margin-top:6px">+ Add income</button>
       </section>
       <section class="sec">
-        <div class="sec-head"><h2>Where to spend</h2><span class="tally" id="planTag">50/30/20</span></div>
+        <div class="sec-head"><h2>Transactions</h2><span class="tally" id="expTag">0</span></div>
+        <div class="txn-add">
+          <button class="add-btn" data-qa="expense">+ Expense</button>
+          <button class="ghost-btn" data-qa="income">+ Income</button>
+        </div>
+        <div class="filters" role="group" aria-label="Filter transactions">
+          <div class="fld"><label for="fType">Show</label><select id="fType"><option value="all">Everything</option><option value="expense">Expenses</option><option value="income">Income</option><option value="saving">Savings moves</option></select></div>
+          <div class="fld"><label for="fCat">Category</label><select id="fCat"></select></div>
+          <div class="fld"><label for="fWhen">When</label><select id="fWhen"><option value="month">This month</option><option value="week">Last 7 days</option><option value="today">Today</option></select></div>
+        </div>
+        <div class="note" id="txnSummary" role="status"></div>
+        <div id="expenseList"></div>
+      </section>
+      <section class="sec">
+        <div class="sec-head"><h2>Budget by envelope</h2><span class="tally" id="planTag">50/30/20</span></div>
         <div id="envList"></div>
         <div class="note" id="planNote"></div>
         <div class="chips-label">Which of these do you pay for?</div>
@@ -654,39 +717,33 @@
         <div class="verdict" id="verdict" role="status"></div>
       </section>
       <section class="sec">
-        <div class="sec-head"><h2>This month</h2></div>
+        <div class="sec-head"><h2>Your monthly budget</h2></div>
         <div class="statement">
-          <div class="st-row"><span>Your money</span><span class="num" id="budgetVal">₱0</span></div>
-          <div class="st-row"><span>Set aside for savings</span><span class="num" id="setAsideVal">₱0</span></div>
+          <div class="st-row"><span>Monthly budget</span><span class="num" id="budgetVal">₱0</span></div>
+          <div class="st-row"><span>Planned savings</span><span class="num" id="setAsideVal">₱0</span></div>
           <div class="st-row"><span>Spent</span><span class="num" id="spentVal">₱0</span></div>
-          <div class="st-row total"><span>Left to spend</span><span class="num val" id="remainVal">₱0</span></div>
+          <div class="st-row total"><span>Budget left</span><span class="num val" id="remainVal">₱0</span></div>
           <div class="st-row sub"><span>You can spend per day</span><span class="num" id="perDayVal">—</span></div>
         </div>
         <div class="meter"><i id="meterFill"></i></div>
         <div class="meter-note" id="meterText"></div>
+        <div class="note">A budget is a limit you set for yourself. It is not money in your bank account.</div>
         <div class="add-row">
-          <input id="budgetInput" type="number" inputmode="decimal" enterkeyhint="done" placeholder="Money for this month (₱)" aria-label="Money for this month">
+          <input id="budgetInput" type="number" inputmode="decimal" enterkeyhint="done" placeholder="Monthly budget (₱)" aria-label="Monthly budget in pesos">
           <button class="add-btn" onclick="setBudget()">Set</button>
         </div>
       </section>
       <section class="sec">
-        <div class="sec-head"><h2>New expense</h2></div>
-        <div class="add-row expense-add">
-          <input id="expenseNote" class="expense-note" enterkeyhint="next" placeholder="What did you spend on?" aria-label="What did you spend on">
-          <select id="expenseCat" class="expense-cat" aria-label="Category">
-            <option value="food">🍜 Food</option>
-            <option value="transport">🚌 Transport</option>
-            <option value="bills">🧾 Bills</option>
-            <option value="fun">🎮 Fun</option>
-            <option value="other">📦 Other</option>
-          </select>
-          <input id="expenseAmt" class="expense-amt" type="number" inputmode="decimal" enterkeyhint="done" placeholder="₱ Amount" aria-label="Amount in pesos">
-          <button class="add-btn" onclick="addExpense()">Log expense</button>
+        <div class="sec-head"><h2>Savings goals</h2><span class="tally" id="goalTag">0 open</span></div>
+        <div id="goalList"></div>
+        <div class="meter"><i id="goalBar" style="background:var(--violet)"></i></div>
+        <div class="meter-note" id="goalBarNote"></div>
+        <div id="goalArchive"></div>
+        <div class="add-row" id="goalForm">
+          <input id="goalInput" placeholder="What are you saving for?" maxlength="60" enterkeyhint="next" aria-label="Savings goal name">
+          <input id="goalTarget" type="number" inputmode="decimal" step="0.01" min="0" placeholder="₱ Target" aria-label="Target amount in pesos" enterkeyhint="done">
+          <button class="add-btn" onclick="addGoal()">Add</button>
         </div>
-      </section>
-      <section class="sec">
-        <div class="sec-head"><h2>Expenses</h2><span class="tally" id="expTag">0</span></div>
-        <div id="expenseList"></div>
       </section>
       <section class="sec">
         <div class="sec-head"><h2>Repeats every month</h2><span class="tally" id="recTag"></span></div>
@@ -718,12 +775,22 @@
       </section>
       <section class="sec">
         <div class="sec-head"><h2>New entry</h2></div>
-        <textarea id="journalInput" maxlength="2000" placeholder="What is on your mind today?" aria-label="Journal entry"></textarea>
+        <div class="fld"><label for="journalInput">Entry</label><textarea id="journalInput" maxlength="2000" placeholder="What is on your mind today?"></textarea></div>
+        <div class="qa-row jr-opts">
+          <div class="fld"><label for="jDate">Date</label><input type="date" id="jDate"></div>
+          <div class="fld"><label for="jMood">Mood (optional)</label><select id="jMood"></select></div>
+        </div>
         <button class="add-btn jr-save" onclick="addJournal()">Save entry</button>
         <div class="note">Entries stay on this phone and are included in your backup.</div>
       </section>
       <section class="sec full">
         <div class="sec-head"><h2>Timeline</h2><span class="tally" id="journalTag"></span></div>
+        <div class="filters jr-filters" role="search">
+          <div class="fld wide"><label for="jSearch">Search your entries</label><input type="search" id="jSearch" placeholder="Search words" autocomplete="off" maxlength="60"></div>
+          <div class="fld"><label for="jFrom">From</label><input type="date" id="jFrom"></div>
+          <div class="fld"><label for="jTo">To</label><input type="date" id="jTo"></div>
+        </div>
+        <button class="link-btn" id="jClear" hidden>Clear search</button>
         <div id="journalList"></div>
       </section>
     </div>
@@ -761,6 +828,7 @@
           <button class="ghost-btn" onclick="$('restoreFile').click()">Restore a backup</button>
         </div>
         <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+        <div id="preUpdate"></div>
       </section>
     </div>
   </section>
@@ -806,13 +874,26 @@ const pad2 = n => String(n).padStart(2,'0');
 const dateKey = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
 const todayKey = () => dateKey(new Date());
 const monthKey = () => todayKey().slice(0,7);
-// Philippine peso with thousands separators, e.g. ₱15,000 or −₱1,250.50
+// Money is shown in Philippine pesos. The symbol comes from one place so a currency setting can be added later.
+const CURRENCIES = {PHP:{symbol:'₱', locale:'en-PH', name:'Philippine peso'}};
+const curr = () => CURRENCIES[(typeof state !== 'undefined' && state && state.currency)] || CURRENCIES.PHP;
+// e.g. ₱15,000 or −₱1,250.50
 const peso = (n, dp) => {
-  const f = Math.pow(10, dp), v = Math.round(Math.abs(n) * f) / f;
-  return (n < 0 && v > 0 ? '−' : '') + '₱' + v.toLocaleString('en-PH', {minimumFractionDigits:dp, maximumFractionDigits:dp});
+  n = Number.isFinite(n) ? n : 0;
+  const f = Math.pow(10, dp), v = Math.round(Math.abs(n) * f) / f, c = curr();
+  return (n < 0 && v > 0 ? '−' : '') + c.symbol + v.toLocaleString(c.locale, {minimumFractionDigits:dp, maximumFractionDigits:dp});
 };
 // Same, but shows cents only when there are some, so statement lines always add up
-const pesoExact = n => { const v = Math.round(n * 100) / 100; return peso(v, Number.isInteger(v) ? 0 : 2); };
+const pesoExact = n => { const v = Math.round((Number.isFinite(n) ? n : 0) * 100) / 100; return peso(v, Number.isInteger(v) ? 0 : 2); };
+// Reads a typed amount safely: accepts "1,250.5" or "₱300", rejects empty, text, negative, infinite or silly-big values.
+const MAX_AMT = 1e9;
+function parseAmount(raw){
+  const t = String(raw == null ? '' : raw).replace(/[₱,\s]/g, '');
+  if(t === '') return NaN;
+  const v = Number(t);
+  if(!Number.isFinite(v) || Math.abs(v) > MAX_AMT) return NaN;
+  return Math.round(v * 100) / 100;
+}
 // Makes typed text safe to show inside the page
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CATS = {
@@ -838,30 +919,57 @@ let state = {
   history: []        // {month, budget, spent, byCat} saved when a month ends
 };
 let showAllExpenses = false;
+let showArchivedHabits = false, showArchivedGoals = false;
 let currentTab = 'today';
 let popId = null;    // the item that was just ticked (gets the stamp animation)
 
 // Makes sure saved data has every field we need (older versions saved less)
 // and starts a fresh month of expenses when the month changes.
+function cleanLog(list, okAmt){
+  return (Array.isArray(list) ? list : []).filter(x=>x && typeof x === 'object' && okAmt(Number(x.amt)) && Number.isFinite(Number(x.amt)))
+    .map(x=>{ const o = {id: x.id || uid(), note: String(x.note || '').slice(0,60), amt: Math.round(Number(x.amt)*100)/100};
+              if(/^\d{4}-\d{2}-\d{2}$/.test(x.date||'')) o.date = x.date; if(x.goalId) o.goalId = String(x.goalId); return o; });
+}
 function normalize(){
   state.habits = Array.isArray(state.habits) ? state.habits : [];
   state.goals = Array.isArray(state.goals) ? state.goals : [];
   state.moodLog = state.moodLog || {};
   const rm = state.reminder || {};
   state.reminder = {on: rm.on === true, time: LedgerReminder.minutesOf(rm.time)!==null ? rm.time : '20:00'};
-  state.habits.forEach(h=>{ if(!Array.isArray(h.doneDates)) h.doneDates = []; });
+  state.currency = CURRENCIES[state.currency] ? state.currency : 'PHP';
+  state.habits = state.habits.filter(h=>h && typeof h === 'object');
+  const isKey = k => /^\d{4}-\d{2}-\d{2}$/.test(k||'');
+  state.habits.forEach(h=>{
+    if(!h.id) h.id = uid();
+    h.name = String(h.name || 'Habit');
+    if(!Array.isArray(h.doneDates)) h.doneDates = [];
+    // Optional fields, added in this version. Old habits simply have none of them and stay "every day".
+    const sc = h.sched;
+    if(sc && sc.type === 'days' && Array.isArray(sc.days)){
+      const d = [...new Set(sc.days.map(Number).filter(x=>Number.isInteger(x) && x>=0 && x<=6))].sort();
+      if(d.length && d.length < 7) h.sched = {type:'days', days:d}; else delete h.sched;
+    }else if(sc && sc.type === 'weekly' && Number(sc.n) >= 1 && Number(sc.n) < 7){
+      h.sched = {type:'weekly', n:Math.floor(Number(sc.n))};
+    }else delete h.sched;
+    if(Array.isArray(h.pauses)) h.pauses = h.pauses.filter(p=>p && isKey(p.from)).map(p=>isKey(p.to) ? {from:p.from, to:p.to} : {from:p.from}); else delete h.pauses;
+    if(h.pauses && !h.pauses.length) delete h.pauses;
+    if(h.archived !== true) delete h.archived;
+    if(!isKey(h.created)) delete h.created;
+  });
   state.goals = state.goals.filter(g=>g && typeof g === 'object').map(g=>{
     const t = Number(g.target) > 0 ? Number(g.target) : 0;
     const out = {id: g.id || uid(), text: String(g.text || 'Goal'), done: g.done === true};
     if(t){ out.target = t; out.saved = Math.max(0, Number(g.saved) || 0); }
     if(out.done && /^\d{4}-\d{2}-\d{2}$/.test(g.doneDate||'')) out.doneDate = g.doneDate;
+    if(t && /^\d{4}-\d{2}-\d{2}$/.test(g.deadline||'')) out.deadline = g.deadline;
+    if(t && g.archived === true) out.archived = true;
     return out;
   });
   state.journal = (Array.isArray(state.journal) ? state.journal : [])
     .filter(e=>e && typeof e === 'object' && String(e.text||'').trim())
     .map(e=>{ const o = {id: e.id || uid(), date: /^\d{4}-\d{2}-\d{2}$/.test(e.date||'') ? e.date : todayKey(), ts: Number(e.ts) || Date.now(), text: String(e.text).slice(0,2000)};
-              if(Number.isInteger(e.mood) && e.mood >= 0 && e.mood <= 4) o.mood = e.mood; return o; })
-    .sort((a,b)=>b.ts-a.ts);
+              if(Number.isInteger(e.mood) && e.mood >= 0 && e.mood <= 4) o.mood = e.mood; if(Number(e.edited) > 0) o.edited = Number(e.edited); return o; })
+    .sort((a,b)=>b.date.localeCompare(a.date) || b.ts-a.ts);
   state.backupSince = /^\d{4}-\d{2}-\d{2}$/.test(state.backupSince||'') ? state.backupSince : todayKey();
   state.lastBackup = /^\d{4}-\d{2}-\d{2}$/.test(state.lastBackup||'') ? state.lastBackup : '';
   state.backupSnooze = /^\d{4}-\d{2}-\d{2}$/.test(state.backupSnooze||'') ? state.backupSnooze : '';
@@ -873,7 +981,11 @@ function normalize(){
      (Number(b.amount) > 0 || b.expenses.length) && !state.history.some(x=>x.month===b.month)){
     const byCat = {}; let spent = 0;
     b.expenses.forEach(e=>{ const a = Number(e.amt)||0; spent += a; const k = CATS[e.cat] ? e.cat : 'other'; byCat[k] = (byCat[k]||0) + a; });
-    state.history.unshift({month:b.month, budget:Number(b.amount)||0, spent:Math.round(spent*100)/100, byCat});
+    const sum = l => (Array.isArray(l) ? l : []).reduce((n,x)=>n + (Number(x && x.amt)||0), 0);
+    const rec = {month:b.month, budget:Number(b.amount)||0, spent:Math.round(spent*100)/100, byCat};
+    if(sum(b.income) > 0) rec.income = Math.round(sum(b.income)*100)/100;
+    if(sum(b.deposits) !== 0) rec.saved = Math.round(sum(b.deposits)*100)/100;
+    state.history.unshift(rec);
   }
   state.history.sort((x,y)=>y.month.localeCompare(x.month));
   state.history = state.history.slice(0,24);
@@ -882,6 +994,9 @@ function normalize(){
     month: monthKey(),
     amount: Number(b.amount) || 0,
     expenses: (sameMonth && Array.isArray(b.expenses)) ? b.expenses : [],
+    // Income you logged and money moved into savings goals. Like expenses, these are kept for the current month.
+    income: cleanLog(sameMonth ? b.income : [], v => v > 0),
+    deposits: cleanLog(sameMonth ? b.deposits : [], v => v !== 0),
     // The spending plan carries over from month to month
     // "off" = envelopes you do not pay for. Until you choose, bills, food and transport start off.
     plan: {
@@ -893,7 +1008,7 @@ function normalize(){
   // Never hide an envelope that already has spending logged this month
   state.budget.plan.off = state.budget.plan.off.filter(k=>!state.budget.expenses.some(e=>e.cat===k));
   if(state.budget.plan.off.length >= ENVS.length) state.budget.plan.off = [];
-  state.budget.expenses.forEach(e=>{ if(!e.id) e.id = uid(); if(!CATS[e.cat]) e.cat = 'other'; });
+  state.budget.expenses.forEach(e=>{ if(!e.id) e.id = uid(); if(!CATS[e.cat]) e.cat = 'other'; e.amt = Number(e.amt) || 0; if(e.date && !isKey(e.date)) delete e.date; });
   // Monthly repeating expenses: add them once each month, on or after their day
   state.recurring = (Array.isArray(state.recurring) ? state.recurring : [])
     .filter(r=>r && Number(r.amt) > 0)
@@ -902,7 +1017,7 @@ function normalize(){
   const nowD = new Date();
   state.recurring.forEach(r=>{
     if(r.last !== monthKey() && nowD.getDate() >= r.day){
-      state.budget.expenses.unshift({id: uid(), note: r.note, amt: r.amt, cat: r.cat, auto: true});
+      state.budget.expenses.unshift({id: uid(), note: r.note, amt: r.amt, cat: r.cat, auto: true, date: todayKey()});
       r.last = monthKey();
       // an envelope that now has spending can't stay switched off
       state.budget.plan.off = state.budget.plan.off.filter(k=>k !== r.cat);
@@ -912,7 +1027,16 @@ function normalize(){
 function load(){
   try{
     const raw = localStorage.getItem('ledger-state');
-    if(raw) state = JSON.parse(raw) || state;
+    if(raw){
+      state = JSON.parse(raw) || state;
+      // Safety copy: the first time this version opens older data, keep an untouched copy of it
+      try{
+        if(localStorage.getItem('ledger-schema') !== '2'){
+          if(!localStorage.getItem('ledger-state-backup-v1')) localStorage.setItem('ledger-state-backup-v1', raw);
+          localStorage.setItem('ledger-schema', '2');
+        }
+      }catch(e){ /* storage full: carry on, the data is still intact */ }
+    }
   }catch(e){ /* no data yet */ }
   normalize();
   save();
@@ -1030,12 +1154,17 @@ function doUndo(){
 // ---------- Habits ----------
 function addHabit(){
   const inp = $('habitInput');
-  const name = inp.value.trim();
+  const name = inp.value.trim().slice(0,40);
   if(!name) return;
-  state.habits.push({id: uid(), name, doneDates: []});
+  if(habitNameTaken(name)){ showToast('You already have a habit called "' + name + '".', null, 3500); return; }
+  state.habits.push({id: uid(), name, doneDates: [], created: todayKey()});
   inp.value='';
   buzz(12);
   save(); render();
+}
+function habitNameTaken(name, exceptId){
+  const n = name.trim().toLowerCase();
+  return state.habits.some(h=>!h.archived && h.id !== exceptId && h.name.trim().toLowerCase() === n);
 }
 function toggleHabit(id){
   const h = state.habits.find(x=>x.id===id);
@@ -1060,25 +1189,44 @@ function deleteHabit(id){
     save(); render();
   });
 }
-// Longest run of consecutive days ever ticked
-function bestStreak(h){
-  const days = [...new Set(h.doneDates)].map(k=>{ const [y,m,d] = k.split('-').map(Number); return Date.UTC(y, m-1, d); }).sort((a,b)=>a-b);
-  let best = 0, run = 0, prev = null;
-  days.forEach(t=>{
-    run = (prev !== null && Math.round((t - prev) / 86400000) === 1) ? run + 1 : 1;
-    if(run > best) best = run;
-    prev = t;
-  });
-  return best;
+// Streaks, schedules and consistency all live in reminder.js so the page and the service worker agree
+function bestStreak(h){ return LedgerReminder.bestStreakOf(h, new Date()); }
+function calcStreak(h){ return LedgerReminder.streakOf(h, new Date()); }
+const habitIsPaused = h => !h.archived && LedgerReminder.isPausedOn(h, todayKey());
+const habitIsWeekly = h => LedgerReminder.schedOf(h).type === 'weekly';
+// Habits that belong on today's list: scheduled today and not paused or archived.
+// Weekly habits drop off once their weekly goal is met (unless you ticked them today).
+function habitsForToday(now){
+  now = now || new Date(); const k = dateKey(now);
+  return state.habits.filter(h=>LedgerReminder.isScheduledOn(h, now) && (h.doneDates.includes(k) || LedgerReminder.pendingToday(h, now)));
 }
-function calcStreak(h){
-  const done = new Set(h.doneDates);
-  const d = new Date();
-  // If today isn't ticked yet, the streak is still alive until midnight, so count from yesterday
-  if(!done.has(dateKey(d))) d.setDate(d.getDate()-1);
-  let streak = 0;
-  while(done.has(dateKey(d))){ streak++; d.setDate(d.getDate()-1); }
-  return streak;
+function yesterdayKey(){ const d = new Date(); d.setDate(d.getDate()-1); return dateKey(d); }
+function pauseHabit(id){
+  const h = state.habits.find(x=>x.id===id); if(!h || h.archived || habitIsPaused(h)) return;
+  const prev = JSON.stringify(h);
+  h.pauses = (h.pauses||[]).concat([{from: todayKey()}]);
+  save(); render();
+  showToast(`Paused "${h.name}". Paused days never count as missed.`, ()=>restoreHabit(id, prev), 6000);
+}
+function resumeHabit(id){
+  const h = state.habits.find(x=>x.id===id); if(!h || !habitIsPaused(h)) return;
+  const prev = JSON.stringify(h);
+  const open = h.pauses.find(p=>!p.to && todayKey() >= p.from);
+  if(open){ if(open.from > yesterdayKey()) h.pauses = h.pauses.filter(p=>p!==open); else open.to = yesterdayKey(); }
+  if(!h.pauses.length) delete h.pauses;
+  save(); render();
+  showToast(`Resumed "${h.name}".`, ()=>restoreHabit(id, prev), 5000);
+}
+function archiveHabit(id, on){
+  const h = state.habits.find(x=>x.id===id); if(!h) return;
+  const prev = JSON.stringify(h);
+  if(on) h.archived = true; else delete h.archived;
+  save(); render();
+  showToast(on ? `Archived "${h.name}". Its history is kept.` : `Restored "${h.name}".`, ()=>restoreHabit(id, prev), 6000);
+}
+function restoreHabit(id, json){
+  const i = state.habits.findIndex(x=>x.id===id); if(i < 0) return;
+  state.habits[i] = JSON.parse(json); save(); render();
 }
 
 // ---------- Monthly repeating expenses ----------
@@ -1114,12 +1262,13 @@ function renderRecurring(){
 
 // ---------- Year heatmap ----------
 function renderHeat(){
-  const total = state.habits.length;
+  const habits = state.habits.filter(h=>LedgerReminder.isActiveNow(h, new Date()));
+  const total = habits.length;
   const el = $('heat');
   if(!total){ el.innerHTML = ''; el.style.display = 'none'; $('yearTag').textContent = ''; document.querySelector('.heat-legend').style.display = 'none'; return; }
   el.style.display = ''; document.querySelector('.heat-legend').style.display = '';
   const counts = {};
-  state.habits.forEach(h=>h.doneDates.forEach(k=>{ counts[k] = (counts[k]||0) + 1; }));
+  habits.forEach(h=>h.doneDates.forEach(k=>{ counts[k] = (counts[k]||0) + 1; }));
   const today = new Date(); today.setHours(12,0,0,0);
   // 53 columns of weeks, Sunday on top, ending with this week
   const start = new Date(today); start.setDate(start.getDate() - today.getDay() - 52*7);
@@ -1179,6 +1328,16 @@ function restoreFromText(text){
   showToast('Backup restored.', ()=>{ state = JSON.parse(before); normalize(); save(); render(); }, 8000);
   return true;
 }
+// The untouched copy saved the first time this version opened older data
+function renderPreUpdate(){
+  let has = false; try{ has = !!localStorage.getItem('ledger-state-backup-v1'); }catch(e){}
+  $('preUpdate').innerHTML = has ? '<div class="note">A safety copy of your data from before this update is kept on this phone.</div><button class="link-btn" onclick="restorePreUpdate()">Restore the copy from before the update</button>' : '';
+}
+function restorePreUpdate(){
+  let raw = null; try{ raw = localStorage.getItem('ledger-state-backup-v1'); }catch(e){}
+  if(!raw){ showToast('No safety copy found.', null, 3000); return; }
+  openQA('confirm', {title:'Go back to the older copy?', text:'This replaces what is on screen with your data from before the update. Anything you added since then would be replaced. You can undo for a few seconds.', ok:'Restore', danger:true, onOk:()=>restoreFromText(raw)});
+}
 function renderHistory(){
   const h = state.history;
   $('histSec').hidden = !h.length;
@@ -1189,9 +1348,9 @@ function renderHistory(){
     const [y, m] = x.month.split('-');
     const top = Object.entries(x.byCat||{}).sort((a,b)=>b[1]-a[1])[0];
     const over = x.budget > 0 && x.spent > x.budget;
-    const sub = x.budget > 0
-      ? (over ? pesoExact(x.spent - x.budget) + ' over' : pesoExact(x.budget - x.spent) + ' left') + ' of ' + pesoExact(x.budget)
-      : 'No budget set';
+    const sub = (x.budget > 0
+      ? (over ? pesoExact(x.spent - x.budget) + ' over' : pesoExact(x.budget - x.spent) + ' left') + ' of ' + pesoExact(x.budget) + ' budget'
+      : 'No budget set') + (x.income > 0 ? ' · income ' + pesoExact(x.income) : '');
     return `<div class="hist-row"><div class="h-m">${names[+m-1]} ${y}<div class="h-s">${esc(sub)}${top ? ' · most on ' + esc(catOf(top[0]).label) : ''}</div></div><div class="h-v${over?' over':''}">${pesoExact(x.spent)}</div></div>`;
   }).join('');
 }
@@ -1211,73 +1370,121 @@ function addJournal(){
   const inp = $('journalInput');
   const text = inp.value.trim();
   if(!text){ showToast('Write a few words first.', null, 2500); return; }
-  inp.value = '';
-  pushJournal(text);
+  const date = $('jDate').value || todayKey();
+  if(!isDateKey(date) || date > todayKey()){ showToast('Pick a date that is not in the future.', null, 3000); return; }
+  const mood = moodFromSelect($('jMood').value, date);
+  inp.value = ''; $('jDate').value = todayKey(); $('jMood').value = 'auto';
+  pushJournal(text, {date, mood});
   showToast('Entry saved.', null, 2500);
 }
-function pushJournal(text){
-  const e = {id: uid(), date: todayKey(), ts: Date.now(), text: text.slice(0,2000)};
-  const m = state.moodLog[todayKey()];
-  if(m !== undefined) e.mood = m;
+const sortJournal = () => state.journal.sort((a,b)=>b.date.localeCompare(a.date) || b.ts-a.ts);
+function tsFor(date, base){
+  if(date === todayKey() && !base) return Date.now();
+  const t = new Date(base || Date.now()), [y,m,d] = date.split('-').map(Number);
+  return new Date(y, m-1, d, t.getHours(), t.getMinutes(), t.getSeconds()).getTime();
+}
+function pushJournal(text, opts){
+  opts = opts || {};
+  const date = isDateKey(opts.date) ? opts.date : todayKey();
+  const e = {id: uid(), date, ts: tsFor(date), text: text.slice(0,2000)};
+  const mood = 'mood' in opts ? opts.mood : state.moodLog[date];
+  if(mood !== undefined) e.mood = mood;
   state.journal.unshift(e);
+  sortJournal();
   buzz(12);
   save(); render();
+}
+// Editing updates the original entry in place
+function updateJournal(id, text, date, mood){
+  const e = state.journal.find(x=>x.id===id); if(!e) return false;
+  e.text = text.slice(0,2000);
+  if(date !== e.date){ e.ts = tsFor(date, e.ts); e.date = date; }
+  if(mood === undefined) delete e.mood; else e.mood = mood;
+  e.edited = Date.now();
+  sortJournal(); save(); render();
+  return true;
+}
+function confirmDeleteJournal(id){
+  if(!state.journal.some(x=>x.id===id)) return;
+  openQA('confirm', {title:'Delete this entry?', text:'The entry will be removed from this phone. You can undo it for a few seconds afterwards.', ok:'Delete', danger:true, onOk:()=>deleteJournal(id)});
 }
 function deleteJournal(id){
   const i = state.journal.findIndex(x=>x.id===id);
   if(i < 0) return;
   const [gone] = state.journal.splice(i, 1);
   save(); render();
-  showToast('Entry deleted.', ()=>{ state.journal.splice(Math.min(i, state.journal.length), 0, gone); save(); render(); }, 7000);
+  showToast('Entry deleted.', ()=>{ state.journal.splice(Math.min(i, state.journal.length), 0, gone); sortJournal(); save(); render(); }, 7000);
+}
+function journalFiltered(){
+  const q = $('jSearch').value.trim().toLowerCase(), from = $('jFrom').value, to = $('jTo').value;
+  return state.journal.filter(e=>(!q || e.text.toLowerCase().includes(q)) && (!from || e.date >= from) && (!to || e.date <= to));
 }
 function renderJournal(){
-  const list = state.journal;
-  $('journalTag').textContent = list.length ? list.length + (list.length === 1 ? ' entry' : ' entries') : '';
-  if(!list.length){
+  $('jDate').max = todayKey(); if(!$('jDate').value) $('jDate').value = todayKey();
+  if(!$('jMood').options.length){ $('jMood').innerHTML = moodOptions("Today's mood"); }
+  const all = state.journal, list = journalFiltered();
+  const filtering = list.length !== all.length || !!($('jSearch').value.trim() || $('jFrom').value || $('jTo').value);
+  $('jClear').hidden = !($('jSearch').value || $('jFrom').value || $('jTo').value);
+  $('journalTag').textContent = !all.length ? '' : filtering ? `${list.length} of ${all.length}` : all.length + (all.length === 1 ? ' entry' : ' entries');
+  if(!all.length){
     $('journalList').innerHTML = empty('✎','Your journal is empty','Write a few lines about your day. It only takes a minute.');
-  }else{
-    const shown = showAllJournal ? list : list.slice(0, 15);
-    $('journalList').innerHTML = shown.map(e=>{
-      const d = new Date(e.ts);
-      const when = d.toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric'}) + ' · ' + d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
-      return `<div class="jr-entry"><div class="jr-meta"><span>${esc(when)}</span>${e.mood !== undefined ? `<span class="jr-mood" aria-label="Mood ${e.mood+1} of 5">${MOODS[e.mood]}</span>` : ''}<div class="del-x" role="button" aria-label="Delete entry" onclick="deleteJournal('${esc(e.id)}')">×</div></div><div class="jr-text">${esc(e.text)}</div></div>`;
-    }).join('');
-    if(list.length > 15){
-      const more = document.createElement('button');
-      more.className = 'link-btn';
-      more.textContent = showAllJournal ? 'Show fewer' : `Show ${list.length - 15} older`;
-      more.onclick = () => { showAllJournal = !showAllJournal; render(); };
-      $('journalList').appendChild(more);
-    }
+    return;
+  }
+  if(!list.length){ $('journalList').innerHTML = empty('🔎','No entries match','Try different words or a wider date range.'); return; }
+  const shown = (showAllJournal || filtering) ? list : list.slice(0, 15);
+  let lastMonth = '', html = '';
+  shown.forEach(e=>{
+    const d = new Date(e.ts), day = new Date(e.date + 'T12:00:00');
+    const mk = e.date.slice(0,7);
+    if(mk !== lastMonth){ lastMonth = mk; html += `<h3 class="jr-month">${esc(day.toLocaleDateString(undefined,{month:'long', year:'numeric'}))}</h3>`; }
+    const when = day.toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric'}) + ' · ' + d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+    html += `<article class="jr-entry" data-id="${esc(e.id)}"><div class="jr-meta"><span>${esc(when)}${e.edited ? ' · edited' : ''}</span>${e.mood !== undefined ? `<span class="jr-mood" role="img" aria-label="Mood: ${MOOD_NAMES[e.mood]}">${MOODS[e.mood]}</span>` : ''}</div>` +
+      `<div class="jr-text">${esc(e.text)}</div>` +
+      `<div class="jr-acts"><button class="jr-act" aria-label="Edit entry from ${esc(e.date)}" onclick="openQA('journal','${esc(e.id)}')">Edit</button><button class="jr-act danger" aria-label="Delete entry from ${esc(e.date)}" onclick="confirmDeleteJournal('${esc(e.id)}')">Delete</button></div></article>`;
+  });
+  $('journalList').innerHTML = html;
+  if(!filtering && list.length > 15){
+    const more = document.createElement('button');
+    more.className = 'link-btn';
+    more.textContent = showAllJournal ? 'Show fewer' : `Show ${list.length - 15} older`;
+    more.onclick = () => { showAllJournal = !showAllJournal; render(); };
+    $('journalList').appendChild(more);
   }
 }
+function clearJournalFilters(){ ['jSearch','jFrom','jTo'].forEach(id=>{ $(id).value = ''; }); renderJournal(); }
+['jSearch','jFrom','jTo'].forEach(id=>$(id).addEventListener('input', renderJournal));
+$('jClear').addEventListener('click', clearJournalFilters);
 
 // ---------- Insights (everything here is calculated from your own data) ----------
 function renderInsights(){
-  const total = state.habits.length;
+  const L = LedgerReminder, nowD = new Date();
+  const habits = state.habits.filter(h=>L.isActiveNow(h, nowD));
+  const total = habits.length;
   const keys = n => { const a = []; for(let i=n-1;i>=0;i--){ const d = new Date(); d.setDate(d.getDate()-i); a.push(dateKey(d)); } return a; };
-  const doneOn = k => state.habits.filter(h=>h.doneDates.includes(k)).length;
+  const doneOn = k => habits.filter(h=>h.doneDates.includes(k)).length;
+  const schedOn = k => habits.filter(h=>L.isScheduledOn(h, keyToDay(k)) || h.doneDates.includes(k)).length;
   const d7 = keys(7), d14 = keys(14), d30 = keys(30);
   const ticks7 = d7.reduce((n,k)=>n+doneOn(k), 0);
+  const due7 = d7.reduce((n,k)=>n+schedOn(k), 0);
   const moods = d14.map(k=>state.moodLog[k]).filter(v=>v !== undefined);
   const moodAvg = moods.length ? moods.reduce((a,v)=>a+v+1, 0) / moods.length : null;
   const M = moneyInfo();
   const stat = (k,v,sub) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${sub}</div></div>`;
   $('insSummary').innerHTML =
-    stat('Habits', total ? Math.round(ticks7/(total*7)*100) + '%' : '—', total ? `${ticks7} of ${total*7} ticks, 7 days` : 'no habits yet') +
-    stat('Spent', pesoExact(M.spent), M.amount > 0 ? 'of ' + pesoExact(M.amount) : 'no budget set') +
+    stat('Habits', due7 ? Math.min(100, Math.round(ticks7/due7*100)) + '%' : '—', due7 ? `${ticks7} of ${due7} ticks, 7 days` : 'no habits yet') +
+    stat('Spent', pesoExact(M.spent), M.amount > 0 ? 'of ' + pesoExact(M.amount) + ' budget' : 'no budget set') +
     stat('Mood', moodAvg !== null ? moodAvg.toFixed(1) + '/5' : '—', moods.length ? `${moods.length} day${moods.length>1?'s':''} logged` : 'nothing logged');
 
   // habit consistency, last 30 days
   const barColor = pct => pct >= 75 ? 'var(--mint)' : pct >= 40 ? 'var(--brass)' : 'var(--coral)';
-  $('insHabits').innerHTML = total ? state.habits.map(h=>{
-    const c = d30.filter(k=>h.doneDates.includes(k)).length, pct = Math.round(c/30*100);
-    return `<div class="bar-row"><div class="br-top"><span>${esc(h.name)}</span><b>${pct}%</b></div><div class="meter"><i style="width:${pct}%;background:${barColor(pct)}"></i></div><div class="note" style="margin-top:6px">${c} of 30 days · streak ${calcStreak(h)}</div></div>`;
+  $('insHabits').innerHTML = total ? habits.map(h=>{
+    const c = L.consistencyOf(h, nowD, 30), pct = c.pct, wk = habitIsWeekly(h);
+    return `<div class="bar-row"><div class="br-top"><span>${esc(h.name)}</span><b>${pct}%</b></div><div class="meter"><i style="width:${pct}%;background:${barColor(pct)}"></i></div><div class="note" style="margin-top:6px">${c.done} of ${c.due} ${wk ? 'planned' : 'days'} · ${L.scheduleLabel(h).toLowerCase()} · streak ${calcStreak(h)}${wk ? ' wk' : ''}</div></div>`;
   }).join('') : '<div class="plain">Add a habit to see how consistent you are.</div>';
 
   // daily completion, last 14 days
   $('insDaily').innerHTML = total
-    ? `<div class="daily" role="img" aria-label="Habits finished each day over the last 14 days">${d14.map(k=>{ const v = doneOn(k)/total; return `<i class="${v ? '' : 'zero'}" style="height:${Math.max(4, Math.round(v*80))}px" title="${k}: ${doneOn(k)}/${total}"></i>`; }).join('')}</div><div class="daily-lbl"><span>14 days ago</span><span>Today</span></div>`
+    ? `<div class="daily" role="img" aria-label="Habits finished each day over the last 14 days">${d14.map(k=>{ const sc = schedOn(k), v = sc ? Math.min(1, doneOn(k)/sc) : 0; return `<i class="${v ? '' : 'zero'}" style="height:${Math.max(4, Math.round(v*80))}px" title="${k}: ${doneOn(k)}/${sc}"></i>`; }).join('')}</div><div class="daily-lbl"><span>14 days ago</span><span>Today</span></div>`
     : '<div class="plain">Your daily chart appears once you add a habit.</div>';
 
   // spending by category
@@ -1291,7 +1498,7 @@ function renderInsights(){
   }).join('') : '<div class="plain">No spending logged this month.</div>';
 
   // goal progress
-  const sav = state.goals.filter(g=>g.target > 0), tasks = state.goals.filter(g=>!(g.target > 0));
+  const sav = state.goals.filter(g=>g.target > 0 && !g.archived), tasks = state.goals.filter(g=>!(g.target > 0));
   $('insGoalTag').textContent = sav.length ? `${sav.filter(g=>g.done).length}/${sav.length} reached` : '';
   let gh = sav.map(g=>{
     const pct = Math.round(goalProgress(g)*100);
@@ -1310,11 +1517,13 @@ try{ remSent = localStorage.getItem('ledger-rem-sent') || ''; }catch(e){}
 function syncMeta(){
   if(!('caches' in window)) return;
   try{
-    const meta = {reminder: state.reminder, habits: state.habits.map(h=>({name:h.name, doneDates:h.doneDates})), sent: remSent};
+    const meta = {reminder: state.reminder, habits: state.habits.map(h=>({name:h.name, doneDates:h.doneDates, sched:h.sched, pauses:h.pauses, archived:h.archived})), sent: remSent};
     caches.open('ledger-meta').then(c=>c.put('/__meta/state', new Response(JSON.stringify(meta), {headers:{'Content-Type':'application/json'}}))).catch(()=>{});
   }catch(e){}
 }
 function notifSupported(){ return 'Notification' in window && 'serviceWorker' in navigator; }
+// Background reminders need the browser to support Periodic Background Sync. Many phones do not, so we never promise them.
+function bgSupported(){ try{ return 'serviceWorker' in navigator && 'periodicSync' in ServiceWorkerRegistration.prototype; }catch(e){ return false; } }
 async function showNotif(title, body){
   const reg = await navigator.serviceWorker.getRegistration();
   if(!reg) throw new Error('no service worker');
@@ -1358,10 +1567,16 @@ async function testReminder(){
   catch(e){ showToast('Could not show it right now.', null, 3000); }
 }
 // Fires the reminder while the app is open (or recently open). The service worker covers the closed-app case.
+let remBusy = false;   // one check at a time, so the timer and a tab switch can never both send
 async function checkReminder(){
+  if(remBusy) return;
   const now = new Date();
   if(!LedgerReminder.isDue(state.reminder, now, remSent)) return;
   if(!notifSupported() || Notification.permission !== 'granted') return;
+  remBusy = true;
+  try{ await sendDueReminder(now); } finally { remBusy = false; }
+}
+async function sendDueReminder(now){
   const day = LedgerReminder.dateKey(now);
   const msg = LedgerReminder.buildReminder(state.habits, now);
   remSent = day; try{ localStorage.setItem('ledger-rem-sent', day); }catch(e){}
@@ -1392,13 +1607,18 @@ function renderReminder(){
   const granted = notifSupported() && Notification.permission === 'granted';
   const on = rem.on && granted;
   $('remSwitch').setAttribute('aria-checked', on ? 'true' : 'false');
-  $('remOpts').hidden = !on;
+  $('remOpts').hidden = !on && notifSupported();
   $('remTag').textContent = on ? LedgerReminder.formatTime(rem.time) : 'off';
   $('remSub').textContent = on ? 'Only if a habit is still open.' : 'Get a nudge if habits are still open.';
   if(document.activeElement !== $('remTime')) $('remTime').value = rem.time;
   $('remNote').textContent = on
-    ? 'Reminders appear when the app is open or recently used. For an alarm that always rings, tap "Add to phone calendar".'
-    : (notifSupported() && Notification.permission === 'denied' ? 'Notifications are blocked for this app in your phone settings.' : '');
+    ? (bgSupported()
+        ? 'Your browser may also deliver reminders while the app is closed, but that is not guaranteed. For an alarm that always rings, tap "Add to phone calendar".'
+        : 'This browser cannot run reminders in the background, so you will only get them while the app is open or recently used. For an alarm that always rings, tap "Add to phone calendar".')
+    : !notifSupported() ? 'This browser cannot show notifications. Use "Add to phone calendar" for a daily alarm instead.'
+    : Notification.permission === 'denied' ? 'Notifications are blocked for this app. Allow them in your phone settings, or use the calendar alarm.'
+    : '';
+
 }
 $('remTime').addEventListener('change', setReminderTime);
 
@@ -1406,16 +1626,51 @@ $('remTime').addEventListener('change', setReminderTime);
 function addGoal(){
   const inp = $('goalInput');
   const text = inp.value.trim();
-  const t = parseFloat($('goalTarget').value);
+  const t = parseAmount($('goalTarget').value);
   if(!text){ showToast('Name what you are saving for.', null, 2500); return; }
   if(!(t > 0)){ showToast('Add a target amount in pesos.', null, 2500); return; }
   inp.value=''; $('goalTarget').value='';
   pushGoal(text, t);
 }
-function pushGoal(text, t){
-  state.goals.unshift({id: uid(), text, done:false, target: t, saved: 0});
+function pushGoal(text, t, opts){
+  opts = opts || {};
+  const g = {id: uid(), text, done:false, target: t, saved: Math.max(0, opts.saved || 0)};
+  if(opts.deadline) g.deadline = opts.deadline;
+  if(g.saved >= g.target){ g.done = true; g.doneDate = todayKey(); }
+  state.goals.unshift(g);
   buzz(12);
   save(); render();
+}
+// Editing changes the original goal. Nothing is copied or re-created.
+function editGoal(g, text, t, saved, deadline){
+  g.text = text; g.target = t; g.saved = saved;
+  if(deadline) g.deadline = deadline; else delete g.deadline;
+  if(saved >= t){ if(!g.done){ g.done = true; g.doneDate = todayKey(); } }
+  else if(g.done){ g.done = false; delete g.doneDate; }
+  save(); render();
+}
+function archiveGoal(id, on){
+  const g = findGoal(id); if(!g) return;
+  if(on) g.archived = true; else delete g.archived;
+  save(); render();
+  showToast(on ? `Archived "${g.text}". Nothing was deleted.` : `Restored "${g.text}".`, ()=>{ if(on) delete g.archived; else g.archived = true; save(); render(); }, 6000);
+}
+function confirmDeleteGoal(id){
+  const g = findGoal(id); if(!g) return;
+  openQA('confirm', {title:`Delete "${g.text}"?`, text:'This removes the goal for good. Archive it instead if you only want it out of the way.', ok:'Delete', danger:true, onOk:()=>deleteGoal(id)});
+}
+// A short line about the deadline, e.g. "Due Dec 5 · 41 days left" (or nothing when there is no deadline)
+function deadlineInfo(g){
+  if(!g.deadline) return null;
+  const a = new Date(todayKey() + 'T12:00:00'), b = new Date(g.deadline + 'T12:00:00');
+  const days = Math.round((b - a) / 86400000);
+  const when = b.toLocaleDateString(undefined, {month:'short', day:'numeric', year: b.getFullYear() !== a.getFullYear() ? 'numeric' : undefined});
+  if(g.done) return {text:`Due ${when}`, cls:''};
+  const left = Math.max(0, g.target - g.saved);
+  if(days < 0) return {text:`Due ${when} · ${-days} day${days === -1 ? '' : 's'} overdue`, cls:'late'};
+  if(days === 0) return {text:`Due today · ${pesoExact(left)} to go`, cls:'soon'};
+  const months = Math.max(1, days / 30.4);
+  return {text:`Due ${when} · ${days} day${days === 1 ? '' : 's'} left` + (left > 0 ? ` · about ${pesoExact(Math.ceil(left / months))} a month` : ''), cls: days <= 14 ? 'soon' : ''};
 }
 function addTask(){
   const inp = $('taskInput');
@@ -1430,15 +1685,20 @@ function pushTask(text){
   save(); render();
 }
 function addToGoal(id){
-  const g = state.goals.find(x=>x.id===id);
-  if(!g || !g.target) return;
-  const input = prompt(`How much did you add to "${g.text}"? (₱)\nUse a minus sign to take some out.`, '');
-  if(input === null) return;
-  const v = parseFloat(String(input).replace(/,/g,''));
-  if(isNaN(v) || v === 0) return;
+  const g = findGoal(id);
+  if(!g || !(g.target > 0)) return;
+  openQA('deposit', id);
+}
+// Moves money into (or out of) a goal and keeps a record of it for this month
+function applyDeposit(id, v){
+  const g = findGoal(id);
+  if(!g || !(g.target > 0) || !Number.isFinite(v) || v === 0) return;
   const wasDone = g.done;
-  g.saved = Math.max(0, Math.round((g.saved + v) * 100) / 100);
+  const next = Math.max(0, Math.round((g.saved + v) * 100) / 100);
+  const applied = Math.round((next - g.saved) * 100) / 100;
+  g.saved = next;
   if(g.saved >= g.target){ g.done = true; g.doneDate = todayKey(); } else if(v < 0){ g.done = false; delete g.doneDate; }
+  if(applied !== 0) state.budget.deposits.unshift({id: uid(), note: g.text, amt: applied, date: todayKey(), goalId: g.id});
   buzz(14);
   if(g.done && !wasDone){ popId = id; buzz(22); showToast(`Goal reached: ${g.text}`, null, 4000); }
   save(); render();
@@ -1466,37 +1726,28 @@ function deleteGoal(id){
 // ---------- Money ----------
 function setBudget(){
   const inp = $('budgetInput');
-  const v = parseFloat(inp.value);
-  if(isNaN(v) || v < 0) return;
+  const v = parseAmount(inp.value);
+  if(isNaN(v) || v < 0){ showToast('Enter your monthly budget in pesos, like 15000.', null, 3200); return; }
   state.budget.amount = v;
   inp.value='';
   buzz(12);
   save(); render();
 }
 function addExpense(){
+  const amt = parseAmount($('expenseAmt').value);
+  if(!(amt > 0)){ showToast(AMT_MSG, null, 3200); return; }
   const note = $('expenseNote').value.trim() || 'Expense';
-  const amt = parseFloat($('expenseAmt').value);
-  if(isNaN(amt) || amt <= 0) return;
   const cat = $('expenseCat').value;
   $('expenseNote').value='';
   $('expenseAmt').value='';
   pushExpense(note, amt, cat);
 }
-function pushExpense(note, amt, cat){
-  state.budget.expenses.unshift({id: uid(), note, amt, cat});
+function pushExpense(note, amt, cat, date){
+  state.budget.expenses.unshift({id: uid(), note, amt, cat, date: isDateKey(date) ? date : todayKey()});
   buzz(12);
   save(); render();
 }
-function editExpense(id){
-  const e = state.budget.expenses.find(x=>x.id===id);
-  if(!e) return;
-  const input = prompt(`Change amount for "${e.note}" (₱)`, e.amt);
-  if(input === null) return;
-  const v = parseFloat(String(input).replace(/,/g,''));
-  if(isNaN(v) || v <= 0) return;
-  e.amt = v;
-  save(); render();
-}
+function editExpense(id){ if(state.budget.expenses.some(x=>x.id===id)) openQA('expense', id); }
 function deleteExpense(id){
   const list = state.budget.expenses;
   const idx = list.findIndex(x=>x.id===id);
@@ -1508,7 +1759,14 @@ function deleteExpense(id){
     save(); render();
   });
 }
-
+function deleteIncome(id){
+  const list = state.budget.income;
+  const idx = list.findIndex(x=>x.id===id);
+  if(idx < 0) return;
+  const [removed] = list.splice(idx, 1);
+  save(); render();
+  showToast(`Deleted "${removed.note}"`, ()=>{ state.budget.income.splice(Math.min(idx, state.budget.income.length), 0, removed); save(); render(); });
+}
 // ---------- Spending plan ----------
 // The 50/30/20 rule: about half of your money for needs, 30% for wants, 20% saved.
 const PLAN_PRESET = { bills:25, food:15, transport:10, fun:20, other:10, savings:20 };
@@ -1571,11 +1829,11 @@ function focusBudget(){
 function editPlan(key){
   const info = moneyInfo();
   if(!(info.amount > 0)){ focusBudget(); return; }
+  openQA('plan', key);
+}
+function setPlanAmount(key, v){
+  const info = moneyInfo();
   const label = key === 'savings' ? 'Savings' : CATS[key].label;
-  const input = prompt(`How much for ${label} this month? (₱)`, Math.round(info.alloc[key] * 100) / 100);
-  if(input === null) return;
-  const v = parseFloat(String(input).replace(/,/g, ''));
-  if(isNaN(v) || v < 0) return;
   const prev = JSON.stringify(state.budget.plan);
   const plan = state.budget.plan;
   if(plan.mode !== 'custom'){ plan.mode = 'custom'; plan.alloc = {...info.alloc}; }
@@ -1616,8 +1874,8 @@ function checkAfford(){
   const box = $('verdict');
   const say = (cls, html) => { box.className = 'verdict ' + cls; box.innerHTML = html; };
   const info = moneyInfo();
-  const amt = parseFloat($('checkAmt').value);
-  if(!(info.amount > 0)) return say('', 'Set your money for the month first, then I can check prices for you.');
+  const amt = parseAmount($('checkAmt').value);
+  if(!(info.amount > 0)) return say('', 'Set your monthly budget first, then I can check prices for you.');
   if(isNaN(amt) || amt <= 0) return say('', 'Type a price to see if it fits your plan.');
   const env = info.envs.find(e=>e.key === $('checkCat').value) || info.envs[0];
   const after = env.left - amt;
@@ -1645,37 +1903,143 @@ function setMood(idx){
 
 // ---------- Rendering ----------
 function habitRow(h, manage){
+  const L = LedgerReminder, now = new Date();
   const done = h.doneDates.includes(todayKey());
+  const paused = habitIsPaused(h), weekly = habitIsWeekly(h);
   const streak = calcStreak(h);
   const best = bestStreak(h);
+  const unit = weekly ? 'week' : 'day';
   // The small line under the name always says something useful about the streak
   let hint;
-  if(streak === 0) hint = 'Tick it today to start a streak';
+  if(h.archived) hint = 'Archived. History kept';
+  else if(paused) hint = 'Paused. Paused days never count as missed';
+  else if(weekly){ const sc = L.schedOf(h); hint = `${L.weekCount(h, now)} of ${sc.n} this week` + (streak ? ` · ${streak}-week streak` : ''); }
+  else if(manage && !L.isScheduledOn(h, now) && !done) hint = 'Not scheduled today';
+  else if(streak === 0) hint = 'Tick it today to start a streak';
   else if(!done) hint = 'Tick today to keep your streak';
   else if(streak >= 2 && streak >= best) hint = 'Your best streak so far';
-  else if(best > streak) hint = `Best: ${best} day${best>1?'s':''}`;
-  else hint = 'Day one. Keep going';
-  return `<div class="row habit-row${done?' is-done':''}" data-id="${h.id}" onclick="toggleHabit('${h.id}')">
+  else if(best > streak) hint = `Best: ${best} ${unit}${best>1?'s':''}`;
+  else hint = `${unit === 'day' ? 'Day' : 'Week'} one. Keep going`;
+  const c = manage ? L.consistencyOf(h, now, 30) : null;
+  const meta = manage ? `<div class="habit-meta">${esc(L.scheduleLabel(h))}${c && c.due ? ` · ${c.pct}% in the last 30 days` : ''}</div>` : '';
+  const inactive = paused || h.archived;
+  const toggle = inactive ? `onclick="openQA('habitMenu','${esc(h.id)}')"` : `onclick="toggleHabit('${esc(h.id)}')" role="checkbox" aria-checked="${done}" tabindex="0"`;
+  return `<div class="row habit-row${done?' is-done':''}${inactive?' inactive':''}" data-id="${esc(h.id)}" ${toggle} aria-label="${esc(h.name)}">
     <div class="check${done?' on':''}${popId===h.id?' pop':''}"></div>
-    <div class="row-main"><div class="habit-name">${esc(h.name)}</div><div class="streak${streak===0?' none':''}">${hint}</div></div>
-    <div class="streak-badge${streak===0?' zero':''}${popId===h.id?' bump':''}" aria-label="${streak} day streak"><svg class="fl-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg><span class="streak-num">${streak}</span></div>
-    ${manage ? `<div class="del-x" role="button" aria-label="Delete habit" onclick="event.stopPropagation();deleteHabit('${h.id}')">×</div>` : ''}
+    <div class="row-main"><div class="habit-name">${esc(h.name)}${paused ? ' <span class="pill">Paused</span>' : ''}</div><div class="streak${streak===0||inactive?' none':''}">${hint}</div>${meta}</div>
+    <div class="streak-badge${streak===0?' zero':''}${popId===h.id?' bump':''}" aria-label="${streak} ${unit} streak"><svg class="fl-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg><span class="streak-num">${streak}</span></div>
+    ${manage ? `<button class="more-btn" aria-label="Manage ${esc(h.name)}" onclick="event.stopPropagation();openQA('habitMenu','${esc(h.id)}')">⋯</button>` : ''}
   </div>`;
+}
+// Five weeks of history for one habit: done, missed, not scheduled
+function habitInfoHtml(h){
+  const L = LedgerReminder, now = new Date(), tk = todayKey();
+  const c = L.consistencyOf(h, now, 30), streak = calcStreak(h), best = bestStreak(h), weekly = habitIsWeekly(h), unit = weekly ? 'week' : 'day';
+  const first = h.created || ([...h.doneDates].sort()[0]) || tk;
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
+  start.setDate(start.getDate() - ((start.getDay()+6)%7) - 28);          // Monday, four weeks back
+  const done = new Set(h.doneDates);
+  let cells = '', missed = 0;
+  for(let i=0;i<35;i++){
+    const d = new Date(start); d.setDate(start.getDate()+i); const k = dateKey(d);
+    let cls = 'na', label = 'not scheduled';
+    if(k > tk){ cls = 'fut'; label = 'upcoming'; }
+    else if(done.has(k)){ cls = 'ok'; label = 'done'; }
+    else if(k >= first && k < tk && L.isScheduledOn(h, d) && !weekly){ cls = 'miss'; label = 'missed'; missed++; }
+    cells += `<span class="cal-d ${cls}${k===tk?' now':''}" title="${k}: ${label}" role="img" aria-label="${k}: ${label}">${d.getDate()}</span>`;
+  }
+  const status = h.archived ? 'Archived' : habitIsPaused(h) ? 'Paused' : 'Active';
+  return `<div class="info-grid"><div class="stat"><div class="k">Streak</div><div class="v">${streak}</div><div class="s">${unit}${streak===1?'':'s'}</div></div>
+    <div class="stat"><div class="k">Best</div><div class="v">${best}</div><div class="s">${unit}${best===1?'':'s'}</div></div>
+    <div class="stat"><div class="k">30 days</div><div class="v">${c.pct}%</div><div class="s">${c.done} of ${c.due} ${c.unit === 'planned' ? 'planned' : 'days'}</div></div></div>
+    <div class="cal" role="group" aria-label="Last five weeks">${'MTWTFSS'.split('').map(x=>`<span class="cal-h">${x}</span>`).join('')}${cells}</div>
+    <div class="cal-key"><span><i class="cal-d ok"></i> done</span><span><i class="cal-d miss"></i> missed</span><span><i class="cal-d na"></i> not scheduled</span></div>
+    <div class="note" style="margin:0">${esc(L.scheduleLabel(h))} · ${status} · ${h.doneDates.length} tick${h.doneDates.length===1?'':'s'} in total` +
+    `${!weekly && missed ? ` · ${missed} missed in these weeks` : ''}. ${weekly ? 'Weekly habits count whole weeks, so there are no single missed days.' : 'Days off and paused days are never counted as missed.'}</div>`;
 }
 function goalRow(g){
   const has = g.target > 0;
   const pct = has ? Math.min(100, Math.round(g.saved / g.target * 100)) : 0;
-  const prog = has ? `<div class="goal-prog"><div class="meter"><i style="width:${pct}%;background:var(--violet)"></i></div><div class="goal-amt">${pesoExact(g.saved)} of ${pesoExact(g.target)}</div></div>` : '';
-  const add = has && !g.done ? `<button class="goal-add" aria-label="Add money to ${esc(g.text)}" onclick="event.stopPropagation();addToGoal('${g.id}')">+ ₱</button>` : '';
-  return `<div class="row goal-row${g.done?' done':''}" onclick="toggleGoal('${g.id}')">
+  const dl = has ? deadlineInfo(g) : null;
+  const prog = has ? `<div class="goal-prog"><div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" aria-label="${esc(g.text)} progress"><i style="width:${pct}%;background:var(--violet)"></i></div><div class="goal-amt">${pesoExact(g.saved)} of ${pesoExact(g.target)} · ${pct}%</div>${dl ? `<div class="goal-due ${dl.cls}">${esc(dl.text)}</div>` : ''}</div>` : '';
+  const add = has && !g.done && !g.archived ? `<button class="goal-add" aria-label="Add money to ${esc(g.text)}" onclick="event.stopPropagation();addToGoal('${esc(g.id)}')">+ ₱</button>` : '';
+  const act = has ? `<button class="more-btn" aria-label="Manage ${esc(g.text)}" onclick="event.stopPropagation();openQA('goalMenu','${esc(g.id)}')">⋯</button>`
+                  : `<div class="del-x" role="button" tabindex="0" aria-label="Delete task ${esc(g.text)}" onclick="event.stopPropagation();deleteGoal('${esc(g.id)}')">×</div>`;
+  return `<div class="row goal-row${g.done?' done':''}${g.archived?' inactive':''}" role="checkbox" aria-checked="${g.done}" tabindex="0" aria-label="${esc(g.text)}" onclick="toggleGoal('${esc(g.id)}')">
     <div class="check v${g.done?' on':''}${popId===g.id?' pop':''}"></div>
     <div class="row-main"><div class="goal-text">${esc(g.text)}</div>${prog}</div>
     ${add}
-    <div class="del-x" role="button" aria-label="Delete goal" onclick="event.stopPropagation();deleteGoal('${g.id}')">×</div>
+    ${act}
   </div>`;
 }
+const keyToDay = k => { const [y,m,d] = k.split('-').map(Number); return new Date(y, m-1, d, 12); };
 const goalProgress = g => g.done ? 1 : (g.target > 0 ? Math.min(1, g.saved / g.target) : 0);
 const meterColor = pct => pct >= 100 ? 'var(--red)' : pct >= 75 ? 'var(--brass)' : 'var(--mint)';
+
+function moneyTotals(){
+  const sum = l => Math.round(l.reduce((n,x)=>n + (Number(x.amt)||0), 0) * 100) / 100;
+  const income = sum(state.budget.income), spent = sum(state.budget.expenses), moved = sum(state.budget.deposits);
+  return {income, spent, moved, avail: Math.round((income - spent - moved) * 100) / 100};
+}
+// Plain-language warnings when spending gets close to (or past) a limit
+function budgetAlerts(M){
+  const out = [];
+  if(!(M.amount > 0)) return out;
+  M.envs.filter(e=>e.status === 'over').forEach(e=>out.push({cls:'bad', icon:'⚠️', text:`${esc(e.label)} is over its limit by <b>${pesoExact(-e.left)}</b>.`}));
+  M.envs.filter(e=>e.status === 'careful').forEach(e=>out.push({cls:'warn', icon:'🔔', text:`${esc(e.label)} is at <b>${Math.round(e.pct)}%</b> of its limit. ${pesoExact(e.left)} left.`}));
+  if(M.pct >= 100) out.push({cls:'bad', icon:'⚠️', text:'You have used all of your spending budget for this month.'});
+  else if(M.pct >= 90) out.push({cls:'warn', icon:'🔔', text:`You have used <b>${Math.round(M.pct)}%</b> of your spending budget this month.`});
+  return out.slice(0, 4);
+}
+// All income, expenses and savings moves in one list, newest first, with filters
+function txnList(){
+  const b = state.budget, rows = [];
+  b.expenses.forEach(e=>rows.push({kind:'expense', id:e.id, date:e.date||'', note:e.note, amt:e.amt, cat:e.cat}));
+  b.income.forEach(e=>rows.push({kind:'income', id:e.id, date:e.date||'', note:e.note, amt:e.amt}));
+  b.deposits.forEach(e=>rows.push({kind:'saving', id:e.id, date:e.date||'', note:e.note, amt:e.amt}));
+  rows.sort((a,c)=>c.date.localeCompare(a.date));          // stable: same-day entries keep their order
+  const type = $('fType').value, cat = $('fCat').value, when = $('fWhen').value;
+  const wk = new Date(); wk.setDate(wk.getDate()-6); const weekFrom = dateKey(wk), tk = todayKey();
+  return rows.filter(r=>(type === 'all' || r.kind === type) && (cat === 'all' || (r.kind === 'expense' && r.cat === cat)) &&
+    (when === 'month' || (when === 'week' ? r.date >= weekFrom : r.date === tk)));
+}
+function renderTransactions(){
+  if(!$('fCat').options.length){
+    $('fCat').innerHTML = '<option value="all">All categories</option>' + Object.keys(CATS).map(k=>`<option value="${k}">${CATS[k].icon} ${CATS[k].label}</option>`).join('');
+  }
+  const b = state.budget, totalCount = b.expenses.length + b.income.length + b.deposits.length;
+  const rows = txnList(), filtered = $('fType').value !== 'all' || $('fCat').value !== 'all' || $('fWhen').value !== 'month';
+  $('expTag').textContent = totalCount;
+  const el = $('expenseList');
+  if(!totalCount){
+    el.innerHTML = empty('🧾','No transactions yet','Log an expense or your income and it will show up here.');
+    $('txnSummary').textContent = ''; return;
+  }
+  if(!rows.length){ el.innerHTML = empty('🔎','Nothing matches these filters','Try “Everything”, “All categories” or “This month”.'); $('txnSummary').textContent = ''; return; }
+  const spent = rows.filter(r=>r.kind === 'expense').reduce((n,r)=>n+r.amt, 0), inc = rows.filter(r=>r.kind === 'income').reduce((n,r)=>n+r.amt, 0);
+  $('txnSummary').textContent = `${filtered ? `${rows.length} of ${totalCount} shown` : `${rows.length} ${rows.length === 1 ? 'entry' : 'entries'}`} · spent ${pesoExact(spent)}` + (inc ? ` · income ${pesoExact(inc)}` : '');
+  const shown = showAllExpenses ? rows : rows.slice(0, 8);
+  el.innerHTML = shown.map(r=>{
+    const when = r.date ? new Date(r.date + 'T12:00:00').toLocaleDateString(undefined, {month:'short', day:'numeric'}) : 'No date';
+    if(r.kind === 'saving'){
+      const out = r.amt < 0;
+      return `<div class="row txn-row"><div class="exp-ico">🐷</div><div class="exp-main"><span class="exp-note">${out ? 'Taken out of' : 'Moved to'} ${esc(r.note)}</span><span class="exp-cat">Savings · ${esc(when)}</span></div><span class="amt">${out ? '+' : '−'}${peso(Math.abs(r.amt), 2)}</span></div>`;
+    }
+    const inc = r.kind === 'income', c = inc ? {icon:'💵', label:'Income'} : catOf(r.cat);
+    return `<div class="row txn-row" role="button" tabindex="0" aria-label="Edit ${inc ? 'income' : 'expense'}: ${esc(r.note)}, ${peso(r.amt, 2)}" onclick="${inc ? "openQA('income','" + esc(r.id) + "')" : "editExpense('" + esc(r.id) + "')"}">
+      <div class="exp-ico">${c.icon}</div>
+      <div class="exp-main"><span class="exp-note">${esc(r.note)}</span><span class="exp-cat">${esc(c.label)} · ${esc(when)}</span></div>
+      <span class="amt${inc ? ' in' : ''}">${inc ? '+' : '−'}${peso(r.amt, 2)}</span>
+      <div class="del-x" role="button" tabindex="0" aria-label="Delete ${inc ? 'income' : 'expense'}: ${esc(r.note)}" onclick="event.stopPropagation();${inc ? 'deleteIncome' : 'deleteExpense'}('${esc(r.id)}')">×</div></div>`;
+  }).join('') + (rows.length > 8 ? `<button class="link-btn" onclick="showAllExpenses=!showAllExpenses;render()">${showAllExpenses ? 'Show less' : `Show all ${rows.length}`}</button>` : '') +
+    '<div class="hint">Tap an entry to edit it.</div>';
+}
+['fType','fCat','fWhen'].forEach(id=>$(id).addEventListener('change', renderTransactions));
+// Rows that act like buttons also work with the keyboard
+document.addEventListener('keydown', ev=>{
+  const t = ev.target;
+  if((ev.key === 'Enter' || ev.key === ' ') && t.matches && t.matches('.row[role=button],.row[role=checkbox],.del-x[role=button]') && !qaKind){ ev.preventDefault(); t.click(); }
+});
 
 function render(){
   const now = new Date();
@@ -1685,27 +2049,38 @@ function render(){
 
   // ----- Habits -----
   const tk = todayKey();
-  const total = state.habits.length;
-  const doneCount = state.habits.filter(h=>h.doneDates.includes(tk)).length;
+  const L = LedgerReminder;
+  const activeHabits = state.habits.filter(h=>L.isActiveNow(h, now));        // not paused, not archived
+  const pausedHabits = state.habits.filter(h=>!h.archived && !L.isActiveNow(h, now));
+  const archivedHabits = state.habits.filter(h=>h.archived);
+  const todayList = habitsForToday(now);                                      // scheduled today
+  const total = todayList.length;
+  const doneCount = todayList.filter(h=>h.doneDates.includes(tk)).length;
   $('todayHabits').innerHTML = total
-    ? state.habits.map(h=>habitRow(h,false)).join('')
-    : '<div class="plain">No habits yet.</div>';
-  $('habitList').innerHTML = total
-    ? state.habits.map(h=>habitRow(h,true)).join('')
-    : empty('🌱','Start small','Add your first habit above, like “Drink water”.');
+    ? todayList.map(h=>habitRow(h,false)).join('')
+    : `<div class="plain">${activeHabits.length ? 'Nothing scheduled today. Enjoy the rest.' : 'No habits yet.'}</div>`;
+  const listed = [...activeHabits, ...pausedHabits];
+  $('habitList').innerHTML = listed.length
+    ? listed.map(h=>habitRow(h,true)).join('')
+    : (archivedHabits.length ? '<div class="plain">All your habits are archived.</div>' : empty('🌱','Start small','Add your first habit above, like “Drink water”.'));
+  $('habitArchive').innerHTML = archivedHabits.length
+    ? `<button class="link-btn" aria-expanded="${showArchivedHabits}" onclick="showArchivedHabits=!showArchivedHabits;render()">${showArchivedHabits ? 'Hide' : 'Show'} ${archivedHabits.length} archived</button>` +
+      (showArchivedHabits ? archivedHabits.map(h=>habitRow(h,true)).join('') : '') : '';
   $('habitTag').textContent = `${doneCount}/${total}`;
   $('habitTag2').textContent = `${doneCount}/${total} today`;
 
   // ----- Savings goals (Money) and tasks (Today); both live in state.goals -----
-  const savings = state.goals.filter(g=>g.target>0);
+  const savings = state.goals.filter(g=>g.target>0 && !g.archived);
+  const archivedGoals = state.goals.filter(g=>g.target>0 && g.archived);
   const tasks = state.goals.filter(g=>!(g.target>0));
-  const openGoals = state.goals.filter(g=>!g.done).length;
-  const doneGoals = state.goals.length - openGoals;
   const openFirst = list => [...list.filter(g=>!g.done), ...list.filter(g=>g.done)];
   $('goalList').innerHTML = savings.length
     ? openFirst(savings).map(goalRow).join('')
     : empty('<span class="peso-ico">₱</span>','No savings goals yet','Name something you are saving for and set a target amount.');
   $('goalTag').textContent = `${savings.filter(g=>!g.done).length} open`;
+  $('goalArchive').innerHTML = archivedGoals.length
+    ? `<button class="link-btn" aria-expanded="${showArchivedGoals}" onclick="showArchivedGoals=!showArchivedGoals;render()">${showArchivedGoals ? 'Hide' : 'Show'} ${archivedGoals.length} archived</button>` +
+      (showArchivedGoals ? archivedGoals.map(goalRow).join('') : '') : '';
   const savAvg = savings.length ? savings.reduce((n,g)=>n+goalProgress(g),0)/savings.length : 0;
   $('goalBar').style.width = Math.round(savAvg*100) + '%';
   $('goalBarNote').textContent = savings.length ? `${savings.filter(g=>g.done).length} of ${savings.length} reached` : '';
@@ -1719,10 +2094,8 @@ function render(){
   $('todayEmpty').innerHTML = nothingPlanned ? empty('✓','Nothing planned yet','Add a task below, or start a habit you want to build.') : '';
   ['habitsHead','tasksHead'].forEach(id=>{ $(id).hidden = nothingPlanned; });
   $('todayHabits').hidden = nothingPlanned; $('taskList').hidden = nothingPlanned;
-  const goalAvg = state.goals.length ? state.goals.reduce((n,g)=>n+goalProgress(g),0)/state.goals.length : 0;
 
   // ----- Money -----
-  const exps = state.budget.expenses;
   const M = moneyInfo();
   const hasBudget = M.amount > 0;
   const { spent, left: remaining, perDay, daysLeft, pct } = M;
@@ -1740,7 +2113,7 @@ function render(){
   mf.style.background = meterColor(pct);
   $('meterText').textContent = hasBudget
     ? `${Math.round(pct)}% of your spending money used.`
-    : 'Add your money for the month to get a spending plan.';
+    : 'Set a monthly budget to get a spending plan.';
 
   // The big answer: how much you can spend per day
   $('spendHero').innerHTML = hasBudget ? `
@@ -1750,7 +2123,20 @@ function render(){
       : `<div class="hero-num neg">${pesoExact(remaining)}</div>
          <div class="hero-note">You have spent more than your plan allows this month.</div>`}
     <div class="meter"><i style="width:${Math.min(100,pct)}%;background:${meterColor(pct)}"></i></div>`
-    : empty('<span class="peso-ico">₱</span>','Set your money for the month','Add what you have to spend this month. I will split it into a plan for you.','Set my money','focusBudget()');
+    : empty('<span class="peso-ico">₱</span>','Set a monthly budget','A budget is the most you plan to spend this month. It is not money in your bank. I will split it into a plan for you.','Set my budget','focusBudget()');
+  $('budgetAlerts').innerHTML = budgetAlerts(M).map(a=>`<div class="alert ${a.cls}">${a.icon} ${a.text}</div>`).join('');
+
+  // Income and what is available: only from what you logged here (never your bank balance)
+  const T = moneyTotals();
+  $('incomeVal').textContent = pesoExact(T.income);
+  $('expTotalVal').textContent = pesoExact(T.spent);
+  $('movedVal').textContent = pesoExact(T.moved);
+  const av = $('availVal');
+  av.textContent = T.income > 0 ? pesoExact(T.avail) : '—';
+  av.className = 'num val ' + (T.income > 0 ? (T.avail < 0 ? 'neg' : 'pos') : '');
+  $('balanceNote').textContent = T.income > 0
+    ? 'Available = income logged − expenses − money moved to savings goals. It only counts what you log here, so it will not match your bank balance.'
+    : 'No income logged this month. Add your income to see what is available. Your budget above is a limit, not money you have.';
 
   // The envelopes: where you can spend, and how much is left in each
   const statusColor = s => s === 'over' ? 'var(--red)' : s === 'careful' ? 'var(--brass)' : 'var(--mint)';
@@ -1765,10 +2151,9 @@ function render(){
     return `<button class="chip${on?' on':''}" aria-pressed="${on}" onclick="toggleEnv('${k}')">${CATS[k].icon} ${CATS[k].label}</button>`;
   }).join('');
   // The category pickers only list envelopes you use
-  fillCatSelect($('expenseCat'), activeEnvs());
   fillCatSelect($('checkCat'), activeEnvs());
   if(!hasBudget){
-    $('envList').innerHTML = '<div class="plain">Set your money for the month to see your envelopes.</div>';
+    $('envList').innerHTML = '<div class="plain">Set a monthly budget to see your envelopes.</div>';
     $('planNote').textContent = '';
   }else{
     $('envList').innerHTML = M.envs.map(e=>`
@@ -1797,37 +2182,11 @@ function render(){
       : 'Your envelopes add up to your spending money.';
   }
 
-  $('expTag').textContent = exps.length;
-  const el = $('expenseList');
-  el.innerHTML = exps.length ? '' : empty('🧾','No expenses yet','Log what you spend and it will show up here.');
-  (showAllExpenses ? exps : exps.slice(0,6)).forEach(e=>{
-    const c = catOf(e.cat);
-    const row = document.createElement('div');
-    row.className = 'row expense-row';
-    row.onclick = () => editExpense(e.id);
-    row.innerHTML = `
-      <div class="exp-ico">${c.icon}</div>
-      <div class="exp-main"><span class="exp-note">${esc(e.note)}</span><span class="exp-cat">${c.label}</span></div>
-      <span class="amt">−${peso(e.amt, 2)}</span>
-      <div class="del-x" role="button" aria-label="Delete expense" onclick="event.stopPropagation();deleteExpense('${e.id}')">×</div>`;
-    el.appendChild(row);
-  });
-  if(exps.length > 6){
-    const more = document.createElement('button');
-    more.className = 'link-btn';
-    more.textContent = showAllExpenses ? 'Show less' : `Show all ${exps.length}`;
-    more.onclick = () => { showAllExpenses = !showAllExpenses; render(); };
-    el.appendChild(more);
-  }
-  if(exps.length){
-    const hint = document.createElement('div');
-    hint.className = 'hint';
-    hint.textContent = 'Tap an expense to change its amount.';
-    el.appendChild(hint);
-  }
+  renderTransactions();
 
   renderReminder();
   renderHistory();
+  renderPreUpdate();
   renderRecurring();
   renderBackupNudge();
   renderJournal();
@@ -1841,23 +2200,25 @@ function render(){
     const d = new Date(); d.setDate(d.getDate()-i);
     days.push({key: dateKey(d), label: d.toLocaleDateString('en-US',{weekday:'narrow'}), today: i===0});
   }
-  if(!total){
+  if(!activeHabits.length){
     $('weekGrid').innerHTML = '<div class="plain">Add a habit to see your week here.</div>';
     $('weekTag').textContent = 'last 7 days';
   }else{
-    let doneTotal = 0;
+    let doneTotal = 0, dueTotal = 0;
     let html = '<div class="week-row week-head"><span></span>' +
       days.map(d=>`<span class="${d.today?'today':''}">${d.label}</span>`).join('') + '</div>';
-    state.habits.forEach(h=>{
+    activeHabits.forEach(h=>{
       html += `<div class="week-row"><span class="week-name">${esc(h.name)}</span>` +
         days.map(d=>{
           const on = h.doneDates.includes(d.key);
+          const sched = LedgerReminder.isScheduledOn(h, keyToDay(d.key));
           if(on) doneTotal++;
-          return `<span class="wd${on?' on':''}"></span>`;
+          if(sched || on) dueTotal++;
+          return `<span class="wd${on?' on':''}${!sched && !on?' off':''}"></span>`;
         }).join('') + '</div>';
     });
     $('weekGrid').innerHTML = html;
-    $('weekTag').textContent = Math.round(doneTotal/(total*7)*100) + '% this week';
+    $('weekTag').textContent = (dueTotal ? Math.round(doneTotal/dueTotal*100) : 0) + '% this week';
   }
 
   // ----- Mood -----
@@ -1938,60 +2299,208 @@ function goHabits(){ go('habits'); setTimeout(()=>{ try{ $('habitInput').focus()
 function focusTasks(){ const el = $('taskInput'); try{ el.scrollIntoView({block:'center'}); el.focus({preventScroll:true}); }catch(e){} }
 const REFLECT_PROMPTS = ['What is one thing that went okay today?','What would make tomorrow a little easier?','What are you glad you did today?','Is there anything you want to remember about today?','What gave you energy today?'];
 
-// ---------- Quick actions: one small sheet, five forms ----------
-let qaKind = null, qaReturn = null;
+// ---------- One dialog for every form: add, edit, confirm ----------
+let qaKind = null, qaCtx = null, qaReturn = null;
+const MOOD_NAMES = ['Low','Down','Okay','Good','Great'];
+const DAY_CHIPS = [[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri'],[6,'Sat'],[0,'Sun']];
+const fld = (id, label, inner, hint) => `<div class="fld"><label for="${id}">${label}</label>${inner}${hint ? `<div class="fld-hint">${hint}</div>` : ''}</div>`;
+const dateField = (id, label, val, min, max, hint) => fld(id, label, `<input id="${id}" type="date" value="${val || ''}"${min ? ` min="${min}"` : ''}${max ? ` max="${max}"` : ''}>`, hint);
+const moodOptions = autoLabel => (autoLabel ? `<option value="auto">${autoLabel}</option>` : '') + '<option value="none">No mood</option>' + MOODS.map((m,i)=>`<option value="${i}">${m} ${MOOD_NAMES[i]}</option>`).join('');
+const isDateKey = k => /^\d{4}-\d{2}-\d{2}$/.test(k || '') && !isNaN(new Date(k + 'T12:00:00'));
+const monthStartKey = () => monthKey() + '-01';
+const AMT_MSG = 'Enter an amount greater than zero, like 250 or 99.50.';
+// Returns an error message, or '' when the date is fine. Money dates stay inside the current month.
+function moneyDateError(v, required){
+  if(!v) return required ? 'Pick a date.' : '';
+  if(!isDateKey(v)) return 'That date is not valid.';
+  if(v > todayKey()) return 'The date cannot be in the future.';
+  if(v < monthStartKey()) return 'Money entries are kept for the current month. Pick a date this month.';
+  return '';
+}
+function moodFromSelect(v, date){
+  if(v === 'none') return undefined;
+  if(v === 'auto') return state.moodLog[date || todayKey()];
+  const n = parseInt(v); return n >= 0 && n <= 4 ? n : undefined;
+}
+const deleteBtn = '<button class="ghost-btn danger" data-qa-do="delete">Delete</button>';
+const menuBtn = (act, label, sub, cls) => `<button class="menu-btn${cls ? ' ' + cls : ''}" data-qa-do="${act}"><b>${label}</b>${sub ? `<span>${sub}</span>` : ''}</button>`;
+const findHabit = id => state.habits.find(x=>x.id===id);
+const findGoal = id => state.goals.find(x=>x.id===id);
+
 const QA = {
-  expense:{ title:'Add an expense',
-    body:()=>`<input id="qaNote" maxlength="60" placeholder="What did you spend on? (optional)" aria-label="What did you spend on"><div class="qa-row"><select id="qaCat" aria-label="Category"></select><input id="qaAmt" type="number" inputmode="decimal" placeholder="₱ Amount" aria-label="Amount in pesos"></div>`,
-    init:()=>{ fillCatSelect($('qaCat'), activeEnvs()); }, focus:'qaAmt',
-    submit:()=>{ const amt = parseFloat($('qaAmt').value); if(!(amt > 0)) return {error:'Enter an amount greater than zero.'};
-      pushExpense($('qaNote').value.trim() || 'Expense', amt, $('qaCat').value); return {msg:'Expense added.'}; } },
-  mood:{ title:'How are you feeling?', body:()=>'<div class="mood-picker" id="qaMoods"></div>', noSave:true,
+  expense:{ title:id=>id ? 'Edit expense' : 'Add an expense',
+    body:id=>{ const e = id && state.budget.expenses.find(x=>x.id===id);
+      return fld('qaNote','What for (optional)',`<input id="qaNote" maxlength="60" placeholder="e.g. Lunch" value="${e ? esc(e.note) : ''}">`) +
+        `<div class="qa-row">${fld('qaCat','Category','<select id="qaCat"></select>')}${fld('qaAmt','Amount (₱)',`<input id="qaAmt" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" value="${e ? e.amt : ''}">`)}</div>` +
+        dateField('qaDate','Date', e ? (e.date || '') : todayKey(), monthStartKey(), todayKey()); },
+    init:id=>{ const e = id && state.budget.expenses.find(x=>x.id===id);
+      fillCatSelect($('qaCat'), e ? Object.keys(CATS) : activeEnvs()); if(e) $('qaCat').value = e.cat; },
+    focus:'qaAmt', extra:id=>id ? deleteBtn : '',
+    act:(n,id)=>{ if(n === 'delete'){ closeQA(); deleteExpense(id); } },
+    submit:id=>{ const amt = parseAmount($('qaAmt').value); if(!(amt > 0)) return {error:AMT_MSG};
+      const date = $('qaDate').value, de = moneyDateError(date, !id); if(de) return {error:de};
+      const note = $('qaNote').value.trim() || 'Expense';
+      if(id){ const e = state.budget.expenses.find(x=>x.id===id); if(!e) return {error:'That expense no longer exists.'};
+        e.note = note; e.amt = amt; e.cat = $('qaCat').value; if(date) e.date = date; else delete e.date;
+        state.budget.plan.off = state.budget.plan.off.filter(k=>k !== e.cat); save(); render(); return {msg:'Expense updated.'}; }
+      pushExpense(note, amt, $('qaCat').value, date); return {msg:'Expense added.'}; } },
+  income:{ title:id=>id ? 'Edit income' : 'Add income',
+    body:id=>{ const e = id && state.budget.income.find(x=>x.id===id);
+      return fld('qaNote','Where from (optional)',`<input id="qaNote" maxlength="60" placeholder="e.g. Salary, allowance, sales" value="${e ? esc(e.note) : ''}">`) +
+        fld('qaAmt','Amount (₱)',`<input id="qaAmt" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" value="${e ? e.amt : ''}">`) +
+        dateField('qaDate','Date', e ? (e.date || '') : todayKey(), monthStartKey(), todayKey()); },
+    focus:'qaAmt', extra:id=>id ? deleteBtn : '',
+    act:(n,id)=>{ if(n === 'delete'){ closeQA(); deleteIncome(id); } },
+    submit:id=>{ const amt = parseAmount($('qaAmt').value); if(!(amt > 0)) return {error:AMT_MSG};
+      const date = $('qaDate').value, de = moneyDateError(date, !id); if(de) return {error:de};
+      const note = $('qaNote').value.trim() || 'Income';
+      if(id){ const e = state.budget.income.find(x=>x.id===id); if(!e) return {error:'That entry no longer exists.'};
+        e.note = note; e.amt = amt; if(date) e.date = date; else delete e.date; save(); render(); return {msg:'Income updated.'}; }
+      state.budget.income.unshift({id: uid(), note, amt, date}); buzz(12); save(); render(); return {msg:'Income added.'}; } },
+  deposit:{ title:id=>{ const g = findGoal(id); return g ? `Money for "${g.text}"` : 'Savings'; },
+    body:id=>{ const g = findGoal(id); if(!g) return '';
+      return `<div class="note" style="margin:0">Saved so far: <b>${pesoExact(g.saved)}</b> of ${pesoExact(g.target)}</div>` +
+        `<div class="qa-row">${fld('qaDir','I want to','<select id="qaDir"><option value="in">Put money in</option><option value="out">Take money out</option></select>')}${fld('qaAmt','Amount (₱)','<input id="qaAmt" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00">')}</div>`; },
+    focus:'qaAmt',
+    submit:id=>{ const g = findGoal(id); if(!g || !(g.target > 0)) return {error:'That goal no longer exists.'};
+      const v = parseAmount($('qaAmt').value); if(!(v > 0)) return {error:AMT_MSG};
+      const out = $('qaDir').value === 'out';
+      if(out && v > g.saved) return {error:`Only ${pesoExact(g.saved)} is saved here, so you cannot take out ${pesoExact(v)}.`};
+      const was = g.done; applyDeposit(id, out ? -v : v);
+      return {msg: (g.done && !was) ? null : out ? 'Money taken out.' : 'Money added.'}; } },
+  plan:{ title:key=>(key === 'savings' ? 'Savings' : CATS[key].label) + ' this month',
+    body:key=>fld('qaAmt','Amount for this month (₱)',`<input id="qaAmt" type="number" inputmode="decimal" step="0.01" min="0" value="${Math.round(moneyInfo().alloc[key]*100)/100}">`, 'Changing one envelope switches your plan to custom. You can reset it any time.'),
+    focus:'qaAmt',
+    submit:key=>{ const v = parseAmount($('qaAmt').value); if(isNaN(v) || v < 0) return {error:'Enter zero or more pesos.'}; setPlanAmount(key, v); return {msg:null}; } },
+  mood:{ title:()=>'How are you feeling?', body:()=>'<div class="mood-picker" id="qaMoods"></div>', noSave:true,
     init:()=>{ const cur = state.moodLog[todayKey()]; MOODS.forEach((m,i)=>{ const b = document.createElement('button'); b.className = 'mood-opt' + (cur===i ? ' on' : ''); b.textContent = m; b.dataset.mood = i; b.setAttribute('aria-label', `Mood ${i+1} of 5`); $('qaMoods').appendChild(b); }); } },
-  task:{ title:'New task', body:()=>'<input id="qaText" maxlength="60" placeholder="What needs doing?" aria-label="Task">', focus:'qaText',
+  task:{ title:()=>'New task', body:()=>fld('qaText','Task','<input id="qaText" maxlength="60" placeholder="What needs doing?">'), focus:'qaText',
     submit:()=>{ const t = $('qaText').value.trim(); if(!t) return {error:'Write the task first.'}; pushTask(t); return {msg:'Task added.'}; } },
-  journal:{ title:'Journal entry', body:()=>`<textarea id="qaText" maxlength="2000" placeholder="${REFLECT_PROMPTS[new Date().getDate() % REFLECT_PROMPTS.length]}" aria-label="Journal entry"></textarea><div class="note" style="margin:0">Optional. Share only what you want.</div>`, focus:'qaText',
-    submit:()=>{ const t = $('qaText').value.trim(); if(!t) return {error:'Write a few words first.'}; pushJournal(t); return {msg:'Entry saved.'}; } },
-  goal:{ title:'New savings goal', body:()=>'<input id="qaText" maxlength="60" placeholder="What are you saving for?" aria-label="Goal name"><input id="qaTarget" type="number" inputmode="decimal" placeholder="₱ Target amount" aria-label="Target amount in pesos">', focus:'qaText',
-    submit:()=>{ const t = $('qaText').value.trim(), amt = parseFloat($('qaTarget').value); if(!t) return {error:'Name what you are saving for.'}; if(!(amt > 0)) return {error:'Add a target amount in pesos.'}; pushGoal(t, amt); return {msg:'Goal added.'}; } }
+  journal:{ title:id=>id ? 'Edit entry' : 'Journal entry',
+    body:id=>{ const e = id && state.journal.find(x=>x.id===id);
+      return fld('qaText','Entry',`<textarea id="qaText" maxlength="2000" placeholder="${REFLECT_PROMPTS[new Date().getDate() % REFLECT_PROMPTS.length]}">${e ? esc(e.text) : ''}</textarea>`, 'Optional prompt above. Share only what you want.') +
+        `<div class="qa-row">${dateField('qaDate','Date', e ? e.date : todayKey(), '', todayKey())}${fld('qaMood','Mood (optional)',`<select id="qaMood">${moodOptions(id ? '' : "Today's mood")}</select>`)}</div>`; },
+    init:id=>{ const e = id && state.journal.find(x=>x.id===id); if(e) $('qaMood').value = e.mood !== undefined ? String(e.mood) : 'none'; },
+    focus:'qaText', extra:id=>id ? deleteBtn : '',
+    act:(n,id)=>{ if(n === 'delete'){ closeQA(); confirmDeleteJournal(id); } },
+    submit:id=>{ const t = $('qaText').value.trim(); if(!t) return {error:'Write a few words first.'};
+      const date = $('qaDate').value; if(!isDateKey(date)) return {error:'Pick a valid date.'}; if(date > todayKey()) return {error:'The date cannot be in the future.'};
+      const mood = moodFromSelect($('qaMood').value, date);
+      if(id){ if(!updateJournal(id, t, date, mood)) return {error:'That entry no longer exists.'}; return {msg:'Entry updated.'}; }
+      pushJournal(t, {date, mood}); return {msg:'Entry saved.'}; } },
+  goal:{ title:id=>id ? 'Edit savings goal' : 'New savings goal',
+    body:id=>{ const g = id && findGoal(id);
+      return fld('qaText','Goal name',`<input id="qaText" maxlength="60" placeholder="What are you saving for?" value="${g ? esc(g.text) : ''}">`) +
+        `<div class="qa-row">${fld('qaTarget','Target (₱)',`<input id="qaTarget" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" value="${g ? g.target : ''}">`)}${fld('qaSaved','Saved so far (₱)',`<input id="qaSaved" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0" value="${g ? g.saved : ''}">`)}</div>` +
+        dateField('qaDue','Deadline (optional)', g ? (g.deadline || '') : '', '', '', 'Leave empty if there is no deadline.'); },
+    focus:'qaText', extra:id=>id ? deleteBtn : '',
+    act:(n,id)=>{ if(n === 'delete'){ closeQA(); confirmDeleteGoal(id); } },
+    submit:id=>{ const text = $('qaText').value.trim(); if(!text) return {error:'Name what you are saving for.'};
+      const t = parseAmount($('qaTarget').value); if(!(t > 0)) return {error:'Add a target amount in pesos.'};
+      const sv = $('qaSaved').value.trim() === '' ? 0 : parseAmount($('qaSaved').value); if(isNaN(sv) || sv < 0) return {error:'Saved so far must be zero or more.'};
+      const due = $('qaDue').value; if(due && !isDateKey(due)) return {error:'That deadline is not a valid date.'};
+      if(due && !id && due < todayKey()) return {error:'Pick a deadline from today onward, or leave it empty.'};
+      if(id){ const g = findGoal(id); if(!g) return {error:'That goal no longer exists.'}; editGoal(g, text, t, sv, due); return {msg:'Goal updated.'}; }
+      pushGoal(text, t, {saved:sv, deadline:due}); return {msg:'Goal added.'}; } },
+  goalMenu:{ title:id=>{ const g = findGoal(id); return g ? g.text : 'Goal'; }, noSave:true,
+    body:id=>{ const g = findGoal(id); if(!g) return '';
+      return menuBtn('edit','Edit goal','Name, target, saved so far, deadline') + (g.done ? '' : menuBtn('add','Add or take out money', pesoExact(g.saved) + ' saved')) +
+        menuBtn('done', g.done ? 'Reopen goal' : 'Mark as reached', g.done ? 'Put it back in progress' : 'Counts it as done') +
+        menuBtn('archive', g.archived ? 'Restore goal' : 'Archive goal', g.archived ? 'Show it in your list again' : 'Hide it. Nothing is deleted') +
+        menuBtn('delete','Delete goal','Removes it for good','danger'); },
+    act:(n,id)=>{ closeQA();
+      if(n === 'edit') openQA('goal', id); else if(n === 'add') openQA('deposit', id);
+      else if(n === 'done') toggleGoal(id); else if(n === 'archive'){ const g = findGoal(id); if(g) archiveGoal(id, !g.archived); }
+      else if(n === 'delete') confirmDeleteGoal(id); } },
+  habit:{ title:id=>id ? 'Edit habit' : 'New habit',
+    body:id=>{ const h = id && findHabit(id);
+      return fld('qaText','Habit name',`<input id="qaText" maxlength="40" placeholder="e.g. Drink water" value="${h ? esc(h.name) : ''}">`) +
+        fld('qaSched','How often',`<select id="qaSched"><option value="daily">Every day</option><option value="weekdays">Weekdays (Mon to Fri)</option><option value="weekends">Weekends</option><option value="days">Pick days</option><option value="weekly">A few days a week</option></select>`) +
+        `<div class="fld" id="qaDaysWrap" hidden><label id="qaDaysLbl">Which days</label><div class="chips" id="qaDays" role="group" aria-labelledby="qaDaysLbl">${DAY_CHIPS.map(([d,n])=>`<button type="button" class="chip" data-day="${d}" aria-pressed="false">${n}</button>`).join('')}</div></div>` +
+        `<div class="fld" id="qaNWrap" hidden><label for="qaN">Days each week</label><select id="qaN">${[1,2,3,4,5,6].map(n=>`<option value="${n}">${n}</option>`).join('')}</select><div class="fld-hint">Any days you like. Your week runs Monday to Sunday.</div></div>` +
+        (h ? '<div class="note" style="margin:0">Your history is kept when you change the schedule.</div>' : ''); },
+    init:id=>{ const h = id && findHabit(id), sc = h ? LedgerReminder.schedOf(h) : {type:'daily'};
+      let v = 'daily';
+      if(sc.type === 'weekly'){ v = 'weekly'; $('qaN').value = String(sc.n); }
+      else if(sc.type === 'days'){ const k = [...sc.days].sort().join(''); v = k === '12345' ? 'weekdays' : k === '06' ? 'weekends' : 'days';
+        $('qaDays').querySelectorAll('.chip').forEach(c=>{ const on = sc.days.includes(+c.dataset.day); c.classList.toggle('on', on); c.setAttribute('aria-pressed', on); }); }
+      $('qaSched').value = v; syncSchedFields(); },
+    focus:'qaText',
+    submit:id=>{ const name = $('qaText').value.trim().slice(0,40); if(!name) return {error:'Give the habit a name.'};
+      if(habitNameTaken(name, id)) return {error:`You already have a habit called "${name}".`};
+      const v = $('qaSched').value; let sched;
+      if(v === 'weekdays') sched = {type:'days', days:[1,2,3,4,5]};
+      else if(v === 'weekends') sched = {type:'days', days:[0,6]};
+      else if(v === 'days'){ const d = [...$('qaDays').querySelectorAll('.chip.on')].map(c=>+c.dataset.day); if(!d.length) return {error:'Pick at least one day.'}; if(d.length < 7) sched = {type:'days', days:d.sort()}; }
+      else if(v === 'weekly') sched = {type:'weekly', n:+$('qaN').value};
+      if(id){ const h = findHabit(id); if(!h) return {error:'That habit no longer exists.'};
+        h.name = name; if(sched) h.sched = sched; else delete h.sched; save(); render(); return {msg:'Habit updated. Your history is untouched.'}; }
+      state.habits.push(Object.assign({id: uid(), name, doneDates: [], created: todayKey()}, sched ? {sched} : {})); buzz(12); save(); render(); return {msg:'Habit added.'}; } },
+  habitMenu:{ title:id=>{ const h = findHabit(id); return h ? h.name : 'Habit'; }, noSave:true,
+    body:id=>{ const h = findHabit(id); if(!h) return ''; const paused = habitIsPaused(h);
+      return menuBtn('edit','Edit habit','Name and schedule') + menuBtn('info','History and streaks','Last 5 weeks, misses, consistency') +
+        (h.archived ? '' : menuBtn('pause', paused ? 'Resume habit' : 'Pause habit', paused ? 'Start counting it again' : 'Holiday or sick? Paused days never count as missed')) +
+        menuBtn('archive', h.archived ? 'Restore habit' : 'Archive habit', h.archived ? 'Bring it back to your list' : 'Hide it but keep all its history') +
+        menuBtn('delete','Delete forever',`Removes it and its ${h.doneDates.length} tick${h.doneDates.length === 1 ? '' : 's'}`,'danger'); },
+    act:(n,id)=>{ closeQA(); const h = findHabit(id); if(!h) return;
+      if(n === 'edit') openQA('habit', id); else if(n === 'info') openQA('habitInfo', id);
+      else if(n === 'pause') (habitIsPaused(h) ? resumeHabit : pauseHabit)(id);
+      else if(n === 'archive') archiveHabit(id, !h.archived);
+      else if(n === 'delete') openQA('confirm', {title:`Delete "${h.name}" forever?`, text:`This removes the habit and its ${h.doneDates.length} tick${h.doneDates.length === 1 ? '' : 's'} of history. Archive it instead if you want to keep the history.`, ok:'Delete', danger:true, onOk:()=>deleteHabit(id)}); } },
+  habitInfo:{ title:id=>{ const h = findHabit(id); return h ? h.name : 'Habit'; }, noSave:true, closeLabel:'Close', body:id=>{ const h = findHabit(id); return h ? habitInfoHtml(h) : ''; } },
+  confirm:{ title:c=>c.title, body:c=>`<p class="qa-text">${esc(c.text)}</p>`, saveLabel:c=>c.ok || 'OK', danger:c=>!!c.danger,
+    submit:c=>{ c.onOk(); return {msg:null}; } }
 };
-function openQA(kind){
+function syncSchedFields(){
+  const v = $('qaSched') && $('qaSched').value;
+  if($('qaDaysWrap')) $('qaDaysWrap').hidden = v !== 'days';
+  if($('qaNWrap')) $('qaNWrap').hidden = v !== 'weekly';
+}
+const qaOf = (x, ctx) => typeof x === 'function' ? x(ctx) : x;
+function openQA(kind, ctx){
   const q = QA[kind]; if(!q || qaKind) return;
-  qaKind = kind; qaReturn = document.activeElement;
-  $('qaTitle').textContent = q.title; $('qaBody').innerHTML = q.body();
+  qaKind = kind; qaCtx = ctx; qaReturn = document.activeElement;
+  $('qaTitle').textContent = qaOf(q.title, ctx); $('qaBody').innerHTML = qaOf(q.body, ctx);
   $('qaErr').hidden = true;
-  $('qaActions').innerHTML = q.noSave ? '' : '<button class="ghost-btn" id="qaCancel">Cancel</button><button class="add-btn" id="qaSave">Save</button>';
+  const saveLabel = qaOf(q.saveLabel, ctx) || 'Save';
+  $('qaActions').innerHTML = q.noSave
+    ? (q.closeLabel ? `<button class="ghost-btn" id="qaCancel">${q.closeLabel}</button>` : '')
+    : `${q.extra ? qaOf(q.extra, ctx) : ''}<button class="ghost-btn" id="qaCancel">Cancel</button><button class="add-btn${qaOf(q.danger, ctx) ? ' danger' : ''}" id="qaSave">${saveLabel}</button>`;
   $('qa').hidden = false;
-  if(q.init) q.init();
-  const f = q.focus ? $(q.focus) : $('qaClose'); try{ f.focus(); }catch(e){}
+  if(q.init) q.init(ctx);
+  const f = q.focus ? $(q.focus) : ($('qaBody').querySelector('button,input,select,textarea') || $('qaClose')); try{ f.focus(); }catch(e){}
 }
 function closeQA(){
   if(!qaKind) return;
-  qaKind = null; $('qa').hidden = true;
-  try{ if(qaReturn && qaReturn.focus) qaReturn.focus(); }catch(e){} qaReturn = null;
+  qaKind = null; qaCtx = null; $('qa').hidden = true;
+  try{ if(qaReturn && qaReturn.isConnected && qaReturn.focus) qaReturn.focus(); }catch(e){} qaReturn = null;
 }
 function submitQA(){
   if(!qaKind) return;                       // already submitted: ignore a second tap
-  const r = QA[qaKind].submit();
+  const r = QA[qaKind].submit(qaCtx);
   if(r.error){ $('qaErr').textContent = r.error; $('qaErr').hidden = false; return; }
-  const btn = $('qaSave'); if(btn) btn.disabled = true;
   closeQA();
-  showToast(r.msg, null, 2500);
+  if(r.msg) showToast(r.msg, null, 2500);
 }
 // These listeners are attached exactly once, at startup
 document.addEventListener('click', ev=>{
-  const t = ev.target;
-  const trigger = t.closest && t.closest('[data-qa]');
+  const t = ev.target, c = t.closest ? sel=>t.closest(sel) : ()=>null;
+  const trigger = c('[data-qa]');
   if(trigger){ openQA(trigger.dataset.qa); return; }
-  if(t.id === 'qa' || (t.closest && (t.closest('#qaClose') || t.closest('#qaCancel')))){ closeQA(); return; }
-  if(t.closest && t.closest('#qaSave')){ submitQA(); return; }
-  const m = t.closest && t.closest('#qaMoods .mood-opt');
+  if(t.id === 'qa' || c('#qaClose') || c('#qaCancel')){ closeQA(); return; }
+  if(c('#qaSave')){ submitQA(); return; }
+  const doBtn = c('[data-qa-do]');
+  if(doBtn && qaKind){ const q = QA[qaKind]; if(q.act) q.act(doBtn.dataset.qaDo, qaCtx); return; }
+  const day = c('#qaDays .chip');
+  if(day){ day.classList.toggle('on'); day.setAttribute('aria-pressed', day.classList.contains('on')); return; }
+  const m = c('#qaMoods .mood-opt');
   if(m){ closeQA(); setMood(+m.dataset.mood); }
 });
+document.addEventListener('change', ev=>{ if(ev.target && ev.target.id === 'qaSched') syncSchedFields(); });
 document.addEventListener('keydown', ev=>{
   if(!qaKind) return;
   if(ev.key === 'Escape'){ closeQA(); return; }
-  if(ev.key === 'Enter' && ev.target.tagName === 'INPUT'){ ev.preventDefault(); submitQA(); return; }
+  if(ev.key === 'Enter' && ev.target.tagName === 'INPUT' && $('qaSave')){ ev.preventDefault(); submitQA(); return; }
   if(ev.key === 'Tab'){
     const f = [...$('qa').querySelectorAll('button,input,select,textarea')].filter(e=>!e.disabled && e.offsetParent !== null);
     if(!f.length) return;
@@ -2002,14 +2511,11 @@ document.addEventListener('keydown', ev=>{
 });
 
 // Enter / Go / Done on the phone keyboard submits the field
-[['habitInput', addHabit], ['goalInput', addGoal], ['goalTarget', addGoal], ['taskInput', addTask], ['budgetInput', setBudget], ['expenseAmt', addExpense]].forEach(([id, fn])=>{
+[['habitInput', addHabit], ['goalInput', addGoal], ['goalTarget', addGoal], ['taskInput', addTask], ['budgetInput', setBudget]].forEach(([id, fn])=>{
   $(id).addEventListener('keydown', ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); fn(); } });
 });
 $('checkAmt').addEventListener('input', checkAfford);
 $('checkCat').addEventListener('change', checkAfford);
-$('expenseNote').addEventListener('keydown', ev=>{
-  if(ev.key==='Enter'){ ev.preventDefault(); $('expenseAmt').focus(); }
-});
 
 // When you come back to the app (or it's left open past midnight), refresh the day and month
 document.addEventListener('visibilitychange', ()=>{
