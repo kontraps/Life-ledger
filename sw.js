@@ -1,7 +1,12 @@
-const CACHE = 'ledger-v19';
+const CACHE = 'ledger-v20';
 const META_CACHE = 'ledger-meta';   // survives updates: holds a copy of your reminder settings
 const FILES = [
   './life-dashboard.html','./manifest.json','./icon.png','./reminder.js','./icon-192.png',
+  './assets/life-ledger/branding/life_ledger_leaf.svg','./assets/life-ledger/branding/life_ledger_logo.svg',
+  './assets/life-ledger/illustrations/onboarding_landscape.svg','./assets/life-ledger/illustrations/empty_state.svg',
+  './assets/life-ledger/icons/categories/food.svg','./assets/life-ledger/icons/categories/transport.svg',
+  './assets/life-ledger/icons/categories/bills.svg','./assets/life-ledger/icons/categories/entertainment.svg',
+  './assets/life-ledger/icons/categories/other.svg','./assets/life-ledger/ASSET_INVENTORY.md',
   './fonts/bricolage-700.woff2','./fonts/bricolage-800.woff2',
   './fonts/plexmono-500-latin.woff2','./fonts/plexmono-500-ext.woff2',
   './fonts/plexmono-600-latin.woff2','./fonts/plexmono-600-ext.woff2'
