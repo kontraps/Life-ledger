@@ -425,11 +425,17 @@
   .money-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;}
   .money-overview h2{font-family:var(--display);font-size:14px;line-height:1.2;font-weight:500;margin:0 0 4px;}
   .money-link{min-height:44px;border:0;background:transparent;color:var(--mint);font-size:14px;font-weight:700;white-space:nowrap;cursor:pointer;padding:0 2px 0 8px;}
-  .money-total{padding:10px 0 13px;}
   .money-label{font-size:13px;color:var(--muted);}
   .money-value{display:block;font-family:var(--display);font-weight:700;font-size:25px;line-height:1.2;letter-spacing:-.03em;margin-top:3px;overflow-wrap:anywhere;}
   .money-value.pos{color:var(--mint);}.money-value.neg{color:var(--red);}
   .money-caption{display:block;font-size:12px;color:var(--muted);margin-top:4px;}
+  .money-total{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0 13px;}
+  .money-total-copy{min-width:0;}
+  .balance-eye{width:44px;height:44px;flex:none;border:0;border-radius:50%;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;}
+  .balance-eye svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+  .balance-eye .eye-hidden{display:none;}
+  .balance-eye[aria-pressed="true"] .eye-visible{display:none;}
+  .balance-eye[aria-pressed="true"] .eye-hidden{display:block;}
   .money-split{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);}
   .money-stat{min-width:0;}.money-stat:last-child{text-align:right;}
   .money-stat span{display:block;color:var(--muted);font-size:12px;}
@@ -652,13 +658,19 @@
         <button class="money-link" onclick="go('budget')">View budget <span aria-hidden="true">›</span></button>
       </div>
       <div class="money-total">
-        <span class="money-label">Available this month</span>
-        <strong class="money-value" id="homeAvailable">—</strong>
-        <span class="money-caption" id="homeBalanceNote">Based on the activity you log here.</span>
+        <div class="money-total-copy">
+          <span class="money-label">Available this month</span>
+          <strong class="money-value home-money-value" id="homeAvailable">—</strong>
+          <span class="money-caption" id="homeBalanceNote">Based on the activity you log here.</span>
+        </div>
+        <button class="balance-eye" id="homeBalanceToggle" onclick="toggleHomeBalance()" aria-label="Hide balances" aria-pressed="false">
+          <svg class="eye-visible" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-hidden" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a15 15 0 0 1-3.2 3.8M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10 10 0 0 0 4-.8"/></svg>
+        </button>
       </div>
       <div class="money-split">
-        <div class="money-stat"><span>Income</span><strong class="income" id="homeIncome">₱0</strong></div>
-        <div class="money-stat"><span>Expenses</span><strong class="expenses" id="homeExpenses">₱0</strong></div>
+        <div class="money-stat"><span>Income</span><strong class="income home-money-value" id="homeIncome">₱0</strong></div>
+        <div class="money-stat"><span>Expenses</span><strong class="expenses home-money-value" id="homeExpenses">₱0</strong></div>
       </div>
       <div class="money-actions" role="group" aria-label="Money quick actions">
         <button class="money-action" data-qa="expense"><span class="money-action-icon" aria-hidden="true">+</span><span>Add Expense</span></button>
@@ -1060,6 +1072,8 @@ let state = {
 let showAllExpenses = false;
 let showArchivedHabits = false, showArchivedGoals = false;
 let currentTab = 'today';
+let hideHomeBalance = false;
+try{ hideHomeBalance = localStorage.getItem('ledger-hide-balance') === '1'; }catch(e){}
 let popId = null;    // the item that was just ticked (gets the stamp animation)
 
 // Makes sure saved data has every field we need (older versions saved less)
@@ -1209,6 +1223,22 @@ function go(tab){
 function syncThemeColor(){
   const light = document.documentElement.getAttribute('data-theme') === 'light';
   $('themeColor').setAttribute('content', light ? '#E4ECDE' : '#0A1510');
+}
+function syncHomeBalanceVisibility(){
+  document.querySelectorAll('.home-money-value').forEach(el=>{
+    const label = el.id === 'homeAvailable' ? 'Available balance' : el.id === 'homeIncome' ? 'Income' : 'Expenses';
+    const value = el.dataset.balanceValue || '—';
+    el.textContent = hideHomeBalance ? '••••••' : value;
+    el.setAttribute('aria-label', hideHomeBalance ? `${label} hidden` : `${label}: ${value}`);
+  });
+  const button = $('homeBalanceToggle');
+  button.setAttribute('aria-pressed', hideHomeBalance ? 'true' : 'false');
+  button.setAttribute('aria-label', hideHomeBalance ? 'Show balances' : 'Hide balances');
+}
+function toggleHomeBalance(){
+  hideHomeBalance = !hideHomeBalance;
+  try{ localStorage.setItem('ledger-hide-balance', hideHomeBalance ? '1' : '0'); }catch(e){}
+  syncHomeBalanceVisibility();
 }
 function toggleTheme(){
   const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
@@ -1406,15 +1436,20 @@ function renderRecurring(){
 }
 
 // ---------- Year heatmap ----------
+let lastHeatKey = '';
 function renderHeat(){
-  const habits = state.habits.filter(h=>LedgerReminder.isActiveNow(h, new Date()));
+  const now = new Date();
+  const habits = state.habits.filter(h=>LedgerReminder.isActiveNow(h, now));
   const total = habits.length;
   const el = $('heat');
+  const heatKey = dateKey(now) + JSON.stringify(habits.map(h=>[h.id,h.doneDates]));
+  if(heatKey === lastHeatKey) return;
+  lastHeatKey = heatKey;
   if(!total){ el.innerHTML = ''; el.style.display = 'none'; $('yearTag').textContent = ''; document.querySelector('.heat-legend').style.display = 'none'; return; }
   el.style.display = ''; document.querySelector('.heat-legend').style.display = '';
   const counts = {};
   habits.forEach(h=>h.doneDates.forEach(k=>{ counts[k] = (counts[k]||0) + 1; }));
-  const today = new Date(); today.setHours(12,0,0,0);
+  const today = new Date(now); today.setHours(12,0,0,0);
   // 53 columns of weeks, Sunday on top, ending with this week
   const start = new Date(today); start.setDate(start.getDate() - today.getDay() - 52*7);
   let html = '', active = 0;
@@ -2297,11 +2332,12 @@ function render(){
   const T = moneyTotals();
   const monthLabel = now.toLocaleDateString(undefined,{month:'long',year:'numeric'});
   $('homeMonthPill').textContent = monthLabel;
-  $('homeIncome').textContent = pesoExact(T.income);
-  $('homeExpenses').textContent = pesoExact(T.spent);
+  $('homeIncome').dataset.balanceValue = pesoExact(T.income);
+  $('homeExpenses').dataset.balanceValue = pesoExact(T.spent);
   const homeAvail = $('homeAvailable');
-  homeAvail.textContent = T.income > 0 ? pesoExact(T.avail) : '—';
-  homeAvail.className = 'money-value' + (T.income > 0 ? (T.avail < 0 ? ' neg' : ' pos') : '');
+  homeAvail.dataset.balanceValue = T.income > 0 ? pesoExact(T.avail) : '—';
+  homeAvail.className = 'money-value home-money-value' + (T.income > 0 ? (T.avail < 0 ? ' neg' : ' pos') : '');
+  syncHomeBalanceVisibility();
   $('homeBalanceNote').textContent = T.income > 0
     ? 'Income minus expenses and savings moved · logged activity only'
     : 'Log income to see what is available this month.';
