@@ -95,6 +95,9 @@
   .screen > .top h1{font-size:22px;}
   .brand-mark{display:flex;align-items:center;gap:7px;color:var(--mint);font-family:var(--display);font-size:13px;font-weight:800;letter-spacing:.02em;margin-bottom:8px;}
   .brand-symbol{display:grid;place-items:center;width:20px;height:20px;border-radius:7px;background:var(--mint);color:var(--bg);font-family:var(--mono);font-size:12px;}
+  .brand-leaf{width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:5px;filter:drop-shadow(0 0 5px var(--mint-t));}
+  .asset-icon{width:22px;height:22px;display:block;object-fit:contain;flex-shrink:0;}
+  .exp-ico .asset-icon{width:24px;height:24px;}
   .date{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
   h1{font-family:var(--display);font-size:36px;line-height:1.05;font-weight:800;letter-spacing:-.025em;margin:4px 0 0;}
   .icon-btn{
@@ -637,7 +640,7 @@
   <section class="screen active" id="screen-today">
     <header class="top">
       <div>
-        <div class="date" id="dateLabel">—</div>
+        <div class="date" id="dateLabel"><img class="brand-leaf" src="assets/life-ledger/branding/life_ledger_leaf.svg" alt="">—</div>
         <h1 id="greeting">Hello</h1>
         <div class="home-sub">Let’s make today count.</div>
       </div>
@@ -1071,6 +1074,11 @@ const CATS = {
   other:     {label:'Other',     icon:'📦', color:'var(--muted)'}
 };
 const catOf = key => CATS[key] || CATS.other;
+const CAT_ASSET = {food:'food',transport:'transport',bills:'bills',fun:'entertainment',other:'other'};
+function categoryAssetIcon(key){
+  const name = CAT_ASSET[key] || 'other';
+  return '<img class="asset-icon" src="assets/life-ledger/icons/categories/'+name+'.svg" alt="" aria-hidden="true">';
+}
 const buzz = ms => { try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){} };
 const empty = (icon, title, text, cta, onclick) =>
   `<div class="empty"><div class="empty-ico">${icon}</div><div class="empty-title">${title}</div><div class="empty-text">${text}</div>${cta ? `<button class="ghost-btn" onclick="${onclick}">${cta}</button>` : ''}</div>`;
@@ -1443,7 +1451,7 @@ function renderRecurring(){
   $('recTag').textContent = list.length ? list.length + ' set' : '';
   $('recList').innerHTML = list.length ? list.map(r=>{
     const c = catOf(r.cat);
-    return `<div class="rec-row"><div class="rec-txt"><div class="rec-t">${c.icon} ${esc(r.note)}</div><div class="rec-s">Every month on day ${r.day}</div></div><div class="rec-v">${pesoExact(r.amt)}</div><button class="rec-del" aria-label="Stop repeating ${esc(r.note)}" onclick="deleteRecurring('${esc(r.id)}')">×</button></div>`;
+    return `<div class="rec-row"><div class="rec-txt"><div class="rec-t">${categoryAssetIcon(r.cat)} ${esc(r.note)}</div><div class="rec-s">Every month on day ${r.day}</div></div><div class="rec-v">${pesoExact(r.amt)}</div><button class="rec-del" aria-label="Stop repeating ${esc(r.note)}" onclick="deleteRecurring('${esc(r.id)}')">×</button></div>`;
   }).join('') : '<div class="plain">Rent, load, subscriptions: add them once and they log themselves every month.</div>';
 }
 
@@ -2234,7 +2242,7 @@ function renderTransactions(){
     }
     const inc = r.kind === 'income', c = inc ? {icon:'💵', label:'Income'} : catOf(r.cat);
     return `<div class="row txn-row" role="button" tabindex="0" aria-label="Edit ${inc ? 'income' : 'expense'}: ${esc(r.note)}, ${peso(r.amt, 2)}" onclick="${inc ? "openQA('income','" + esc(r.id) + "')" : "editExpense('" + esc(r.id) + "')"}">
-      <div class="exp-ico">${c.icon}</div>
+      <div class="exp-ico">${categoryAssetIcon(r.cat)}</div>
       <div class="exp-main"><span class="exp-note">${esc(r.note)}</span><span class="exp-cat">${esc(c.label)} · ${esc(when)}</span></div>
       <span class="amt${inc ? ' in' : ''}">${inc ? '+' : '−'}${peso(r.amt, 2)}</span>
       <div class="del-x" role="button" tabindex="0" aria-label="Delete ${inc ? 'income' : 'expense'}: ${esc(r.note)}" onclick="event.stopPropagation();${inc ? 'deleteIncome' : 'deleteExpense'}('${esc(r.id)}')">×</div></div>`;
@@ -2373,7 +2381,7 @@ function render(){
   // "I pay for" switches: turn off what someone else pays for
   $('envChips').innerHTML = ENVS.map(k=>{
     const on = !offList.includes(k);
-    return `<button class="chip${on?' on':''}" aria-pressed="${on}" onclick="toggleEnv('${k}')">${CATS[k].icon} ${CATS[k].label}</button>`;
+    return `<button class="chip${on?' on':''}" aria-pressed="${on}" onclick="toggleEnv('${k}')">${categoryAssetIcon(k)} ${CATS[k].label}</button>`;
   }).join('');
   // The category pickers only list envelopes you use
   fillCatSelect($('checkCat'), activeEnvs());
