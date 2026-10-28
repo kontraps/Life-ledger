@@ -96,7 +96,7 @@
   .brand-mark{display:flex;align-items:center;gap:7px;color:var(--mint);font-family:var(--display);font-size:13px;font-weight:800;letter-spacing:.02em;margin-bottom:8px;}
   .brand-symbol{display:grid;place-items:center;width:20px;height:20px;border-radius:7px;background:var(--mint);color:var(--bg);font-family:var(--mono);font-size:12px;}
   .brand-leaf{width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:5px;filter:drop-shadow(0 0 5px var(--mint-t));}
-  .asset-icon{width:22px;height:22px;display:block;object-fit:contain;flex-shrink:0;}
+  .asset-icon{width:22px;height:22px;display:block;object-fit:contain;flex-shrink:0;}\n  .tab .asset-icon{width:21px;height:21px;margin:0 auto 3px;}\n  .goal-asset{width:34px;height:34px;object-fit:contain;flex-shrink:0;}
   .exp-ico .asset-icon{width:24px;height:24px;}
   .date{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
   h1{font-family:var(--display);font-size:36px;line-height:1.05;font-weight:800;letter-spacing:-.025em;margin:4px 0 0;}
@@ -1007,19 +1007,19 @@
 
 <nav class="tabbar" aria-label="Main">
   <button class="tab active" data-tab="today" onclick="go('today')">
-    <svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/></svg>Home
+    <img class="asset-icon" src="assets/life-ledger/icons/navigation/home.svg" alt="" aria-hidden="true">Home
   </button>
   <button class="tab" data-tab="money" onclick="go('money')">
-    <svg viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>Transactions
+    <img class="asset-icon" src="assets/life-ledger/icons/navigation/transactions.svg" alt="" aria-hidden="true">Transactions
   </button>
   <button class="tab" data-tab="goals" onclick="go('goals')">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>Goals
+    <img class="asset-icon" src="assets/life-ledger/icons/navigation/goals.svg" alt="" aria-hidden="true">Goals
   </button>
   <button class="tab" data-tab="bills" onclick="go('bills')">
-    <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Bills
+    <img class="asset-icon" src="assets/life-ledger/icons/navigation/bills.svg" alt="" aria-hidden="true">Bills
   </button>
   <button class="tab" data-tab="more" onclick="go('more')">
-    <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>More
+    <img class="asset-icon" src="assets/life-ledger/icons/navigation/more.svg" alt="" aria-hidden="true">More
   </button>
 </nav>
 
@@ -2174,7 +2174,7 @@ function goalRow(g){
   const act = has ? `<button class="more-btn" aria-label="Manage ${esc(g.text)}" onclick="event.stopPropagation();openQA('goalMenu','${esc(g.id)}')">⋯</button>`
                   : `<div class="del-x" role="button" tabindex="0" aria-label="Delete task ${esc(g.text)}" onclick="event.stopPropagation();deleteGoal('${esc(g.id)}')">×</div>`;
   return `<div class="row goal-row${g.done?' done':''}${g.archived?' inactive':''}" role="checkbox" aria-checked="${g.done}" tabindex="0" aria-label="${esc(g.text)}" onclick="toggleGoal('${esc(g.id)}')">
-    <div class="check v${g.done?' on':''}${popId===g.id?' pop':''}"></div>
+    <img class="goal-asset" src="assets/life-ledger/icons/goals/${(/travel|trip|vacation/i.test(g.text)) ? "travel" : (/emergency|fund/i.test(g.text) ? "emergency_fund" : "savings")}.svg" alt="" aria-hidden="true"><div class="check v${g.done?' on':''}${popId===g.id?' pop':''}"></div>
     <div class="row-main"><div class="goal-text">${esc(g.text)}</div>${prog}</div>
     ${add}
     ${act}
@@ -2262,7 +2262,7 @@ function render(){
   const now = new Date();
   const hr = now.getHours();
   $('greeting').textContent = hr < 12 ? 'Good Morning!' : hr < 18 ? 'Good Afternoon!' : 'Good Evening!';
-  $('dateLabel').textContent = now.toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'});
+  $('dateLabel').innerHTML = '<img class="brand-leaf" src="assets/life-ledger/branding/life_ledger_leaf.svg" alt="">' + esc(now.toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'}));
 
   // ----- Habits -----
   const tk = todayKey();
