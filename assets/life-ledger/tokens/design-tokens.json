@@ -1,0 +1,43 @@
+{
+  "color": {
+    "background": "#041A15",
+    "surface": "#0A2921",
+    "surfaceElevated": "#10362B",
+    "primary": "#54F09A",
+    "primaryDark": "#19B86A",
+    "text": "#F2F8F4",
+    "textMuted": "#A6B8AF",
+    "border": "#204438",
+    "food": "#F58A42",
+    "transport": "#4389F5",
+    "shopping": "#9A4DEB",
+    "bills": "#20C985",
+    "health": "#E95D56",
+    "entertainment": "#16B8A4",
+    "other": "#8A9A94",
+    "income": "#25D978",
+    "expense": "#F45F50"
+  },
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "xxl": 32
+  },
+  "radius": {
+    "sm": 8,
+    "md": 12,
+    "lg": 18,
+    "xl": 24,
+    "pill": 999
+  },
+  "iconSize": {
+    "sm": 16,
+    "md": 20,
+    "lg": 24,
+    "xl": 32
+  },
+  "notes": "Recreated design tokens based on the Life Ledger reference. Adjust to match existing CSS variables."
+}
