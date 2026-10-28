@@ -462,13 +462,7 @@
   .home-row-value strong{display:block;font-family:var(--mono);font-size:14px;font-weight:600;white-space:nowrap;}
   .home-row-value small{display:block;color:var(--muted);font-size:11px;margin-top:1px;}
   .home-row-arrow{color:var(--muted);font-size:20px;line-height:1;margin-left:1px;}
-  #transactionsSection{order:1;scroll-margin-top:16px;} #balanceSection{order:2;} #budgetLeftSection{order:3;scroll-margin-top:16px;}
-  #envelopesSection{order:4;} #affordSection{order:5;} #monthlyBudgetSection{order:6;}
-  #goalsSection{order:7;scroll-margin-top:16px;} #billsSection{order:8;scroll-margin-top:16px;} #histSec{order:9;}
-  @media (max-width:819px){
-    .money-sheet{display:flex;flex-direction:column;gap:14px;}
-    .money-sheet > .sec{margin-top:0;}
-  }
+  @media (max-width:819px){.screen > .sheet > .sec.full{margin-top:14px;}}
   .more-link{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;min-height:58px;padding:9px 0;border-top:1px solid var(--rule);cursor:pointer;}
   .more-link:first-of-type{border-top:0;}
   .more-link-ico{width:36px;height:36px;border-radius:11px;background:var(--sheet-2);display:grid;place-items:center;color:var(--mint);font-size:17px;}
@@ -780,27 +774,11 @@
     </div>
   </section>
 
-  <!-- ============ MONEY ============ -->
+  <!-- ============ TRANSACTIONS ============ -->
   <section class="screen" id="screen-money">
     <header class="top"><div><h1>Transactions</h1></div></header>
-    <div class="sheet money-sheet">
-      <section class="sec" id="budgetLeftSection">
-        <div class="sec-head"><h2>Budget left</h2><span class="tally">this month</span></div>
-        <div id="spendHero"></div>
-        <div id="budgetAlerts" role="status"></div>
-      </section>
-      <section class="sec" id="balanceSection">
-        <div class="sec-head"><h2>Income &amp; balance</h2><span class="tally">this month</span></div>
-        <div class="statement" id="balanceBox">
-          <div class="st-row"><span>Income logged</span><span class="num" id="incomeVal">₱0</span></div>
-          <div class="st-row"><span>Expenses</span><span class="num" id="expTotalVal">₱0</span></div>
-          <div class="st-row"><span>Moved to savings goals</span><span class="num" id="movedVal">₱0</span></div>
-          <div class="st-row total"><span>Available</span><span class="num val" id="availVal">—</span></div>
-        </div>
-        <div class="note" id="balanceNote"></div>
-        <button class="ghost-btn" data-qa="income" style="margin-top:6px">+ Add income</button>
-      </section>
-      <section class="sec" id="transactionsSection">
+    <div class="sheet">
+      <section class="sec full" id="transactionsSection">
         <div class="sec-head"><h2 id="txnMonthTitle">This month</h2><span class="tally" id="expTag">0</span></div>
         <div class="txn-add">
           <button class="add-btn" data-qa="expense">+ Expense</button>
@@ -821,7 +799,67 @@
         <div class="note" id="txnSummary" role="status"></div>
         <div id="expenseList"></div>
       </section>
-      <section class="sec" id="envelopesSection">
+    </div>
+  </section>
+
+  <!-- ============ GOALS ============ -->
+  <section class="screen" id="screen-goals">
+    <header class="top"><div><h1>Goals</h1></div></header>
+    <div class="sheet">
+      <section class="sec full" id="goalsSection">
+        <div class="sec-head"><h2>Savings goals</h2><span class="tally" id="goalTag">0 open</span></div>
+        <div id="goalList"></div>
+        <div class="meter"><i id="goalBar" style="background:var(--violet)"></i></div>
+        <div class="meter-note" id="goalBarNote"></div>
+        <div id="goalArchive"></div>
+        <div class="add-row" id="goalForm">
+          <input id="goalInput" placeholder="What are you saving for?" maxlength="60" enterkeyhint="next" aria-label="Savings goal name">
+          <input id="goalTarget" type="number" inputmode="decimal" step="0.01" min="0" placeholder="₱ Target" aria-label="Target amount in pesos" enterkeyhint="done">
+          <button class="add-btn" onclick="addGoal()">Add</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ============ BILLS ============ -->
+  <section class="screen" id="screen-bills">
+    <header class="top"><div><h1>Bills</h1></div></header>
+    <div class="sheet">
+      <section class="sec full" id="billsSection">
+        <div class="sec-head"><h2>Bills &amp; recurring expenses</h2><span class="tally" id="recTag"></span></div>
+        <div id="recList"></div>
+        <div class="add-row expense-add">
+          <input id="recNote" class="expense-note" enterkeyhint="next" placeholder="e.g. Phone load" aria-label="Name of the monthly expense">
+          <select id="recCat" class="expense-cat" aria-label="Category"></select>
+          <input id="recAmt" class="expense-amt" type="number" inputmode="decimal" placeholder="₱ Amount" aria-label="Amount in pesos">
+          <input id="recDay" class="expense-amt" type="number" inputmode="numeric" min="1" max="28" placeholder="Day (1-28)" aria-label="Day of the month">
+          <button class="add-btn" onclick="addRecurring()">Add monthly expense</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ============ BUDGET ============ -->
+  <section class="screen" id="screen-budget">
+    <header class="top"><div><h1>Budget</h1></div></header>
+    <div class="sheet">
+      <section class="sec full" id="budgetLeftSection">
+        <div class="sec-head"><h2>Budget left</h2><span class="tally">this month</span></div>
+        <div id="spendHero"></div>
+        <div id="budgetAlerts" role="status"></div>
+      </section>
+      <section class="sec full" id="balanceSection">
+        <div class="sec-head"><h2>Income &amp; balance</h2><span class="tally">this month</span></div>
+        <div class="statement" id="balanceBox">
+          <div class="st-row"><span>Income logged</span><span class="num" id="incomeVal">₱0</span></div>
+          <div class="st-row"><span>Expenses</span><span class="num" id="expTotalVal">₱0</span></div>
+          <div class="st-row"><span>Moved to savings goals</span><span class="num" id="movedVal">₱0</span></div>
+          <div class="st-row total"><span>Available</span><span class="num val" id="availVal">—</span></div>
+        </div>
+        <div class="note" id="balanceNote"></div>
+        <button class="ghost-btn" data-qa="income" style="margin-top:6px">+ Add income</button>
+      </section>
+      <section class="sec full" id="envelopesSection">
         <div class="sec-head"><h2>Budget by envelope</h2><span class="tally" id="planTag">50/30/20</span></div>
         <div id="envList"></div>
         <div class="note" id="planNote"></div>
@@ -829,7 +867,7 @@
         <div class="chips" id="envChips"></div>
         <button class="link-btn" id="planReset" onclick="resetPlan()">Reset to 50/30/20</button>
       </section>
-      <section class="sec" id="affordSection">
+      <section class="sec full" id="affordSection">
         <div class="sec-head"><h2>Can I afford it?</h2></div>
         <div class="add-row afford-row">
           <input id="checkAmt" type="number" inputmode="decimal" enterkeyhint="done" placeholder="₱ Price" aria-label="Price in pesos">
@@ -843,7 +881,7 @@
         </div>
         <div class="verdict" id="verdict" role="status"></div>
       </section>
-      <section class="sec" id="monthlyBudgetSection">
+      <section class="sec full" id="monthlyBudgetSection">
         <div class="sec-head"><h2>Your monthly budget</h2></div>
         <div class="statement">
           <div class="st-row"><span>Monthly budget</span><span class="num" id="budgetVal">₱0</span></div>
@@ -860,30 +898,7 @@
           <button class="add-btn" onclick="setBudget()">Set</button>
         </div>
       </section>
-      <section class="sec" id="goalsSection">
-        <div class="sec-head"><h2>Savings goals</h2><span class="tally" id="goalTag">0 open</span></div>
-        <div id="goalList"></div>
-        <div class="meter"><i id="goalBar" style="background:var(--violet)"></i></div>
-        <div class="meter-note" id="goalBarNote"></div>
-        <div id="goalArchive"></div>
-        <div class="add-row" id="goalForm">
-          <input id="goalInput" placeholder="What are you saving for?" maxlength="60" enterkeyhint="next" aria-label="Savings goal name">
-          <input id="goalTarget" type="number" inputmode="decimal" step="0.01" min="0" placeholder="₱ Target" aria-label="Target amount in pesos" enterkeyhint="done">
-          <button class="add-btn" onclick="addGoal()">Add</button>
-        </div>
-      </section>
-      <section class="sec" id="billsSection">
-        <div class="sec-head"><h2>Bills &amp; recurring expenses</h2><span class="tally" id="recTag"></span></div>
-        <div id="recList"></div>
-        <div class="add-row expense-add">
-          <input id="recNote" class="expense-note" enterkeyhint="next" placeholder="e.g. Phone load" aria-label="Name of the monthly expense">
-          <select id="recCat" class="expense-cat" aria-label="Category"></select>
-          <input id="recAmt" class="expense-amt" type="number" inputmode="decimal" placeholder="₱ Amount" aria-label="Amount in pesos">
-          <input id="recDay" class="expense-amt" type="number" inputmode="numeric" min="1" max="28" placeholder="Day (1-28)" aria-label="Day of the month">
-          <button class="add-btn" onclick="addRecurring()">Add monthly expense</button>
-        </div>
-      </section>
-      <section class="sec" id="histSec" hidden>
+      <section class="sec full" id="histSec" hidden>
         <div class="sec-head"><h2>Past months</h2><span class="tally" id="histTag"></span></div>
         <div id="histList"></div>
       </section>
@@ -968,6 +983,7 @@
       </section>
       <section class="sec full">
         <div class="sec-head"><h2>Your tools</h2></div>
+        <button class="more-link" onclick="go('budget')"><span class="more-link-ico" aria-hidden="true">₱</span><span class="more-link-main">Budget<small>Monthly plan, spending limits, and affordability</small></span><span class="more-link-arrow" aria-hidden="true">›</span></button>
         <button class="more-link" onclick="go('habits')"><span class="more-link-ico" aria-hidden="true">✓</span><span class="more-link-main">Habits<small>Schedules, streaks, reminders</small></span><span class="more-link-arrow" aria-hidden="true">›</span></button>
         <button class="more-link" onclick="go('journal')"><span class="more-link-ico" aria-hidden="true">▤</span><span class="more-link-main">Journal<small>Mood and daily entries</small></span><span class="more-link-arrow" aria-hidden="true">›</span></button>
         <button class="more-link" onclick="go('insights')"><span class="more-link-ico" aria-hidden="true">◫</span><span class="more-link-main">Reports &amp; insights<small>Progress across habits, spending, and goals</small></span><span class="more-link-arrow" aria-hidden="true">›</span></button>
@@ -1206,8 +1222,8 @@ function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(
 // ---------- Tabs and theme ----------
 function go(tab){
   currentTab = tab;
-  const screen = ['goals','bills','budget'].includes(tab) ? 'money' : tab;
-  const selectedTab = ['habits','journal','insights'].includes(tab) ? 'more' : (tab === 'budget' ? 'money' : tab);
+  const screen = tab;
+  const selectedTab = ['habits','journal','insights','budget'].includes(tab) ? 'more' : tab;
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active', s.id === 'screen-'+screen));
   document.querySelectorAll('.tab').forEach(b=>{
     const on = b.dataset.tab === selectedTab;
@@ -1215,10 +1231,6 @@ function go(tab){
     b.setAttribute('aria-current', on ? 'page' : 'false');
   });
   try{ window.scrollTo(0,0); }catch(e){}
-  if(tab === 'goals' || tab === 'bills' || tab === 'budget'){
-    const target = $(({goals:'goalsSection',bills:'billsSection',budget:'budgetLeftSection'})[tab]);
-    if(target) setTimeout(()=>target.scrollIntoView({block:'start',behavior:'smooth'}),30);
-  }
 }
 function syncThemeColor(){
   const light = document.documentElement.getAttribute('data-theme') === 'light';
