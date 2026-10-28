@@ -6,7 +6,11 @@ const FILES = [
   './assets/life-ledger/illustrations/onboarding_landscape.svg','./assets/life-ledger/illustrations/empty_state.svg',
   './assets/life-ledger/icons/categories/food.svg','./assets/life-ledger/icons/categories/transport.svg',
   './assets/life-ledger/icons/categories/bills.svg','./assets/life-ledger/icons/categories/entertainment.svg',
-  './assets/life-ledger/icons/categories/other.svg','./assets/life-ledger/ASSET_INVENTORY.md',
+  './assets/life-ledger/icons/categories/other.svg','./assets/life-ledger/icons/categories/income.svg',
+  './assets/life-ledger/icons/goals/savings.svg','./assets/life-ledger/icons/goals/travel.svg','./assets/life-ledger/icons/goals/emergency_fund.svg',
+  './assets/life-ledger/icons/navigation/home.svg','./assets/life-ledger/icons/navigation/transactions.svg',
+  './assets/life-ledger/icons/navigation/goals.svg','./assets/life-ledger/icons/navigation/bills.svg','./assets/life-ledger/icons/navigation/more.svg',
+  './assets/life-ledger/ASSET_INVENTORY.md',
   './fonts/bricolage-700.woff2','./fonts/bricolage-800.woff2',
   './fonts/plexmono-500-latin.woff2','./fonts/plexmono-500-ext.woff2',
   './fonts/plexmono-600-latin.woff2','./fonts/plexmono-600-ext.woff2'
