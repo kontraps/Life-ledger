@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a1510">
+<title>Life Ledger Goals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+</style>
+<style>
+body{background:#050c08;display:flex;justify-content:center}
+body>div{flex:none}
+@media (max-width:430px){body>div{width:100%!important;height:100dvh!important}}
+</style>
+</head>
+<body>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#0a1510;color:#eaf5ee;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden">
+<div style="flex:1;min-height:0;padding:36px 20px 0;display:flex;flex-direction:column;gap:18px;overflow:hidden">
+
+<div style="display:flex;align-items:center;justify-content:space-between">
+<h1 style="margin:0;font-size:26px;font-weight:700;letter-spacing:-0.3px">Goals</h1>
+<button type="button" aria-label="Add goal" style="width:44px;height:44px;border-radius:22px;border:1px solid #1d3a2b;background:#102219;color:#4ade80;display:flex;align-items:center;justify-content:center;cursor:pointer">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+</button>
+</div>
+
+<div style="display:flex;gap:4px;padding:4px;border-radius:16px;background:#102219;border:1px solid #1b3527">
+<button type="button" style="flex:1;height:44px;border-radius:12px;border:0;background:#4ade80;color:#06200f;font-size:14px;font-weight:600;cursor:pointer">Active</button>
+<button type="button" style="flex:1;height:44px;border-radius:12px;border:0;background:transparent;color:#cfe2d6;font-size:14px;font-weight:500;cursor:pointer">Completed</button>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px">
+
+<div style="background:#102219;border:1px solid #1b3527;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:12px">
+<span style="width:46px;height:46px;border-radius:14px;background:#4ade80;color:#06200f;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 3 10.5l7 2.5 2.5 7z"/><path d="m10 13 4-4"/></svg></span>
+<div style="flex:1"><div style="font-size:16px;font-weight:600">Cebu Trip</div><div style="margin-top:2px;font-size:13px;color:#9bb3a6">₱ 5,000 / ₱ 5,000</div></div>
+<div style="font-size:15px;font-weight:700;color:#4ade80">100%</div>
+</div>
+<div role="progressbar" aria-label="Cebu Trip progress" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height:8px;border-radius:4px;background:#1a2e24"><div style="width:100%;height:100%;border-radius:4px;background:#4ade80"></div></div>
+</div>
+
+<div style="background:#102219;border:1px solid #1b3527;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:12px">
+<span style="width:46px;height:46px;border-radius:14px;background:#4d82e8;color:#ffffff;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></svg></span>
+<div style="flex:1"><div style="font-size:16px;font-weight:600">New Phone</div><div style="margin-top:2px;font-size:13px;color:#9bb3a6">₱ 3,500 / ₱ 15,000</div></div>
+<div style="font-size:15px;font-weight:700;color:#cfe2d6">23%</div>
+</div>
+<div role="progressbar" aria-label="New Phone progress" aria-valuenow="23" aria-valuemin="0" aria-valuemax="100" style="height:8px;border-radius:4px;background:#1a2e24"><div style="width:23%;height:100%;border-radius:4px;background:#5b9bf5"></div></div>
+</div>
+
+<div style="background:#102219;border:1px solid #1b3527;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:12px">
+<span style="width:46px;height:46px;border-radius:14px;background:#8b6bf0;color:#ffffff;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+<div style="flex:1"><div style="font-size:16px;font-weight:600">Emergency Fund</div><div style="margin-top:2px;font-size:13px;color:#9bb3a6">₱ 3,000 / ₱ 20,000</div></div>
+<div style="font-size:15px;font-weight:700;color:#cfe2d6">15%</div>
+</div>
+<div role="progressbar" aria-label="Emergency Fund progress" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" style="height:8px;border-radius:4px;background:#1a2e24"><div style="width:15%;height:100%;border-radius:4px;background:#a78bfa"></div></div>
+</div>
+
+</div>
+</div>
+
+<nav aria-label="Main" style="height:76px;flex:none;display:flex;background:#0d1b14;border-top:1px solid #1d3a2b;padding:6px 8px 0;box-sizing:border-box">
+<a href="Home.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#9bb3a6;font-size:11px;font-weight:500"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Home</a>
+<a href="Transactions.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#9bb3a6;font-size:11px;font-weight:500"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>Transactions</a>
+<a href="Goals.html" aria-current="page" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#4ade80;font-size:11px;font-weight:600"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>Goals</a>
+<a href="Bills.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#9bb3a6;font-size:11px;font-weight:500"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Bills</a>
+<a href="Settings.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#9bb3a6;font-size:11px;font-weight:500"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>More</a>
+</nav>
+</div>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a1510">
+<title>Life Ledger Reports</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+</style>
+<style>
+body{background:#050c08;display:flex;justify-content:center}
+body>div{flex:none}
+@media (max-width:430px){body>div{width:100%!important;height:100dvh!important}}
+</style>
+</head>
+<body>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#0a1510;color:#eaf5ee;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden">
+<div style="flex:1;min-height:0;padding:36px 20px 0;display:flex;flex-direction:column;gap:18px;overflow:hidden">
+
+<div style="display:flex;align-items:center;justify-content:space-between">
+<h1 style="margin:0;font-size:26px;font-weight:700;letter-spacing:-0.3px">Reports</h1>
+<a href="Budget.html" style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:14px;background:#102219;border:1px solid #1b3527;font-size:13px;color:#cfe2d6">
+October 2026
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+</a>
+</div>
+
+<div style="display:flex;gap:10px">
+<button type="button" style="flex:1;height:44px;border-radius:22px;border:0;background:#4ade80;color:#06200f;font-size:14px;font-weight:600;cursor:pointer">Expenses</button>
+<button type="button" style="flex:1;height:44px;border-radius:22px;border:1px solid #1b3527;background:#102219;color:#cfe2d6;font-size:14px;font-weight:500;cursor:pointer">Income</button>
+<button type="button" style="flex:1;height:44px;border-radius:22px;border:1px solid #1b3527;background:#102219;color:#cfe2d6;font-size:14px;font-weight:500;cursor:pointer">Savings</button>
+</div>
+
+<div style="position:relative;display:flex;justify-content:center;align-items:center;height:220px;margin-top:4px">
+<svg role="img" aria-label="Expense breakdown: Bills 38 percent, Shopping 32 percent, Food 23 percent, Transport 7 percent" width="220" height="220" viewBox="0 0 220 220">
+<g transform="rotate(-90 110 110)" fill="none" stroke-width="30">
+<circle cx="110" cy="110" r="70" stroke="#f59e42" stroke-dasharray="96 343.8" stroke-dashoffset="0"/>
+<circle cx="110" cy="110" r="70" stroke="#5b9bf5" stroke-dasharray="28.7 411.1" stroke-dashoffset="-99.05"/>
+<circle cx="110" cy="110" r="70" stroke="#a78bfa" stroke-dasharray="139.6 300.2" stroke-dashoffset="-130.75"/>
+<circle cx="110" cy="110" r="70" stroke="#4ade80" stroke-dasharray="163.4 276.4" stroke-dashoffset="-273.35"/>
+</g>
+</svg>
+<div style="position:absolute;left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+<div style="font-size:26px;font-weight:700;letter-spacing:-0.4px">₱ 5,550</div>
+<div style="margin-top:2px;font-size:12px;color:#9bb3a6">Total Expenses</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;gap:12px;min-height:48px;border-bottom:1px solid #15291f">
+<span style="width:14px;height:14px;border-radius:7px;background:#f59e42"></span>
+<span style="flex:1;font-size:15px">Food</span>
+<span style="font-size:15px;font-weight:600">₱ 1,250</span>
+<span style="width:40px;text-align:right;font-size:13px;color:#9bb3a6">23%</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px;min-height:48px;border-bottom:1px solid #15291f">
+<span style="width:14px;height:14px;border-radius:7px;background:#5b9bf5"></span>
+<span style="flex:1;font-size:15px">Transport</span>
+<span style="font-size:15px;font-weight:600">₱ 400</span>
+<span style="width:40px;text-align:right;font-size:13px;color:#9bb3a6">7%</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px;min-height:48px;border-bottom:1px solid #15291f">
+<span style="width:14px;height:14px;border-radius:7px;background:#a78bfa"></span>
+<span style="flex:1;font-size:15px">Shopping</span>
+<span style="font-size:15px;font-weight:600">₱ 1,800</span>
+<span style="width:40px;text-align:right;font-size:13px;color:#9bb3a6">32%</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px;min-height:48px">
+<span style="width:14px;height:14px;border-radius:7px;background:#4ade80"></span>
+<span style="flex:1;font-size:15px">Bills</span>
+<span style="font-size:15px;font-weight:600">₱ 2,100</span>
+<span style="width:40px;text-align:right;font-size:13px;color:#9bb3a6">38%</span>
+</div>
+</div>
+</div>
+
+<nav aria-label="Main" style="height:76px;flex:none;display:flex;background:#0d1b14;border-top:1px solid #1d3a2b;padding:6px 8px 0;box-sizing:border-box">
+<a href="Home.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#9bb3a6;font-size:11px;font-weight:500"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Home</a>
+<a href="Transactions.html" aria-current="page" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#4ade80;font-size:11px;font-weight:600"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>Transactions</a>
+<a href="Goals.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#9bb3a6;font-size:11px;font-weight:500"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>Goals</a>
+<a href="Bills.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#9bb3a6;font-size:11px;font-weight:500"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Bills</a>
+<a href="Settings.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#9bb3a6;font-size:11px;font-weight:500"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>More</a>
+</nav>
+</div>
+</body>
+</html>

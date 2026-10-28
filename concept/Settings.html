@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a1510">
+<title>Life Ledger Settings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+</style>
+<style>
+body{background:#050c08;display:flex;justify-content:center}
+body>div{flex:none}
+@media (max-width:430px){body>div{width:100%!important;height:100dvh!important}}
+</style>
+</head>
+<body>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#0a1510;color:#eaf5ee;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden">
+<div style="flex:1;min-height:0;padding:36px 20px 0;display:flex;flex-direction:column;gap:18px;overflow:hidden">
+
+<h1 style="margin:0;font-size:26px;font-weight:700;letter-spacing:-0.3px">Settings</h1>
+
+<div style="display:flex;align-items:center;gap:14px;background:#102219;border:1px solid #1b3527;border-radius:18px;padding:16px">
+<span style="width:64px;height:64px;flex:none;border-radius:32px;background:#d5ddd8;color:#2a3a32;display:flex;align-items:center;justify-content:center">
+<svg aria-hidden="true" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4-6.5 8-6.5s7 2 8 6.5"/></svg>
+</span>
+<div>
+<div style="font-size:19px;font-weight:700">Life Ledger</div>
+<div style="margin-top:3px;font-size:13px;color:#9bb3a6;line-height:1.35">Track Today, Build a Better Tomorrow</div>
+</div>
+</div>
+
+<div style="background:#102219;border:1px solid #1b3527;border-radius:18px;padding:0 16px;display:flex;flex-direction:column">
+
+<a href="Settings.html" style="display:flex;align-items:center;gap:14px;min-height:56px;border-bottom:1px solid #1b3527">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9bb3a6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6.5 9.5v.01M17.5 14.5v.01"/></svg>
+<span style="flex:1;font-size:15px">Currency</span>
+<span style="font-size:13px;color:#9bb3a6">Philippine Peso (₱)</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9bb3a6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+</a>
+
+<a href="Settings.html" style="display:flex;align-items:center;gap:14px;min-height:56px;border-bottom:1px solid #1b3527">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9bb3a6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.5-9A6 6 0 0 1 18 10a4 4 0 0 1-.5 8z"/><path d="M12 11v6M9.5 14.5 12 17l2.5-2.5"/></svg>
+<span style="flex:1;font-size:15px">Backup &amp; Sync</span>
+<span style="font-size:11px;color:#9bb3a6;text-align:right;line-height:1.3">Last synced:<br>Oct 27, 2026 9:30 AM</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9bb3a6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+</a>
+
+<a href="Settings.html" style="display:flex;align-items:center;gap:14px;min-height:56px;border-bottom:1px solid #1b3527">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9bb3a6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+<span style="flex:1;font-size:15px">Notifications</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9bb3a6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+</a>
+
+<div style="display:flex;align-items:center;gap:14px;min-height:56px;border-bottom:1px solid #1b3527">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9bb3a6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>
+<span id="dm" style="flex:1;font-size:15px">Dark Mode</span>
+<button type="button" role="switch" aria-checked="true" aria-labelledby="dm" style="position:relative;width:52px;height:44px;border:0;background:transparent;cursor:pointer;padding:0">
+<span style="position:absolute;left:0;top:7px;width:52px;height:30px;border-radius:15px;background:#4ade80"></span>
+<span style="position:absolute;left:26px;top:10px;width:24px;height:24px;border-radius:12px;background:#ffffff"></span>
+</button>
+</div>
+
+<a href="Settings.html" style="display:flex;align-items:center;gap:14px;min-height:56px;border-bottom:1px solid #1b3527">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9bb3a6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M5 14v5h14v-5"/></svg>
+<span style="flex:1;font-size:15px">Export Data</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9bb3a6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+</a>
+
+<a href="Settings.html" style="display:flex;align-items:center;gap:14px;min-height:56px;border-bottom:1px solid #1b3527">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9bb3a6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/></svg>
+<span style="flex:1;font-size:15px">About</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9bb3a6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+</a>
+
+<a href="index.html" style="display:flex;align-items:center;gap:14px;min-height:56px;color:#ff7a70">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M9 14h6" stroke="none"/><path d="M8.5 12h7M12.5 9l3 3-3 3"/></svg>
+<span style="flex:1;font-size:15px;font-weight:500">Sign Out</span>
+</a>
+
+</div>
+</div>
+
+<nav aria-label="Main" style="height:76px;flex:none;display:flex;background:#0d1b14;border-top:1px solid #1d3a2b;padding:6px 8px 0;box-sizing:border-box">
+<a href="Home.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#9bb3a6;font-size:11px;font-weight:500"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Home</a>
+<a href="Transactions.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#9bb3a6;font-size:11px;font-weight:500"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>Transactions</a>
+<a href="Goals.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#9bb3a6;font-size:11px;font-weight:500"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>Goals</a>
+<a href="Bills.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#9bb3a6;font-size:11px;font-weight:500"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Bills</a>
+<a href="Settings.html" aria-current="page" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:8px;color:#4ade80;font-size:11px;font-weight:600"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>More</a>
+</nav>
+</div>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a1510">
+<title>Life Ledger Add Transaction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+button,input{font-family:inherit}
+input::placeholder{color:#7f988b}
+</style>
+<style>
+body{background:#050c08;display:flex;justify-content:center}
+body>div{flex:none}
+@media (max-width:430px){body>div{width:100%!important;height:100dvh!important}}
+</style>
+</head>
+<body>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#0a1510;color:#eaf5ee;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden;padding:32px 20px 32px;gap:18px">
+
+<div style="display:flex;align-items:center;height:44px">
+<a href="Transactions.html" aria-label="Back to transactions" style="width:44px;height:44px;margin-left:-10px;display:flex;align-items:center;justify-content:center;color:#eaf5ee">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg>
+</a>
+<h1 style="margin:0;flex:1;text-align:center;font-size:18px;font-weight:600;padding-right:34px">Add Transaction</h1>
+</div>
+
+<div style="display:flex;gap:10px">
+<button type="button" style="flex:1;height:44px;border-radius:22px;border:0;background:#4ade80;color:#06200f;font-size:14px;font-weight:600;cursor:pointer">Expense</button>
+<button type="button" style="flex:1;height:44px;border-radius:22px;border:1px solid #1b3527;background:#102219;color:#cfe2d6;font-size:14px;font-weight:500;cursor:pointer">Income</button>
+<button type="button" style="flex:1;height:44px;border-radius:22px;border:1px solid #1b3527;background:#102219;color:#cfe2d6;font-size:14px;font-weight:500;cursor:pointer">Transfer</button>
+</div>
+
+<div>
+<label for="amt" style="font-size:13px;color:#9bb3a6">Amount</label>
+<div style="margin-top:6px;display:flex;align-items:center;gap:8px;font-size:40px;font-weight:700;color:#eaf5ee">
+<span style="color:#7f988b">₱</span>
+<input id="amt" type="text" inputmode="decimal" placeholder="0.00" style="flex:1;min-width:0;background:transparent;border:0;outline:0;color:#eaf5ee;font-size:40px;font-weight:700;padding:0">
+</div>
+</div>
+
+<div>
+<div style="font-size:13px;color:#9bb3a6;margin-bottom:10px">Category</div>
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px 8px">
+
+<button type="button" aria-pressed="true" style="border:0;background:transparent;color:#eaf5ee;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:0">
+<span style="width:54px;height:54px;border-radius:27px;background:#f59e42;color:#2b1503;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #0a1510,0 0 0 5px #f59e42"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8a2 2 0 0 0 2 2v8M11 3v8M7 7h4M17 3c-2 2-2.5 5-2 8h2v10"/></svg></span>Food</button>
+
+<button type="button" aria-pressed="false" style="border:0;background:transparent;color:#cfe2d6;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:0">
+<span style="width:54px;height:54px;border-radius:27px;background:#14281e;border:1px solid #1d3a2b;box-sizing:border-box;color:#6fa8ff;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="3"/><path d="M4 12h16M7 20l1-3M17 20l-1-3"/></svg></span>Transport</button>
+
+<button type="button" aria-pressed="false" style="border:0;background:transparent;color:#cfe2d6;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:0">
+<span style="width:54px;height:54px;border-radius:27px;background:#14281e;border:1px solid #1d3a2b;box-sizing:border-box;color:#b79bff;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span>Shopping</button>
+
+<button type="button" aria-pressed="false" style="border:0;background:transparent;color:#cfe2d6;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:0">
+<span style="width:54px;height:54px;border-radius:27px;background:#14281e;border:1px solid #1d3a2b;box-sizing:border-box;color:#d9b26b;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span>Bills</button>
+
+<button type="button" aria-pressed="false" style="border:0;background:transparent;color:#cfe2d6;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:0">
+<span style="width:54px;height:54px;border-radius:27px;background:#14281e;border:1px solid #1d3a2b;box-sizing:border-box;color:#ff7a70;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span>Health</button>
+
+<button type="button" aria-pressed="false" style="border:0;background:transparent;color:#cfe2d6;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:0">
+<span style="width:54px;height:54px;border-radius:27px;background:#14281e;border:1px solid #1d3a2b;box-sizing:border-box;color:#4ade80;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="10" rx="5"/><path d="M8 11v4M6 13h4M16 12h.01M18 14h.01"/></svg></span>Entertainment</button>
+
+<button type="button" aria-pressed="false" style="border:0;background:transparent;color:#cfe2d6;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:0">
+<span style="width:54px;height:54px;border-radius:27px;background:#14281e;border:1px solid #1d3a2b;box-sizing:border-box;color:#cfe2d6;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 12h.01M12 12h.01M18 12h.01"/></svg></span>Others</button>
+</div>
+</div>
+
+<div>
+<label for="dt" style="font-size:13px;color:#9bb3a6">Date</label>
+<div style="margin-top:6px;height:48px;border-radius:14px;background:#102219;border:1px solid #1b3527;display:flex;align-items:center;padding:0 14px;box-sizing:border-box">
+<input id="dt" type="text" value="Oct 27, 2026" style="flex:1;min-width:0;background:transparent;border:0;outline:0;color:#eaf5ee;font-size:15px">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9bb3a6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+</div>
+</div>
+
+<div>
+<label for="nt" style="font-size:13px;color:#9bb3a6">Note (optional)</label>
+<div style="margin-top:6px;height:48px;border-radius:14px;background:#102219;border:1px solid #1b3527;display:flex;align-items:center;padding:0 14px;box-sizing:border-box">
+<input id="nt" type="text" placeholder="Add a note..." style="flex:1;min-width:0;background:transparent;border:0;outline:0;color:#eaf5ee;font-size:15px">
+</div>
+</div>
+
+<a href="Transactions.html" style="margin-top:auto;height:54px;border-radius:16px;background:#4ade80;color:#06200f;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center">Save Transaction</a>
+</div>
+</body>
+</html>
