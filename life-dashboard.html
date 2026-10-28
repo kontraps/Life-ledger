@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Daybook</title>
+<title>Life Ledger</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Daybook">
+<meta name="apple-mobile-web-app-title" content="Life Ledger">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#101A16" id="themeColor">
+<meta name="theme-color" content="#0A1510" id="themeColor">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png?v=2">
 <link rel="icon" href="icon.png?v=2">
@@ -37,17 +37,17 @@
     unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;}
 </style>
 <style>
-  /* Daybook green and brass. Dark is the default; the button in the corner switches to light. */
+  /* Forest green and brass. Dark is the default; the button in the corner switches to light. */
   :root{
-    --bg:#101A16;        /* the desk */
-    --sheet:#18251F;     /* cards */
-    --sheet-2:#203128;   /* elevated: fields, tiles */
-    --ink:#F3F0E7;
-    --muted:#A0B0A5;
-    --rule:rgba(243,240,231,.10);
-    --rule-strong:rgba(243,240,231,.28);
-    --brass:#D8AD57;  --on-brass:#101A16;  --brass-t:rgba(216,173,87,.16);
-    --mint:#6FBF9B;   --mint-t:rgba(111,191,155,.20);
+    --bg:#0A1510;        /* the desk */
+    --sheet:#102219;     /* cards */
+    --sheet-2:#1B3D2B;   /* elevated: fields, tiles */
+    --ink:#EAF5EE;
+    --muted:#9BB3A6;
+    --rule:#1B3527;
+    --rule-strong:rgba(155,179,166,.42);
+    --brass:#D8AD57;  --on-brass:#0A1510;  --brass-t:rgba(216,173,87,.16);
+    --mint:#4ADE80;   --mint-t:rgba(74,222,128,.16);
     --violet:#A99BEA; --violet-t:rgba(169,155,234,.20);
     --coral:#F08A6B;
     --red:#E5736A;
@@ -92,6 +92,8 @@
 
   /* ---- Header ---- */
   .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:0 20px;}
+  .brand-mark{display:flex;align-items:center;gap:7px;color:var(--mint);font-family:var(--display);font-size:13px;font-weight:800;letter-spacing:.02em;margin-bottom:8px;}
+  .brand-symbol{display:grid;place-items:center;width:20px;height:20px;border-radius:7px;background:var(--mint);color:var(--bg);font-family:var(--mono);font-size:12px;}
   .date{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
   h1{font-family:var(--display);font-size:36px;line-height:1.05;font-weight:800;letter-spacing:-.025em;margin:4px 0 0;}
   .icon-btn{
@@ -390,6 +392,26 @@
   #screen-today h1{font-size:30px;}
   .hero-col{min-width:0;}
   .hero-count{font-family:var(--mono);font-weight:600;font-size:14px;color:var(--brass);margin-top:8px;}
+  /* ---- Monthly money snapshot on Today ---- */
+  .money-overview{margin:20px 16px 0;padding:18px;background:var(--sheet);border:1px solid var(--rule);border-radius:24px;}
+  .money-overview-head{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .money-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;}
+  .money-overview h2{font-family:var(--display);font-size:19px;line-height:1.2;margin:3px 0 0;}
+  .money-link{min-height:44px;border:0;background:transparent;color:var(--mint);font-size:14px;font-weight:700;white-space:nowrap;cursor:pointer;padding:0 2px 0 8px;}
+  .money-total{padding:15px 0 13px;}
+  .money-label{font-size:13px;color:var(--muted);}
+  .money-value{display:block;font-family:var(--mono);font-weight:600;font-size:30px;line-height:1.2;letter-spacing:-.03em;margin-top:3px;overflow-wrap:anywhere;}
+  .money-value.pos{color:var(--mint);}.money-value.neg{color:var(--red);}
+  .money-caption{display:block;font-size:12px;color:var(--muted);margin-top:4px;}
+  .money-split{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);}
+  .money-stat{min-width:0;}.money-stat:last-child{text-align:right;}
+  .money-stat span{display:block;color:var(--muted);font-size:12px;}
+  .money-stat strong{display:block;font-family:var(--mono);font-size:17px;margin-top:3px;overflow-wrap:anywhere;}
+  .money-stat .income{color:var(--mint);}.money-stat .expenses{color:var(--coral);}
+  .money-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding-top:12px;}
+  .money-action{min-height:44px;border:1px solid var(--rule);border-radius:12px;background:var(--sheet-2);color:var(--ink);font-size:13px;font-weight:600;cursor:pointer;}
+  .money-action:first-child{color:var(--mint);}
+  .money-action:active{transform:translateY(1px);}
   .stat-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px;}
   .stat-card{all:unset;box-sizing:border-box;cursor:pointer;background:var(--sheet);border:1px solid var(--rule);border-radius:20px;padding:14px;min-height:88px;display:flex;flex-direction:column;gap:4px;}
   .stat-card:focus-visible{outline:2px solid var(--brass);outline-offset:2px;}
@@ -397,7 +419,7 @@
   .stat-card .v{font-family:var(--mono);font-weight:600;font-size:22px;letter-spacing:-.02em;overflow-wrap:anywhere;}
   .stat-card .v.pos{color:var(--mint);} .stat-card .v.neg{color:var(--red);}
   .stat-card .s{font-size:12.5px;color:var(--muted);}
-  .quick{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:14px;}
+  .quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px;}
   .qbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:64px;padding:8px 2px;border-radius:16px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink);font-size:12px;font-weight:600;cursor:pointer;}
   .qbtn svg{width:22px;height:22px;stroke:var(--brass);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
   .qbtn:active{transform:translateY(1px);}
@@ -540,7 +562,7 @@
     .sheet{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start;padding:4px 0 48px;}
     .sheet > .sec{margin-top:14px;}
     .sheet > .sec.full{grid-column:1 / -1;}
-    .summary,.legend{margin-left:0;margin-right:0;}
+    .summary,.legend,.money-overview{margin-left:0;margin-right:0;}
     #toast{bottom:28px;}
   }
 </style>
@@ -552,6 +574,7 @@
   <section class="screen active" id="screen-today">
     <header class="top">
       <div>
+        <div class="brand-mark"><span class="brand-symbol" aria-hidden="true">₱</span>Life Ledger</div>
         <div class="date" id="dateLabel">—</div>
         <h1 id="greeting">Hello</h1>
       </div>
@@ -560,6 +583,27 @@
         <svg class="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
       </button>
     </header>
+
+    <section class="money-overview" aria-labelledby="moneyOverviewTitle">
+      <div class="money-overview-head">
+        <div><div class="money-eyebrow" id="homeMonthLabel">This month</div><h2 id="moneyOverviewTitle">Money snapshot</h2></div>
+        <button class="money-link" onclick="go('money')">View money <span aria-hidden="true">›</span></button>
+      </div>
+      <div class="money-total">
+        <span class="money-label">Available from what you logged</span>
+        <strong class="money-value" id="homeAvailable">—</strong>
+        <span class="money-caption" id="homeBalanceNote">Add income to see your available amount.</span>
+      </div>
+      <div class="money-split">
+        <div class="money-stat"><span>Income</span><strong class="income" id="homeIncome">₱0</strong></div>
+        <div class="money-stat"><span>Expenses</span><strong class="expenses" id="homeExpenses">₱0</strong></div>
+      </div>
+      <div class="money-actions" role="group" aria-label="Money quick actions">
+        <button class="money-action" data-qa="expense">+ Expense</button>
+        <button class="money-action" data-qa="income">+ Income</button>
+        <button class="money-action" data-qa="goal">+ Goal</button>
+      </div>
+    </section>
 
     <div class="summary">
       <div class="ring-wrap">
@@ -577,11 +621,10 @@
       <div class="stat-cards" id="statGrid"></div>
 
       <div class="quick" role="group" aria-label="Quick actions">
-        <button class="qbtn" data-qa="expense"><svg viewBox="0 0 24 24"><path d="M12 3v18M16.5 7.5c0-1.7-2-3-4.5-3s-4.5 1.3-4.5 3 2 2.6 4.5 3 4.5 1.3 4.5 3-2 3-4.5 3-4.5-1.3-4.5-3"/></svg>Expense</button>
         <button class="qbtn" data-qa="mood"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 14c.8 1.4 2 2 3.5 2s2.7-.6 3.5-2M9 9.5h.01M15 9.5h.01"/></svg>Mood</button>
         <button class="qbtn" data-qa="task"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8.5v7M8.5 12h7"/></svg>Task</button>
         <button class="qbtn" data-qa="journal"><svg viewBox="0 0 24 24"><path d="M6 4h11a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2z"/><path d="M6 18a2 2 0 0 1 2-2h11"/></svg>Journal</button>
-        <button class="qbtn" data-qa="goal"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".9"/></svg>Goal</button>
+        <button class="qbtn" data-qa="habit"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.3 2.4 2.4 4.6-5"/></svg>Habit</button>
       </div>
 
       <section class="sec full" id="todaySec">
@@ -1063,7 +1106,7 @@ function go(tab){
 }
 function syncThemeColor(){
   const light = document.documentElement.getAttribute('data-theme') === 'light';
-  $('themeColor').setAttribute('content', light ? '#E4ECDE' : '#101A16');
+  $('themeColor').setAttribute('content', light ? '#E4ECDE' : '#0A1510');
 }
 function toggleTheme(){
   const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
@@ -1318,10 +1361,10 @@ function exportBackup(){
 }
 function restoreFromText(text){
   let obj;
-  try{ obj = JSON.parse(text); }catch(e){ showToast('That file is not a Daybook backup.', null, 4000); return false; }
+  try{ obj = JSON.parse(text); }catch(e){ showToast('That file is not a Life Ledger backup.', null, 4000); return false; }
   const st = obj && obj.state ? obj.state : obj;   // accept the wrapped file or a bare state
   if(!st || typeof st !== 'object' || !Array.isArray(st.habits) || !Array.isArray(st.goals)){
-    showToast('That file is not a Daybook backup.', null, 4000); return false;
+    showToast('That file is not a Life Ledger backup.', null, 4000); return false;
   }
   const before = JSON.stringify(state);
   state = st; normalize(); save(); render();
@@ -1589,10 +1632,10 @@ function downloadCalendar(){
   const hh = pad2(Math.floor(mins/60)), mm = pad2(mins%60);
   const now = new Date();
   const stamp = now.getFullYear()+pad2(now.getMonth()+1)+pad2(now.getDate());
-  const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Daybook//EN','CALSCALE:GREGORIAN',
+  const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Life Ledger//EN','CALSCALE:GREGORIAN',
     'BEGIN:VEVENT','UID:ledger-habits-'+stamp+'@life-ledger','DTSTAMP:'+stamp+'T000000Z',
     'DTSTART:'+stamp+'T'+hh+mm+'00','DURATION:PT15M','RRULE:FREQ=DAILY',
-    'SUMMARY:Daybook: tick your habits','DESCRIPTION:Open Daybook and tick off today\'s habits.',
+    'SUMMARY:Life Ledger: tick your habits','DESCRIPTION:Open Life Ledger and tick off today\'s habits.',
     'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Tick your habits','TRIGGER:PT0M','END:VALARM',
     'END:VEVENT','END:VCALENDAR'].join('\r\n');
   const url = URL.createObjectURL(new Blob([ics], {type:'text/calendar'}));
@@ -2128,6 +2171,15 @@ function render(){
 
   // Income and what is available: only from what you logged here (never your bank balance)
   const T = moneyTotals();
+  $('homeMonthLabel').textContent = now.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+  $('homeIncome').textContent = pesoExact(T.income);
+  $('homeExpenses').textContent = pesoExact(T.spent);
+  const homeAvail = $('homeAvailable');
+  homeAvail.textContent = T.income > 0 ? pesoExact(T.avail) : '—';
+  homeAvail.className = 'money-value' + (T.income > 0 ? (T.avail < 0 ? ' neg' : ' pos') : '');
+  $('homeBalanceNote').textContent = T.income > 0
+    ? `${pesoExact(T.moved)} moved to savings goals · logged activity only`
+    : 'Log income to see what is available this month.';
   $('incomeVal').textContent = pesoExact(T.income);
   $('expTotalVal').textContent = pesoExact(T.spent);
   $('movedVal').textContent = pesoExact(T.moved);
