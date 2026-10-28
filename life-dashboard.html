@@ -2239,7 +2239,7 @@ function renderTransactions(){
     const when = r.date ? new Date(r.date + 'T12:00:00').toLocaleDateString(undefined, {month:'short', day:'numeric'}) : 'No date';
     if(r.kind === 'saving'){
       const out = r.amt < 0;
-      return `<div class="row txn-row"><div class="exp-ico">🐷</div><div class="exp-main"><span class="exp-note">${out ? 'Taken out of' : 'Moved to'} ${esc(r.note)}</span><span class="exp-cat">Savings · ${esc(when)}</span></div><span class="amt">${out ? '+' : '−'}${peso(Math.abs(r.amt), 2)}</span></div>`;
+      return `<div class="row txn-row"><div class="exp-ico"><img class="asset-icon" src="assets/life-ledger/icons/goals/savings.svg" alt="" aria-hidden="true"></div><div class="exp-main"><span class="exp-note">${out ? 'Taken out of' : 'Moved to'} ${esc(r.note)}</span><span class="exp-cat">Savings · ${esc(when)}</span></div><span class="amt">${out ? '+' : '−'}${peso(Math.abs(r.amt), 2)}</span></div>`;
     }
     const inc = r.kind === 'income', c = inc ? {icon:'💵', label:'Income'} : catOf(r.cat);
     return `<div class="row txn-row" role="button" tabindex="0" aria-label="Edit ${inc ? 'income' : 'expense'}: ${esc(r.note)}, ${peso(r.amt, 2)}" onclick="${inc ? "openQA('income','" + esc(r.id) + "')" : "editExpense('" + esc(r.id) + "')"}">
@@ -2392,7 +2392,7 @@ function render(){
   }else{
     $('envList').innerHTML = M.envs.map(e=>`
       <div class="row env-row" onclick="editPlan('${e.key}')">
-        <div class="exp-ico">${e.icon}</div>
+        <div class="exp-ico">${categoryAssetIcon(e.key)}</div>
         <div class="env-main">
           <div class="env-top"><span class="env-name">${e.label}</span><span class="env-left ${e.status}">${e.left<0 ? pesoExact(-e.left)+' over' : pesoExact(e.left)+' left'}</span></div>
           <div class="bar"><i style="width:${Math.min(100,Math.round(e.pct))}%;background:${statusColor(e.status)}"></i></div>
